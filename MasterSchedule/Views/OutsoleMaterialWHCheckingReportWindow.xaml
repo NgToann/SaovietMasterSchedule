@@ -1,0 +1,99 @@
+﻿<Window xmlns:rpv="clr-namespace:Microsoft.Reporting.WinForms;assembly=Microsoft.Reportviewer.WinForms" 
+        x:Class="MasterSchedule.Views.OutsoleMaterialWHCheckingReportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MasterSchedule.Views" FontSize="14"
+        mc:Ignorable="d" WindowState="Maximized" WindowStartupLocation="CenterScreen"
+        Title="Outsole Material WH Checking Report" Height="450" Width="800" Loaded="Window_Loaded">
+    <Grid Margin="2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <GroupBox Margin="0,0,0,2" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
+            <GroupBox.Header>
+                <Border Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
+                    <TextBlock Text="Searching Information" Foreground="Black" Padding="10,0,10,0"/>
+                </Border>
+            </GroupBox.Header>
+            <Expander IsExpanded="True" FlowDirection="RightToLeft">
+                <Grid  FlowDirection="LeftToRight">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <RadioButton x:Name="radPO" Content="Product No" VerticalContentAlignment="Center" VerticalAlignment="Bottom" GroupName="SearchWhat" IsChecked="True" Checked="radPO_Checked"/>
+                    <TextBox Grid.Column="2" x:Name="txtPoSearch" FontSize="15" VerticalContentAlignment="Center" Height="{Binding ElementName=dpFrom, Path=ActualHeight}" IsEnabled="{Binding ElementName=radPO, Path=IsChecked}" BorderBrush="Black"/>
+                    <RadioButton Grid.Row="2" x:Name="radDateTime" Content="Check Date" VerticalContentAlignment="Center" VerticalAlignment="Bottom" GroupName="SearchWhat" Checked="radDateTime_Checked"/>
+                    <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal">
+                        <TextBlock Text="From" VerticalAlignment="Bottom" Margin="0,0,2,0"/>
+                        <DatePicker x:Name="dpFrom" IsEnabled="{Binding ElementName=radDateTime, Path=IsChecked}"/>
+                        <TextBlock Text="to" VerticalAlignment="Bottom" Margin="10,0,10,0"/>
+                        <DatePicker x:Name="dpTo" IsEnabled="{Binding ElementName=radDateTime, Path=IsChecked}"/>
+                    </StackPanel>
+
+                    <TextBlock Text="PO Status" Grid.Row="4" FontStyle="Italic" Foreground="Blue"/>
+                    <Grid Grid.Row="4" Grid.Column="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <RadioButton x:Name="radPOAll"                              Content="All"       VerticalContentAlignment="Center" GroupName="POFinishOrNot" IsChecked="True" Checked="radPOAll_Checked"/>
+                        <RadioButton x:Name="radPOFinished" Grid.Column="1"         Content="Finished"  VerticalContentAlignment="Center" GroupName="POFinishOrNot" Checked="radPOFinished_Checked"/>
+                        <RadioButton x:Name="radPONotYetFinished" Grid.Column="2"   Content="Not"       VerticalContentAlignment="Center" GroupName="POFinishOrNot" Checked="radPONotYetFinished_Checked"/>
+                    </Grid>
+
+                    <TextBlock Text="Supplier" Grid.Row="6"/>
+                    <ComboBox x:Name="cbSuppliers" DisplayMemberPath="Name" SelectedValue="OutsoleSupplierId" Grid.Row="6" Grid.Column="2" VerticalContentAlignment="Center" SelectionChanged="cbSuppliers_SelectionChanged"/>
+                    <Button Grid.Column="4" Grid.RowSpan="7" x:Name="btnSearch" MinWidth="80" Content="  _Search  " Template="{DynamicResource ResourceKey=ButtonTemplate}" Click="btnSearch_Click" IsDefault="True"/>
+                </Grid>
+            </Expander>
+        </GroupBox>
+        <TabControl Grid.Row="1" Grid.ColumnSpan="2">
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="Summary Report" FontWeight="SemiBold" Foreground="Black" Padding="3"/>
+                </TabItem.Header>
+                <WindowsFormsHost>
+                    <rpv:ReportViewer x:Name="reportViewer" ShowFindControls="False"/>
+                </WindowsFormsHost>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="Reviser Incentive Report" FontWeight="SemiBold" Foreground="Blue" Padding="3"/>
+                </TabItem.Header>
+                <WindowsFormsHost>
+                    <rpv:ReportViewer x:Name="reportViewerReviserIncentive" ShowFindControls="False"/>
+                </WindowsFormsHost>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="Reject Detail Report" FontWeight="SemiBold" Foreground="Red" Padding="3"/>
+                </TabItem.Header>
+                <WindowsFormsHost Grid.Row="1">
+                    <rpv:ReportViewer x:Name="reportViewerRejectDetail" ShowFindControls="False"/>
+                </WindowsFormsHost>
+            </TabItem>
+        </TabControl>
+        
+    </Grid>
+</Window>

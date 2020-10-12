@@ -1,0 +1,75 @@
+﻿<Window x:Class="MasterSchedule.Views.OutsoleMaterialWHCheckingAddQuantitySizeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" Background="#F8FAF6"
+        xmlns:local="clr-namespace:MasterSchedule.Views" Foreground="Black" Loaded="Window_Loaded"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen" FontSize="14" ResizeMode="CanMinimize" KeyUp="Window_KeyUp"
+        Title="Master Schedule - Add Quantity Check for Outsole Material" Height="300" Width="480">
+    <Grid Margin="2">
+        <GroupBox Grid.Row="3" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
+            <GroupBox.Header>
+                <Border x:Name="brGroupInfor" Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
+                    <TextBlock x:Name="tblGroupInfor" Text="   Input Size and Quantity   "/>
+                </Border>
+            </GroupBox.Header>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="3"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="3"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="3"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="3"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Product No:"/>
+                    <TextBlock x:Name="tblProductNo" Grid.Column="2"/>
+                    <TextBlock Grid.Row="2" Text="Supplier:"/>
+                    <TextBlock Grid.Row="2" x:Name="tblSupplier" Grid.Column="2"/>
+                    <TextBlock Grid.Row="4" Text="Checking Date:"/>
+                    <TextBlock Grid.Row="4" x:Name="tblCheckingDate" Grid.Column="2"/>
+                    <TextBlock Grid.Row="6" Text="Worker Id"/>
+                    <TextBlock Grid.Row="6" x:Name="tblWorkerId" Grid.Column="2"/>
+                    <TextBlock Grid.Row="8" x:Name="tblDefectTitle"/>
+                    <TextBlock Grid.Row="8" x:Name="tblDefect" Grid.Column="2"/>
+                </Grid>
+                <Grid Grid.Row="1" Margin="0,4,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="0"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="2"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="O/S SizeNo" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="tblQtyOrQtyReject" Grid.Column="2" Text="Quantity" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="txtSizeNo"   Grid.Row="2"                  Text="Size" FontSize="68" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1,1,1,1" PreviewKeyDown="txtSizeNo_PreviewKeyDown"/>
+                    <TextBox x:Name="txtQuantity" Grid.Row="2" Grid.Column="2"  Text="1" FontSize="50" TextAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1,1,1,1" PreviewKeyDown="txtQuantity_PreviewKeyDown"/>
+                    
+                    <TextBlock x:Name="tblWorkingCard"  Grid.Column="4" Margin="10,0,0,0" Text="Working Cart(Index No)" HorizontalAlignment="Center" Visibility="Collapsed"/>
+                    <TextBox x:Name="txtWorkingCard"    Grid.Row="2"    Margin="10,0,0,0" Grid.Column="4"    Text="1" FontSize="40" TextAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1,1,1,1" PreviewKeyDown="txtWorkingCard_PreviewKeyDown" Visibility="Collapsed"/>
+                    
+                    
+                </Grid>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>

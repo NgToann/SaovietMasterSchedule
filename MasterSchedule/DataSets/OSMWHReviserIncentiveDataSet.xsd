@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="OSMWHReviserIncentiveDataSet" targetNamespace="http://tempuri.org/OSMWHReviserIncentiveDataSet.xsd" xmlns:mstns="http://tempuri.org/OSMWHReviserIncentiveDataSet.xsd" xmlns="http://tempuri.org/OSMWHReviserIncentiveDataSet.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="OSMWHReviserIncentiveDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="OSMWHReviserIncentiveDataSet" msprop:Generator_UserDSName="OSMWHReviserIncentiveDataSet">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="ReviserIncentiveTable" msprop:Generator_TableClassName="ReviserIncentiveTableDataTable" msprop:Generator_TableVarName="tableReviserIncentiveTable" msprop:Generator_RowChangedName="ReviserIncentiveTableRowChanged" msprop:Generator_TablePropName="ReviserIncentiveTable" msprop:Generator_RowDeletingName="ReviserIncentiveTableRowDeleting" msprop:Generator_RowChangingName="ReviserIncentiveTableRowChanging" msprop:Generator_RowEvHandlerName="ReviserIncentiveTableRowChangeEventHandler" msprop:Generator_RowDeletedName="ReviserIncentiveTableRowDeleted" msprop:Generator_RowClassName="ReviserIncentiveTableRow" msprop:Generator_UserTableName="ReviserIncentiveTable" msprop:Generator_RowEvArgName="ReviserIncentiveTableRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="WorkerId" msprop:Generator_ColumnVarNameInTable="columnWorkerId" msprop:Generator_ColumnPropNameInRow="WorkerId" msprop:Generator_ColumnPropNameInTable="WorkerIdColumn" msprop:Generator_UserColumnName="WorkerId" type="xs:string" minOccurs="0" />
+              <xs:element name="SupplierId" msprop:Generator_ColumnVarNameInTable="columnSupplierId" msprop:Generator_ColumnPropNameInRow="SupplierId" msprop:Generator_ColumnPropNameInTable="SupplierIdColumn" msprop:Generator_UserColumnName="SupplierId" type="xs:string" minOccurs="0" />
+              <xs:element name="SupplierName" msprop:Generator_ColumnVarNameInTable="columnSupplierName" msprop:Generator_ColumnPropNameInRow="SupplierName" msprop:Generator_ColumnPropNameInTable="SupplierNameColumn" msprop:Generator_UserColumnName="SupplierName" type="xs:string" minOccurs="0" />
+              <xs:element name="OSCode" msprop:Generator_ColumnVarNameInTable="columnOSCode" msprop:Generator_ColumnPropNameInRow="OSCode" msprop:Generator_ColumnPropNameInTable="OSCodeColumn" msprop:Generator_UserColumnName="OSCode" type="xs:string" minOccurs="0" />
+              <xs:element name="QuantityChecked" msprop:Generator_ColumnVarNameInTable="columnQuantityChecked" msprop:Generator_ColumnPropNameInRow="QuantityChecked" msprop:Generator_ColumnPropNameInTable="QuantityCheckedColumn" msprop:Generator_UserColumnName="QuantityChecked" type="xs:string" minOccurs="0" />
+              <xs:element name="QuantityRejected" msprop:Generator_ColumnVarNameInTable="columnQuantityRejected" msprop:Generator_ColumnPropNameInRow="QuantityRejected" msprop:Generator_ColumnPropNameInTable="QuantityRejectedColumn" msprop:Generator_UserColumnName="QuantityRejected" type="xs:string" minOccurs="0" />
+              <xs:element name="Total" msprop:Generator_ColumnVarNameInTable="columnTotal" msprop:Generator_ColumnPropNameInRow="Total" msprop:Generator_ColumnPropNameInTable="TotalColumn" msprop:Generator_UserColumnName="Total" type="xs:string" minOccurs="0" />
+              <xs:element name="WorkerTotalCheck" msprop:Generator_ColumnVarNameInTable="columnWorkerTotalCheck" msprop:Generator_ColumnPropNameInRow="WorkerTotalCheck" msprop:Generator_ColumnPropNameInTable="WorkerTotalCheckColumn" msprop:Generator_UserColumnName="WorkerTotalCheck" type="xs:string" minOccurs="0" />
+              <xs:element name="QuantityReturnRejected" msprop:Generator_ColumnVarNameInTable="columnQuantityReturnRejected" msprop:Generator_ColumnPropNameInRow="QuantityReturnRejected" msprop:Generator_ColumnPropNameInTable="QuantityReturnRejectedColumn" msprop:Generator_UserColumnName="QuantityReturnRejected" type="xs:string" minOccurs="0" />
+              <xs:element name="SupplierOperation" msprop:Generator_ColumnVarNameInTable="columnSupplierOperation" msprop:Generator_ColumnPropNameInRow="SupplierOperation" msprop:Generator_ColumnPropNameInTable="SupplierOperationColumn" msprop:Generator_UserColumnName="SupplierOperation" type="xs:string" minOccurs="0" />
+              <xs:element name="InspectionTime" msprop:Generator_ColumnVarNameInTable="columnInspectionTime" msprop:Generator_ColumnPropNameInRow="InspectionTime" msprop:Generator_ColumnPropNameInTable="InspectionTimeColumn" msprop:Generator_UserColumnName="InspectionTime" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

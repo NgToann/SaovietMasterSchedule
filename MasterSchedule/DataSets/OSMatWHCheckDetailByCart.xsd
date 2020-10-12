@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="OSMatWHCheckDetailByCart" targetNamespace="http://tempuri.org/OSMatWHCheckDetailByCart.xsd" xmlns:mstns="http://tempuri.org/OSMatWHCheckDetailByCart.xsd" xmlns="http://tempuri.org/OSMatWHCheckDetailByCart.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="OSMatWHCheckDetailByCart" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="OSMatWHCheckDetailByCart" msprop:Generator_UserDSName="OSMatWHCheckDetailByCart">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="OSMatCheckDetailByCartTable" msprop:Generator_TableClassName="OSMatCheckDetailByCartTableDataTable" msprop:Generator_TableVarName="tableOSMatCheckDetailByCartTable" msprop:Generator_RowChangedName="OSMatCheckDetailByCartTableRowChanged" msprop:Generator_TablePropName="OSMatCheckDetailByCartTable" msprop:Generator_RowDeletingName="OSMatCheckDetailByCartTableRowDeleting" msprop:Generator_RowChangingName="OSMatCheckDetailByCartTableRowChanging" msprop:Generator_RowEvHandlerName="OSMatCheckDetailByCartTableRowChangeEventHandler" msprop:Generator_RowDeletedName="OSMatCheckDetailByCartTableRowDeleted" msprop:Generator_RowClassName="OSMatCheckDetailByCartTableRow" msprop:Generator_UserTableName="OSMatCheckDetailByCartTable" msprop:Generator_RowEvArgName="OSMatCheckDetailByCartTableRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Date" msprop:Generator_ColumnVarNameInTable="columnDate" msprop:Generator_ColumnPropNameInRow="Date" msprop:Generator_ColumnPropNameInTable="DateColumn" msprop:Generator_UserColumnName="Date" type="xs:string" minOccurs="0" />
+              <xs:element name="Cart" msprop:Generator_ColumnVarNameInTable="columnCart" msprop:Generator_ColumnPropNameInRow="Cart" msprop:Generator_ColumnPropNameInTable="CartColumn" msprop:Generator_UserColumnName="Cart" type="xs:int" minOccurs="0" />
+              <xs:element name="DisplayValue" msprop:Generator_ColumnVarNameInTable="columnDisplayValue" msprop:Generator_ColumnPropNameInRow="DisplayValue" msprop:Generator_ColumnPropNameInTable="DisplayValueColumn" msprop:Generator_UserColumnName="DisplayValue" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

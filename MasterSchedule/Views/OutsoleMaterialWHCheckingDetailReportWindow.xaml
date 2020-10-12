@@ -1,0 +1,58 @@
+﻿<Window xmlns:rpv="clr-namespace:Microsoft.Reporting.WinForms;assembly=Microsoft.Reportviewer.WinForms" 
+        x:Class="MasterSchedule.Views.OutsoleMaterialWHCheckingDetailReportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MasterSchedule.Views" FontSize="14"
+        mc:Ignorable="d"  WindowState="Maximized" WindowStartupLocation="CenterScreen"
+        Title="OutsoleMaterialWHCheckingDetailReportWindow" Height="450" Width="800" Loaded="Window_Loaded">
+    <Grid Margin="2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <GroupBox Margin="0,0,0,2" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
+            <GroupBox.Header>
+                <Border Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
+                    <TextBlock Text="Searching Information" Foreground="Black" Padding="10,0,10,0"/>
+                </Border>
+            </GroupBox.Header>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackPanel x:Name="stkSearch" Orientation="Horizontal">
+                    <TextBlock Text="Check Start Date    From" VerticalAlignment="Bottom" Margin="0,0,2,0"/>
+                    <DatePicker x:Name="dpFrom" IsEnabled="{Binding ElementName=radDateTime, Path=IsChecked}"/>
+                    <TextBlock Text="to" VerticalAlignment="Bottom" Margin="10,0,10,0"/>
+                    <DatePicker x:Name="dpTo" IsEnabled="{Binding ElementName=radDateTime, Path=IsChecked}"/>
+                </StackPanel>
+                <Grid Grid.Row="2" Width="{Binding ElementName=stkSearch, Path=ActualWidth}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="PO Status" Foreground="Blue" Margin="0,0,5,0"/>
+                    <RadioButton x:Name="radPOAll" Grid.Column="1"              Content="All"       VerticalContentAlignment="Center" GroupName="POFinishOrNot" IsChecked="True" Checked="radPOAll_Checked"/>
+                    <RadioButton x:Name="radPOFinished" Grid.Column="2"         Content="Finished"  VerticalContentAlignment="Center" GroupName="POFinishOrNot" Checked="radPOFinished_Checked"/>
+                    <RadioButton x:Name="radPONotYetFinished" Grid.Column="3"   Content="Not"       VerticalContentAlignment="Center" GroupName="POFinishOrNot" Checked="radPONotYetFinished_Checked"/>
+                </Grid>
+                <Button Grid.Column="2" Grid.RowSpan="3" x:Name="btnSearch" MinWidth="80" Content="  _Search  " Template="{DynamicResource ResourceKey=ButtonTemplate}" Click="btnSearch_Click" IsDefault="True"/>
+            </Grid>
+        </GroupBox>
+        <WindowsFormsHost Grid.Row="1">
+            <rpv:ReportViewer x:Name="reportViewer" ShowFindControls="False"/>
+        </WindowsFormsHost>
+    </Grid>
+</Window>

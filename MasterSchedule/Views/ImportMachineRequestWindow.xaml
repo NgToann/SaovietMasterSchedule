@@ -1,0 +1,79 @@
+﻿<Window x:Class="MasterSchedule.Views.ImportMachineRequestWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" FontSize="14"
+        Title="Master Schedule - Machine Request" MinHeight="330" MinWidth="750" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+    <Grid Margin="2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="txtStatus" Text="CREATE MACHINE REQUEST" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18"/>
+        <StackPanel  Grid.Row="1" Orientation="Horizontal">
+            <TextBlock Text="Phase: " VerticalAlignment="Bottom" Margin="0,0,5,0" FontWeight="SemiBold"/>
+            <ComboBox Width="150" x:Name="cbPhase" DisplayMemberPath="PhaseName" SelectedValue="PhaseID" SelectedValuePath="{Binding Path=PhaseModel}" SelectionChanged="cbPhase_SelectionChanged" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+        </StackPanel>
+        <GroupBox Grid.Row="2" Margin="0,5,0,0" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
+            <GroupBox.Header>
+                <Border Padding="4" Background="{DynamicResource ResourceKey=Background1}">
+                    <TextBlock Text="Input Order information"/>
+                </Border>
+            </GroupBox.Header>
+            <Grid Margin="0,4,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Vertical" Margin="4,0,4,0">
+                    <TextBlock Text="ArticleNo (exclude color)" VerticalAlignment="Bottom" FontWeight="SemiBold"/>
+                    <TextBox x:Name="txtArticleNo" VerticalContentAlignment="Center" BorderBrush="Black" TextChanged="txtArticleNo_TextChanged"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Grid.Column="1" Margin="4,0,4,0">
+                    <TextBlock Text="Shoe Name" VerticalAlignment="Bottom" FontWeight="SemiBold"/>
+                    <TextBox Text="{Binding ShoeName}" VerticalContentAlignment="Center" BorderBrush="Black"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Orientation="Vertical" Margin="4,0,4,0">
+                    <TextBlock Text="PatternNo" VerticalAlignment="Bottom" FontWeight="SemiBold"/>
+                    <TextBox Text="{Binding PatternNo}" VerticalContentAlignment="Center" BorderBrush="Black"/>
+                </StackPanel>
+                
+            </Grid>
+        </GroupBox>
+        <GroupBox x:Name="grbMachine" Grid.Row="3" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
+            <GroupBox.Header>
+                <Border Padding="4" Background="{DynamicResource ResourceKey=Background1}">
+                    <TextBlock Text="Input Machine Request for: "/>
+                </Border>
+            </GroupBox.Header>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Margin="0,4,0,4" x:Name="gridMachine">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                </Grid>
+                <Grid Grid.Row="1" Margin="4,10,4,0" Height="28" VerticalAlignment="Bottom">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Worker" VerticalAlignment="Bottom" FontWeight="SemiBold"/>
+                        <TextBox Width="150" Text="{Binding Worker}" BorderBrush="Black" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+                    <Button x:Name="btnDelete" Grid.Column="1" Content="  Delete  " Margin="0,0,10,0"/>
+                    <Button x:Name="btnSave" Grid.Column="2" Content="  Save  " Click="btnSave_Click"/>
+                </Grid>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>

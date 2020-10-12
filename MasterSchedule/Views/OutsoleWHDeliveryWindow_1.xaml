@@ -1,0 +1,88 @@
+﻿<Window x:Class="MasterSchedule.Views.OutsoleWHDeliveryWindow_1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" WindowStartupLocation="CenterScreen" WindowState="Maximized"
+        Title="Master Schedule - Outsole WH Delivery" Height="400" Width="750" Loaded="Window_Loaded">
+    <Grid Margin="2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="OUTSOLE WAREHOUSE DELIVERY SUMMARY" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" FontFamily="Times New Roman" FontWeight="SemiBold"/>
+        <DataGrid Grid.Row="1" Margin="0,5,0,0" x:Name="dgWHDelivery" AutoGenerateColumns="False" AlternationCount="2" AlternatingRowBackground="LightCyan" CanUserSortColumns="True"
+                      CanUserAddRows="False" SelectionUnit="Cell" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" MouseLeftButtonDown="dgWHDelivery_MouseLeftButtonDown"
+                      IsReadOnly="True" FontFamily="Times New Roman" FontSize="14" FrozenColumnCount="6">
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="Background" Value="DeepSkyBlue"/>
+                            <Setter Property="FontWeight" Value="Semibold"/>
+                            <Setter Property="BorderThickness" Value="0,0,0,0"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.CellStyle>
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="FontSize" Value="15"/>
+                    <Setter Property="Background" Value="LightGray"/>
+                    <Setter Property="BorderBrush" Value="Gray"/>
+                    <Setter Property="BorderThickness" Value="0.5,0.5,0.5,0"/>
+                    <Setter Property="Padding" Value="8,5,5,8"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+            <!--<DataGrid.Columns>
+                <DataGridTemplateColumn Header="Outsole Code" MinWidth="100" SortMemberPath="OutsoleCode">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding OutsoleCode}" Margin="3"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Delivery" MinWidth="100" SortMemberPath="Delivery">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Delivery}" Margin="3" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Reject" MinWidth="100" SortMemberPath="Reject">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Reject}" Margin="3" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Release" MinWidth="100" SortMemberPath="Release">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Release}" Margin="3" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="WH Quantity" MinWidth="100" SortMemberPath="WHQuantity">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding WHQuantity}" Margin="3" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Matching" MinWidth="100" SortMemberPath="Matching">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Matching}" Margin="3" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>-->
+        </DataGrid>
+        <StatusBar Grid.Row="2">
+            <TextBlock Text="Processing:"/>
+            <ProgressBar x:Name="progressBar" Width="100" Height="15" Minimum="0" Value="0"/>
+            <TextBlock x:Name="lblStatus" Text="" FontWeight="Bold"/>
+        </StatusBar>
+    </Grid>
+</Window>

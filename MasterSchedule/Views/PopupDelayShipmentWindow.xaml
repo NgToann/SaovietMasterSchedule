@@ -1,0 +1,22 @@
+﻿<Window x:Class="MasterSchedule.Views.PopupDelayShipmentWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Popup Delay Shipment" Height="300" Width="300" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="DELAY SHIPMENT" FontWeight="Bold" TextAlignment="Center" Height="30" Background="Red" VerticalAlignment="Center" Padding="0,6,0,0"/>
+        <DataGrid x:Name="dgDelayShipment" RowHeaderWidth="1"  Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" AlternationCount="2" AlternatingRowBackground="LightCyan" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding Style}" Header="Style"/>
+                <DataGridTextColumn Binding="{Binding ProductNo}" Header="PO#"/>
+                <DataGridTextColumn Binding="{Binding AssemblyBalance}" Header="Assembly&#10;Balance"/>
+                <DataGridTextColumn Binding="{Binding SewingBalance}" Header="Sewing&#10;Balance"/>
+                <DataGridTextColumn Binding="{Binding OutsoleBalance}" Header="Stockfit&#10;Balance"/>
+                <DataGridTextColumn MinWidth="80" Binding="{Binding OrderCSD, StringFormat = MM/dd}" Header="CSD"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

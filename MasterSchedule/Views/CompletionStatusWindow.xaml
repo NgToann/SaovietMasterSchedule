@@ -1,0 +1,101 @@
+﻿<Window x:Class="MasterSchedule.Views.CompletionStatusWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Master Schedule - Completion Status" Height="300" Width="Auto" WindowState="Maximized" Loaded="Window_Loaded">
+    <Grid Margin="2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+            <GroupBox Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
+                <GroupBox.Header>
+                    <Border Padding="4" Background="{DynamicResource ResourceKey=Background1}">
+                        <TextBlock Text="EFD Range"/>
+                    </Border>
+                </GroupBox.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Width="{Binding ElementName=lblIsFinished, Path=ActualWidth}" Text="Select Date" VerticalAlignment="Center"/>
+                    <DatePicker Grid.Column="1" x:Name="dpETDStart" Width="{Binding ElementName=txtArticleNo, Path=ActualWidth}" SelectedDate="1/1/2000" BorderThickness="0.5,0.5,0.5,0.5"/>
+                    <TextBlock  Grid.Column="2" Text="->" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <DatePicker Grid.Column="3" Width="{Binding ElementName=txtShoeName,Path=ActualWidth}" x:Name="dpETDEnd" SelectedDate="1/1/2000" BorderThickness="0.5,0.5,0.5,0.5"/>
+                    <Button  Grid.Column="4" x:Name="btnLoad" Margin="5,0,0,0"  Width="{Binding ElementName=btnView,Path=ActualWidth}" Content="Load" Click="btnLoad_Click"/>
+                </Grid>
+
+            </GroupBox>
+            <GroupBox Grid.Row="1" Margin="0,5,0,0" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
+                <GroupBox.Header>
+                    <Border Padding="4" Background="{DynamicResource ResourceKey=Background1}">
+                        <TextBlock Text="Order Information"/>
+                    </Border>
+                </GroupBox.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Text="Article No:" VerticalAlignment="Center"/>
+                    <TextBox x:Name="txtArticleNo"  Grid.Column="1" Height="{Binding ElementName=dpETDEnd, Path=ActualHeight}" VerticalContentAlignment="Center"/>
+                    <TextBlock x:Name="lblStyle"    Grid.Column="2" Text="Style:" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="txtShoeName"   Grid.Column="3" Height="{Binding ElementName=dpETDEnd, Path=ActualHeight}" VerticalContentAlignment="Center"/>
+
+                    <TextBlock x:Name="lblIsFinished"   Grid.Row="2" Text="Is Finished?" VerticalAlignment="Center" FontStyle="Italic"/>
+                    <CheckBox x:Name="chboFinished"     Grid.Row="2" Grid.Column="1" Content="Finished" VerticalAlignment="Center"/>
+                    <CheckBox x:Name="chboUnfinished"   Grid.Row="2" Grid.Column="3" Content="Unfinished" VerticalAlignment="Center"/>
+                    <Button x:Name="btnView"            Grid.Column="4" Grid.RowSpan="3" Margin="5,0,0,0" Content="  View  " IsEnabled="False" Click="btnView_Click" IsDefault="True"/>
+                </Grid>
+            </GroupBox>
+            
+        </Grid>
+        <DataGrid x:Name="dgMain" Grid.Row="1" Margin="0,10,0,0" AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  AlternationCount="2"
+                  AlternatingRowBackground="LightCyan"
+                  HorizontalGridLinesBrush="LightGray"
+                  VerticalGridLinesBrush="LightGray"
+                  IsReadOnly="True" LoadingRow="dgMain_LoadingRow" RowHeaderWidth="NaN">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding ProductNo}" Header="Product No."/>
+                <DataGridTextColumn Binding="{Binding Country}" Header="Country"/>
+                <DataGridTextColumn Binding="{Binding ArticleNo}" Header="Article No."/>
+                <DataGridTextColumn Binding="{Binding ShoeName}" Header="Style"/>
+                <DataGridTextColumn Binding="{Binding Quantity}" Header="Quantity"/>
+                <DataGridTextColumn Binding="{Binding ETD, StringFormat=dd-MMM}" Header="EFD"/>
+                <DataGridTextColumn Binding="{Binding LoadingDate}" Header="Loading Date"/>
+                <DataGridTextColumn Binding="{Binding CutAActualFinishDate, StringFormat=M/d}" Header="Cut A"/>
+                <DataGridTextColumn Binding="{Binding CutAFinishDate, StringFormat=M/d}" Header="Cutprep"/>
+                <DataGridTextColumn Binding="{Binding SewingLine}" Header="Sewing Line"/>
+                <DataGridTextColumn Binding="{Binding SewingFinishDate, StringFormat=M/d}" Header="Sewing"/>
+                <DataGridTextColumn Binding="{Binding OutsoleLine}" Header="O/S Line"/>
+                <DataGridTextColumn Binding="{Binding OutsoleCode}" Header="O/S Code"/>
+                <DataGridTextColumn Binding="{Binding OutsoleFinishDate, StringFormat=M/d}" Header="Outsole"/>
+                <DataGridTextColumn Binding="{Binding AssemblyLine}" Header="Assembly Line"/>
+                <DataGridTextColumn Binding="{Binding AssemblyFinishDate, StringFormat=M/d}" Header="Assembly"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

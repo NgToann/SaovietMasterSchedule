@@ -1,0 +1,213 @@
+﻿<Window x:Class="MasterSchedule.Views.OutsoleMaterialWHCheckingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MasterSchedule.Views"
+        mc:Ignorable="d" WindowState="Maximized" FontSize="14" Loaded="Window_Loaded" KeyUp="Window_KeyUp" Closing="Window_Closing"
+        Title="Master Schedule - Outsole Material WH Check" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+    <Grid Margin="2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <GroupBox Grid.Column="2" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
+            <GroupBox.Header>
+                <Border Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
+                    <TextBlock x:Name="tblGroupPOInfo" Text="   PO Information   "/>
+                </Border>
+            </GroupBox.Header>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="5"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="tblPO" Text="Input ProductNo:"   VerticalAlignment="Bottom" Width="{Binding ElementName=tblGroupPOInfo,Path=ActualWidth}"/>
+                                <TextBox x:Name="txtProductNo" MinWidth="150" FontSize="26" Padding="4,2,2,2" FontWeight="Bold" BorderBrush="Black" ToolTip="Press Enter" PreviewKeyUp="txtProductNo_PreviewKeyUp" VerticalContentAlignment="Center"/>
+                                <Button x:Name="btnSearch" Width="0" Content="  _Search  " Margin="5,0,10,0" FontSize="14" Template="{DynamicResource ResourceKey=ButtonTemplate}" Click="btnSearch_Click" />
+                            </StackPanel>
+                            <Popup x:Name="popInputWorkerId" Margin="0,2,0,0" PlacementTarget="{Binding ElementName= txtProductNo}" PopupAnimation="Fade" AllowsTransparency="True">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="Input Worker ID" Foreground="Blue" FontWeight="Bold"/>
+                                    <TextBox x:Name="txtWorkerId" MinWidth="120" FontSize="26" Padding="4,2,2,2" Foreground="Red" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" PreviewKeyUp="txtWorkerId_PreviewKeyUp" BorderBrush="Red" BorderThickness="2,2,2,2"/>
+                                    <Button x:Name="btnWorkderId" Width="0" Click="btnWorkderId_Click"/>
+                                </StackPanel>
+                            </Popup>
+                            <Grid Grid.Column="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="txtArticleNo"                FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Blue"/>
+                                <TextBlock x:Name="txtOSCode"   Grid.Column="1" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Blue"/>
+                                <TextBlock x:Name="txtShoeName" Grid.Column="2" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Blue"/>
+                            </Grid>
+
+                            <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal">
+                                <TextBlock  Text="" Width="{Binding ElementName=tblGroupPOInfo,Path=ActualWidth}" VerticalAlignment="Center"/>
+                                <StackPanel x:Name="stkSuppliers" Orientation="Horizontal">
+                                </StackPanel>
+                            </StackPanel>
+
+                            <GroupBox x:Name="grbWorkingTime" Grid.RowSpan="4" BorderThickness="0,0,0,0" Grid.Column="2" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock x:Name="tblClock" FontStyle="Italic" Foreground="OrangeRed" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="tblWorkerId" Grid.Row="1" TextAlignment="Center" Foreground="Blue" FontWeight="Bold"/>
+                                    <TextBlock x:Name="tblStartingTime" Grid.Row="2"/>
+                                    <TextBlock x:Name="tblTotalHours" Grid.Row="3"/>
+                                    <TextBlock x:Name="tblTotalPais" Grid.Row="4"/>
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                        <DataGrid x:Name="dgDeliveryStatus" Grid.Row="3" AutoGenerateColumns="False" AlternationCount="2"
+                              CanUserAddRows="False" SelectionUnit="Cell" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" RowHeaderWidth="0"
+                              IsReadOnly="True" FontFamily="Times New Roman" FontSize="15" LoadingRow="dgDeliveryStatus_LoadingRow">
+                            <DataGrid.ColumnHeaderStyle>
+                                <Style TargetType="DataGridColumnHeader">
+                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    <Setter Property="FontSize" Value="15"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="Background" Value="LightGray"/>
+                                    <Setter Property="BorderBrush" Value="Gray"/>
+                                    <Setter Property="BorderThickness" Value="0.5,0.5,0.5,0"/>
+                                    <Setter Property="Padding" Value="5"/>
+                                </Style>
+                            </DataGrid.ColumnHeaderStyle>
+                            <DataGrid.Resources>
+                                <Style TargetType="{x:Type DataGridCell}">
+                                    <Style.Triggers>
+                                        <Trigger Property="DataGridCell.IsSelected" Value="True">
+                                            <Setter Property="Foreground" Value="Black" />
+                                            <Setter Property="Background" Value="LightSkyBlue" />
+                                            <Setter Property="FontWeight" Value="Semibold" />
+                                            <Setter Property="BorderThickness" Value="0,0,0,0"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGrid.Resources>
+                        </DataGrid>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>            
+        </GroupBox>
+        <GroupBox Grid.Row="2" Margin="0,0,0,2" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
+            <GroupBox.Header>
+                <Border Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
+                    <TextBlock x:Name="txtSupplierDeliveryDetail" Text="Delivery Detail" Foreground="Black" Padding="10,0,10,0"/>
+                </Border>
+            </GroupBox.Header>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+                    <CheckBox x:Name="chkbCheckingDate" Margin="0,0,10,0" VerticalContentAlignment="Center" VerticalAlignment="Bottom" Checked="chkbCheckingDate_Checked" Unchecked="chkbCheckingDate_Unchecked">
+                        <CheckBox.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="txtCheckDateTitle" Text="Check Date" Margin="0,0,5,0"/>
+                                <PasswordBox x:Name="txtConfirmBy" Width="100" Visibility="Collapsed" PasswordChanged="txtConfirmBy_PasswordChanged"/>
+                            </StackPanel>
+                        </CheckBox.Content>
+                    </CheckBox>
+                    <DatePicker x:Name="dpCheckingDate" VerticalContentAlignment="Center" BorderThickness="0.5, 0.5, 0.5, 0.5" IsEnabled="False" SelectedDateChanged="dpCheckingDate_SelectedDateChanged"/>
+
+                    <Button x:Name="btnViewDetail" Margin="10,0,0,0" Content="View Detail" Background="LightSeaGreen" Click="btnViewDetail_Click">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <TextBlock TextDecorations="Underline">
+                                    <ContentPresenter/>
+                                </TextBlock>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Foreground" Value="Blue"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="true">
+                                        <Setter Property="Foreground" Value="Red"/>
+                                        <Setter Property="Cursor" Value="Hand"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                </StackPanel>
+                <DataGrid x:Name="dgSupplierDeliveryDetail" Grid.Row="1" AutoGenerateColumns="False" AlternationCount="2"
+                      CanUserAddRows="False" SelectionUnit="Cell" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" RowHeaderWidth="0"
+                      IsReadOnly="True" FontFamily="Times New Roman" FontSize="15" LoadingRow="dgSupplierDeliveryDetail_LoadingRow">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            <Setter Property="FontSize" Value="15"/>
+                            <Setter Property="FontWeight" Value="SemiBold"/>
+                            <Setter Property="Background" Value="LightGray"/>
+                            <Setter Property="BorderBrush" Value="Gray"/>
+                            <Setter Property="BorderThickness" Value="0.5,0.5,0.5,0"/>
+                            <Setter Property="Padding" Value="5"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                    <DataGrid.Resources>
+                        <Style TargetType="{x:Type DataGridCell}">
+                            <Style.Triggers>
+                                <Trigger Property="DataGridCell.IsSelected" Value="True">
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Setter Property="Background" Value="LightSkyBlue" />
+                                    <Setter Property="FontWeight" Value="Semibold" />
+                                    <Setter Property="BorderThickness" Value="0,0,0,0"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.Resources>
+                </DataGrid>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="3" Template="{DynamicResource ResourceKey=GroupBoxListOfKeysTemplate}" Background="#F8FAF6">
+            <GroupBox.Header>
+                <Border Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
+                    <TextBlock Text="  List of Keys  "/>
+                </Border>
+            </GroupBox.Header>
+            <Grid x:Name="gridError">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>

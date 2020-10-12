@@ -1,0 +1,24 @@
+﻿<Window x:Class="MasterSchedule.Views.PopupNotYetDeliveryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Popup Not Yet Deliver" Height="300" Width="300" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="PO BELOW NOT YET COMPLETE DELIVERY" FontWeight="Bold" TextAlignment="Center" Background="Red" Height="30" Padding="0,6,0,0"/>
+        <DataGrid x:Name="dgNotYetDelivery" Grid.Row="1" RowHeaderWidth="1" AutoGenerateColumns="False" CanUserAddRows="False" AlternationCount="2" AlternatingRowBackground="LightCyan" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding Style}" Header="Style"/>
+                <DataGridTextColumn Binding="{Binding ProductNo}" Header="PO#"/>
+                <DataGridTextColumn Binding="{Binding QuantityNotDelivery}" Header="Qty Not Yet&#10;Delivery"/>
+                <DataGridTextColumn Binding="{Binding DeliveryEFDDate, StringFormat = MM/dd}" Header="Delivery&#10;EFD"/>
+                <DataGridTextColumn Binding="{Binding OrderCSD, StringFormat = MM/dd}" Header="CSD"/>
+                <DataGridTextColumn Binding="{Binding Supplier}" Header="Supplier"/>
+                <DataGridTextColumn Binding="{Binding OutsoleCode}" Header="OS Code"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+    
+</Window>
