@@ -31,9 +31,7 @@ namespace MasterSchedule.Controllers
             var @SizeNo = new SqlParameter("@SizeNo", model.SizeNo);
             var @Quantity = new SqlParameter("@Quantity", model.Quantity);
             var @QuantityReject = new SqlParameter("@QuantityReject", model.QuantityReject);
-
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-
+            
             if (db.ExecuteStoreCommand("EXEC spm_InsertUpperComponentMaterial_2 @ProductNo,@UpperComponentID,@SizeNo,@Quantity,@QuantityReject", @ProductNo, @UpperComponentID, @SizeNo, @Quantity, @QuantityReject) >= 1)
             {
                 return true;
@@ -51,8 +49,6 @@ namespace MasterSchedule.Controllers
 
             var @UpdateReject = new SqlParameter("@UpdateReject", updateReject);
             var @UpdateQuantity = new SqlParameter("@UpdateQuantity", updateQuantity);
-
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
 
             if (db.ExecuteStoreCommand("EXEC spm_UpdateUpperComponentMaterial @ProductNo,@UpperComponentID,@SizeNo,@Quantity,@QuantityReject,@UpdateReject,@UpdateQuantity", @ProductNo, @UpperComponentID, @SizeNo, @Quantity, @QuantityReject, @UpdateReject, @UpdateQuantity) >= 1)
             {

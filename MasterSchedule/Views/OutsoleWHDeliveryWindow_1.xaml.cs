@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 
-using MasterSchedule.Models;
-using MasterSchedule.ViewModels;
 using MasterSchedule.Controllers;
-using System.ComponentModel;
-using System.Data;
-using System.Threading;
+using MasterSchedule.Models;
 
 namespace MasterSchedule.Views
 {
@@ -26,7 +24,6 @@ namespace MasterSchedule.Views
         List<OutsoleReleaseMaterialModel> outsoleReleaseMaterialList;
         List<OutsoleSuppliersModel> supplierList;
         List<OrdersModel> ordersList;
-        List<OutsoleMasterModel> outsoleMasterList;
         List<SizeRunModel> sizeRunList;
         List<ReportOutsoleMaterialDeliverySummary> osDeliverySummaryList;
         public OutsoleWHDeliveryWindow_1()
@@ -40,7 +37,6 @@ namespace MasterSchedule.Views
             supplierList                = new List<OutsoleSuppliersModel>();
 
             ordersList              = new List<OrdersModel>();
-            outsoleMasterList       = new List<OutsoleMasterModel>();
             sizeRunList             = new List<SizeRunModel>();
             osDeliverySummaryList   = new List<ReportOutsoleMaterialDeliverySummary>();
 
@@ -67,7 +63,6 @@ namespace MasterSchedule.Views
             outsoleReleaseMaterialList  = OutsoleReleaseMaterialController.SelectByOutsoleMaterial();
             supplierList                = OutsoleSuppliersController.Select();
             ordersList                  = OrdersController.Select();
-            outsoleMasterList           = OutsoleMasterController.Select();
             sizeRunList                 = SizeRunController.SelectIsEnable();
 
             osDeliverySummaryList = ReportController.GetOSDeliverySummary();
@@ -176,12 +171,9 @@ namespace MasterSchedule.Views
                     colSupplier.Header = String.Format("Supplier {0}", i + 1);
                     DataTemplate templateSupplier = new DataTemplate();
                     FrameworkElementFactory tblSupplier = new FrameworkElementFactory(typeof(TextBlock));
-                    //FrameworkElementFactory tblSupplier = new FrameworkElementFactory(typeof(TextBox));
                     templateSupplier.VisualTree = tblSupplier;
                     tblSupplier.SetBinding(TextBlock.TextProperty, new Binding(String.Format("Column{0}", i)));
-                    //tblSupplier.SetBinding(TextBlock.TagProperty, new Binding(String.Format("Column{0}", i)));
                     tblSupplier.SetValue(TextBlock.PaddingProperty, new Thickness(3, 3, 3, 3));
-                    //tblSupplier.SetValue(TextBlock.TextAlignmentProperty, TextAlignment.Center);
                     tblSupplier.SetValue(TextBlock.VerticalAlignmentProperty, VerticalAlignment.Center);
 
                     colSupplier.CellTemplate = templateSupplier;
@@ -198,21 +190,7 @@ namespace MasterSchedule.Views
             int totalQtyOrder = 0, totalQtyWH = 0, totalQtyReject = 0, totalQtyMatch = 0, totalQtyRelease = 0;
             foreach (var outsoleCode in outsoleCodeList)
             {
-                //var osDeliverySummaryByOSCode = osDeliverySummaryList.FirstOrDefault(f => f.OutsoleCode == outsoleCode);
-
                 DataRow dr = dt.NewRow();
-                //dr["OutsoleCode"]   = outsoleCode;
-                //dr["OrderQuantity"] = string.Format("{0:#,0}", osDeliverySummaryByOSCode.QtyOrder);
-                //dr["WHQuantity"]    = string.Format("{0:#,0}", osDeliverySummaryByOSCode.QtyWH);
-                //dr["Reject"]        = string.Format("{0:#,0}", osDeliverySummaryByOSCode.QtyReject);
-                //dr["Matching"]      = string.Format("{0:#,0}", osDeliverySummaryByOSCode.QtyMatch);
-                //dr["Release"]       = string.Format("{0:#,0}", osDeliverySummaryByOSCode.QtyRelease);
-                
-                //totalQtyOrder       += osDeliverySummaryByOSCode.QtyOrder;
-                //totalQtyWH          += osDeliverySummaryByOSCode.QtyWH;
-                //totalQtyReject      += osDeliverySummaryByOSCode.QtyReject;
-                //totalQtyMatch       += osDeliverySummaryByOSCode.QtyMatch;
-                //totalQtyRelease     += osDeliverySummaryByOSCode.QtyRelease;
 
                 var osDeliveryByOScode  = osDeliverySummaryList.Where(w => w.OutsoleCode == outsoleCode).ToList();
 
@@ -230,6 +208,7 @@ namespace MasterSchedule.Views
                 totalQtyRelease         += osDeliveryByOScode.Max(m => m.QtyRelease);
 
                 var supplierIDList_OSCode = osDeliverySummaryList.Where(w => w.OutsoleCode == outsoleCode).Select(s => s.OutsoleSupplierId).Distinct().ToList();
+
                 for (int i = 0; i < supplierIDList_OSCode.Count(); i++)
                 {
                     int supplierID = supplierIDList_OSCode[i];
@@ -248,6 +227,7 @@ namespace MasterSchedule.Views
                                                                         quantityDelivery_SupplierString,
                                                                         reject_SupplierString,
                                                                         balance_SupplierString);
+
                     dr[String.Format("ColumnSupplierID{0}", i)] = supplierIDList_OSCode[i];
                 }
                 dt.Rows.Add(dr);

@@ -13,8 +13,10 @@ namespace MasterSchedule.Controllers
     {
         public static List<SockliningMasterModel> Select()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<SockliningMasterModel>("EXEC spm_SelectSockliningMaster").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<SockliningMasterModel>("EXEC spm_SelectSockliningMaster").ToList();
+            }
         }
 
         public static bool InsertSequence(SockliningMasterModel model)
@@ -24,12 +26,14 @@ namespace MasterSchedule.Controllers
             var @SockliningStartDate = new SqlParameter("@SockliningStartDate", model.SockliningStartDate);
             var @SockliningFinishDate = new SqlParameter("@SockliningFinishDate", model.SockliningFinishDate);
 
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand("EXEC spm_InsertSockliningMasterSequence @ProductNo,@Sequence,@SockliningStartDate,@SockliningFinishDate", @ProductNo, @Sequence, @SockliningStartDate, @SockliningFinishDate) > 0)
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                if (db.ExecuteStoreCommand("EXEC spm_InsertSockliningMasterSequence @ProductNo,@Sequence,@SockliningStartDate,@SockliningFinishDate", @ProductNo, @Sequence, @SockliningStartDate, @SockliningFinishDate) > 0)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
         public static bool InsertSocklining(SockliningMasterModel model)
@@ -59,12 +63,14 @@ namespace MasterSchedule.Controllers
             var @InsoleBalance = new SqlParameter("@InsoleBalance", model.InsoleBalance);
             var @InsockBalance = new SqlParameter("@InsockBalance", model.InsockBalance);
 
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand("EXEC spm_InsertSockliningMasterSocklining @ProductNo,@SockliningLine,@SockliningStartDate,@SockliningFinishDate,@SockliningQuota,@SockliningActualStartDate,@SockliningActualFinishDate,@InsoleBalance,@InsockBalance", @ProductNo, @SockliningLine, @SockliningStartDate, @SockliningFinishDate, @SockliningQuota, @SockliningActualStartDate, @SockliningActualFinishDate, @InsoleBalance, @InsockBalance) > 0)
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                if (db.ExecuteStoreCommand("EXEC spm_InsertSockliningMasterSocklining @ProductNo,@SockliningLine,@SockliningStartDate,@SockliningFinishDate,@SockliningQuota,@SockliningActualStartDate,@SockliningActualFinishDate,@InsoleBalance,@InsockBalance", @ProductNo, @SockliningLine, @SockliningStartDate, @SockliningFinishDate, @SockliningQuota, @SockliningActualStartDate, @SockliningActualFinishDate, @InsoleBalance, @InsockBalance) > 0)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
         public static bool Insert_2(SockliningMasterModel model)
@@ -106,13 +112,15 @@ namespace MasterSchedule.Controllers
             var @IsInsoleBalanceUpdate = new SqlParameter("@IsInsoleBalanceUpdate", model.IsInsoleBalanceUpdate);
             var @IsInsockBalanceUpdate = new SqlParameter("@IsInsockBalanceUpdate", model.IsInsockBalanceUpdate);
 
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand("EXEC spm_InsertSockliningMaster_2 @ProductNo, @Sequence, @SockliningLine, @SockliningStartDate, @SockliningFinishDate, @SockliningQuota, @SockliningActualStartDate, @SockliningActualFinishDate, @InsoleBalance, @InsockBalance, @IsSequenceUpdate, @IsSockliningLineUpdate, @IsSockliningStartDateUpdate, @IsSockliningFinishDateUpdate, @IsSockliningQuotaUpdate, @IsSockliningActualStartDateUpdate, @IsSockliningActualFinishDateUpdate, @IsInsoleBalanceUpdate, @IsInsockBalanceUpdate ",
-                                                                          @ProductNo, @Sequence, @SockliningLine, @SockliningStartDate, @SockliningFinishDate, @SockliningQuota, @SockliningActualStartDate, @SockliningActualFinishDate, @InsoleBalance, @InsockBalance, @IsSequenceUpdate, @IsSockliningLineUpdate, @IsSockliningStartDateUpdate, @IsSockliningFinishDateUpdate, @IsSockliningQuotaUpdate, @IsSockliningActualStartDateUpdate, @IsSockliningActualFinishDateUpdate, @IsInsoleBalanceUpdate, @IsInsockBalanceUpdate) > 0)
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                if (db.ExecuteStoreCommand("EXEC spm_InsertSockliningMaster_2   @ProductNo, @Sequence, @SockliningLine, @SockliningStartDate, @SockliningFinishDate, @SockliningQuota, @SockliningActualStartDate, @SockliningActualFinishDate, @InsoleBalance, @InsockBalance, @IsSequenceUpdate, @IsSockliningLineUpdate, @IsSockliningStartDateUpdate, @IsSockliningFinishDateUpdate, @IsSockliningQuotaUpdate, @IsSockliningActualStartDateUpdate, @IsSockliningActualFinishDateUpdate, @IsInsoleBalanceUpdate, @IsInsockBalanceUpdate ",
+                                                                                @ProductNo, @Sequence, @SockliningLine, @SockliningStartDate, @SockliningFinishDate, @SockliningQuota, @SockliningActualStartDate, @SockliningActualFinishDate, @InsoleBalance, @InsockBalance, @IsSequenceUpdate, @IsSockliningLineUpdate, @IsSockliningStartDateUpdate, @IsSockliningFinishDateUpdate, @IsSockliningQuotaUpdate, @IsSockliningActualStartDateUpdate, @IsSockliningActualFinishDateUpdate, @IsInsoleBalanceUpdate, @IsInsockBalanceUpdate) > 0)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
     }
 }

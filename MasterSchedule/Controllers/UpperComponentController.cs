@@ -12,8 +12,10 @@ namespace MasterSchedule.Controllers
     {
         public static List<UpperComponentModel> Select()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<UpperComponentModel>("EXEC spm_SelectUpperComponents").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<UpperComponentModel>("EXEC spm_SelectUpperComponents").ToList();
+            }
         }
     }
 }

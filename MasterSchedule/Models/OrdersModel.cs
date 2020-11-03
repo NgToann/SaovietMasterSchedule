@@ -20,5 +20,6 @@ namespace MasterSchedule.Models
         public string LastCode { get; set; }
         public string Country { get; set; }
         public bool IsEnable { get; set; }
+        public string Reviser { get; set; }
     }
 }

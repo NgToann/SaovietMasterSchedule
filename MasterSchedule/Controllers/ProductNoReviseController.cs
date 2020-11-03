@@ -15,18 +15,22 @@ namespace MasterSchedule.Controllers
             var @ProductNo = new SqlParameter("@ProductNo", model.ProductNo);
             var @ReviseDate = new SqlParameter("@ReviseDate", model.ReviseDate);
             var @SectionId = new SqlParameter("@SectionId", model.SectionId);
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand("EXEC spm_InsertProductNoRevise @ProductNo, @ReviseDate, @SectionId", @ProductNo, @ReviseDate, @SectionId) > 0)
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                if (db.ExecuteStoreCommand("EXEC spm_InsertProductNoRevise @ProductNo, @ReviseDate, @SectionId", @ProductNo, @ReviseDate, @SectionId) > 0)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
         public static List<ProductNoReviseModel> SelectProductNoReviseToday()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<ProductNoReviseModel>("EXEC spm_SelectProductNoReviseToDay").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<ProductNoReviseModel>("EXEC spm_SelectProductNoReviseToDay").ToList();
+            }
         }
     }
 }

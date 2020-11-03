@@ -15,42 +15,55 @@ namespace MasterSchedule.Controllers
         // IsEnable = 1
         public static List<SewingMasterModel> Select()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<SewingMasterModel>("EXEC spm_SelectSewingMaster").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<SewingMasterModel>("EXEC spm_SelectSewingMaster").ToList();
+            };
         }
 
         public static List<SewingMasterViewModelNew> SelectViewModel()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<SewingMasterViewModelNew>("EXEC spm_SelectSewingMasterViewModel").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<SewingMasterViewModelNew>("EXEC spm_SelectSewingMasterViewModel").ToList();
+            };
         }
 
         // IsEnable = 1 || 0
         public static List<SewingMasterModel> SelectFull(DateTime etdStart, DateTime etdEnd)
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
             var @ETDStart = new SqlParameter("@ETDStart", etdStart);
             var @ETDEnd = new SqlParameter("@ETDEnd", etdEnd);
-            return db.ExecuteStoreQuery<SewingMasterModel>("EXEC spm_SelectSewingMasterFull @ETDStart, @ETDEnd", ETDStart, ETDEnd).ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<SewingMasterModel>("EXEC spm_SelectSewingMasterFull @ETDStart, @ETDEnd", ETDStart, ETDEnd).ToList();
+            };
         }
         public static List<SewingMasterModel> SelectAnTuongList()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<SewingMasterModel>("EXEC spm_SelectAnTuongList").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<SewingMasterModel>("EXEC spm_SelectAnTuongList").ToList();
+            };
         }
 
         public static List<SewingMasterModel> SelectByProductNo()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<SewingMasterModel>("EXEC spm_SelectSewingLineByProductNo").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<SewingMasterModel>("EXEC spm_SelectSewingLineByProductNo").ToList();
+            };
         }
 
         public static List<SewingMasterModel> SelectCutAStartDate()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<SewingMasterModel>("EXEC spm_SelectSewingMasterCutAStartDate").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<SewingMasterModel>("EXEC spm_SelectSewingMasterCutAStartDate").ToList();
+            };
         }
 
+        // Not Use
         public static bool Insert(SewingMasterModel model)
         {
             var @ProductNo = new SqlParameter("@ProductNo", model.ProductNo);
@@ -70,16 +83,22 @@ namespace MasterSchedule.Controllers
             var @CutBBalance = new SqlParameter("@CutBBalance", model.CutBBalance);
             var @AutoCut = new SqlParameter("@AutoCut", model.AutoCut);
 
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand("EXEC spm_InsertSewingMaster @ProductNo,@Sequence,@SewingLine,@SewingQuota,@SewingActualStartDate,@SewingActualFinishDate,@SewingBalance,@CutAQuota,@CutAActualStartDate,@CutAActualFinishDate,@CutABalance,@PrintingBalance,@H_FBalance,@EmbroideryBalance,@CutBBalance,@AutoCut", @ProductNo, @Sequence, @SewingLine, @SewingQuota, @SewingActualStartDate, @SewingActualFinishDate, @SewingBalance, @CutAQuota, @CutAActualStartDate, @CutAActualFinishDate, @CutABalance, @PrintingBalance, @H_FBalance, @EmbroideryBalance, @CutBBalance, @AutoCut) > 0)
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                if (db.ExecuteStoreCommand("EXEC spm_InsertSewingMaster @ProductNo,@Sequence,@SewingLine,@SewingQuota,@SewingActualStartDate,@SewingActualFinishDate,@SewingBalance,@CutAQuota,@CutAActualStartDate,@CutAActualFinishDate,@CutABalance,@PrintingBalance,@H_FBalance,@EmbroideryBalance,@CutBBalance,@AutoCut", @ProductNo, @Sequence, @SewingLine, @SewingQuota, @SewingActualStartDate, @SewingActualFinishDate, @SewingBalance, @CutAQuota, @CutAActualStartDate, @CutAActualFinishDate, @CutABalance, @PrintingBalance, @H_FBalance, @EmbroideryBalance, @CutBBalance, @AutoCut) > 0)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
         public static bool Insert_2(SewingMasterModel model)
         {
+            string computerName = "";
+            try { computerName = System.Environment.MachineName; }
+            catch { computerName = ""; }
+
             DateTime dtDefault = new DateTime(2000, 01, 01);
             var @ProductNo                          = new SqlParameter("@ProductNo", model.ProductNo);
             var @Sequence                           = new SqlParameter("@Sequence", model.Sequence);
@@ -95,16 +114,13 @@ namespace MasterSchedule.Controllers
 
             DateTime sewingActualStartDateAutoDt    = TimeHelper.Convert(model.SewingActualStartDateAuto);
             DateTime sewingActualFinishDateAutoDt   = TimeHelper.Convert(model.SewingActualFinishDateAuto);
+            
             string sewingActualStartDateAutoString  = "";
             if (sewingActualStartDateAutoDt != dtDefault)
-            {
                 sewingActualStartDateAutoString = String.Format("{0:MM/dd/yyyy}", sewingActualStartDateAutoDt);
-            }
             string sewingActualFinishDateAutoString = "";
             if (sewingActualFinishDateAutoDt != dtDefault)
-            {
                 sewingActualFinishDateAutoString = String.Format("{0:MM/dd/yyyy}", sewingActualFinishDateAutoDt);
-            }
 
             var @SewingActualStartDateAuto          = new SqlParameter("@SewingActualStartDateAuto", sewingActualStartDateAutoString);
             var @SewingActualFinishDateAuto         = new SqlParameter("@SewingActualFinishDateAuto", sewingActualFinishDateAutoString);
@@ -182,18 +198,21 @@ namespace MasterSchedule.Controllers
             var @IsComelzCutAUpdate                 = new SqlParameter("@IsComelzCutAUpdate", model.IsUpdateComelzCutA);
             var @IsComelzCutBUpdate                 = new SqlParameter("@IsComelzCutBUpdate", model.IsUpdateComelzCutB);
 
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            db.CommandTimeout = 120;
-            if (db.ExecuteStoreCommand(@"EXEC spm_InsertSewingMaster_7  @ProductNo, @Sequence, @SewingLine, @SewingStartDate, @SewingFinishDate, @SewingQuota, @SewingPrep, @SewingActualStartDate, @SewingActualFinishDate, @SewingActualStartDateAuto, @SewingActualFinishDateAuto, @SewingBalance, @CutAStartDate, @CutAFinishDate, @CutAQuota, @CutAActualStartDate, @CutAActualFinishDate, @CutABalance, @PrintingBalance, @H_FBalance, @EmbroideryBalance, @CutBActualStartDate, @CutBBalance, @AutoCut, @LaserCut, @HuasenCut, @CutBStartDate, @AtomCutA, @AtomCutB, @LaserCutA, @LaserCutB, @HuasenCutA, @HuasenCutB, @ComelzCutA, @ComelzCutB, 
-                                                                        @IsSequenceUpdate, @IsSewingLineUpdate, @IsSewingStartDateUpdate, @IsSewingFinishDateUpdate, @IsSewingQuotaUpdate, @IsSewingPrepUpdate, @IsSewingActualStartDateUpdate, @IsSewingActualFinishDateUpdate, @IsSewingActualStartDateAutoUpdate, @IsSewingActualFinishDateAutoUpdate, @IsSewingBalanceUpdate, @IsCutAStartDateUpdate, @IsCutAFinishDateUpdate, @IsCutAQuotaUpdate, @IsCutAActualStartDateUpdate, @IsCutAActualFinishDateUpdate, @IsCutABalanceUpdate, @IsPrintingBalanceUpdate, @IsH_FBalanceUpdate, @IsEmbroideryBalanceUpdate, @IsCutBActualStartDateUpdate, @IsCutBBalanceUpdate, @IsAutoCutUpdate, @IsLaserCutUpdate, @IsHuasenCutUpdate, @IsCutBStartDateUpdate, @IsAtomCutAUpdate, @IsAtomCutBUpdate, @IsLaserCutAUpdate, @IsLaserCutBUpdate, @IsHuasenCutAUpdate, @IsHuasenCutBUpdate, @IsComelzCutAUpdate, @IsComelzCutBUpdate",
-                                                                        @ProductNo, @Sequence, @SewingLine, @SewingStartDate, @SewingFinishDate, @SewingQuota, @SewingPrep, @SewingActualStartDate, @SewingActualFinishDate, @SewingActualStartDateAuto, @SewingActualFinishDateAuto, @SewingBalance, @CutAStartDate, @CutAFinishDate, @CutAQuota, @CutAActualStartDate, @CutAActualFinishDate, @CutABalance, @PrintingBalance, @H_FBalance, @EmbroideryBalance, @CutBActualStartDate, @CutBBalance, @AutoCut, @LaserCut, @HuasenCut, @CutBStartDate, @AtomCutA, @AtomCutB, @LaserCutA, @LaserCutB, @HuasenCutA, @HuasenCutB, @ComelzCutA, @ComelzCutB,
-                                                                        @IsSequenceUpdate, @IsSewingLineUpdate, @IsSewingStartDateUpdate, @IsSewingFinishDateUpdate, @IsSewingQuotaUpdate, @IsSewingPrepUpdate, @IsSewingActualStartDateUpdate, @IsSewingActualFinishDateUpdate, @IsSewingActualStartDateAutoUpdate, @IsSewingActualFinishDateAutoUpdate, @IsSewingBalanceUpdate, @IsCutAStartDateUpdate, @IsCutAFinishDateUpdate, @IsCutAQuotaUpdate, @IsCutAActualStartDateUpdate, @IsCutAActualFinishDateUpdate, @IsCutABalanceUpdate, @IsPrintingBalanceUpdate, @IsH_FBalanceUpdate, @IsEmbroideryBalanceUpdate, @IsCutBActualStartDateUpdate, @IsCutBBalanceUpdate, @IsAutoCutUpdate, @IsLaserCutUpdate, @IsHuasenCutUpdate, @IsCutBStartDateUpdate, @IsAtomCutAUpdate, @IsAtomCutBUpdate, @IsLaserCutAUpdate, @IsLaserCutBUpdate, @IsHuasenCutAUpdate, @IsHuasenCutBUpdate, @IsComelzCutAUpdate, @IsComelzCutBUpdate) > 0)
+            var @Reviser                            = new SqlParameter("@Reviser", String.Format("{0}-{1}", model.Reviser, computerName));
+
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                db.CommandTimeout = 120;
+                if (db.ExecuteStoreCommand(@"EXEC spm_InsertSewingMaster_8  @ProductNo, @Sequence, @SewingLine, @SewingStartDate, @SewingFinishDate, @SewingQuota, @SewingPrep, @SewingActualStartDate, @SewingActualFinishDate, @SewingActualStartDateAuto, @SewingActualFinishDateAuto, @SewingBalance, @CutAStartDate, @CutAFinishDate, @CutAQuota, @CutAActualStartDate, @CutAActualFinishDate, @CutABalance, @PrintingBalance, @H_FBalance, @EmbroideryBalance, @CutBActualStartDate, @CutBBalance, @AutoCut, @LaserCut, @HuasenCut, @CutBStartDate, @AtomCutA, @AtomCutB, @LaserCutA, @LaserCutB, @HuasenCutA, @HuasenCutB, @ComelzCutA, @ComelzCutB, @IsSequenceUpdate, @IsSewingLineUpdate, @IsSewingStartDateUpdate, @IsSewingFinishDateUpdate, @IsSewingQuotaUpdate, @IsSewingPrepUpdate, @IsSewingActualStartDateUpdate, @IsSewingActualFinishDateUpdate, @IsSewingActualStartDateAutoUpdate, @IsSewingActualFinishDateAutoUpdate, @IsSewingBalanceUpdate, @IsCutAStartDateUpdate, @IsCutAFinishDateUpdate, @IsCutAQuotaUpdate, @IsCutAActualStartDateUpdate, @IsCutAActualFinishDateUpdate, @IsCutABalanceUpdate, @IsPrintingBalanceUpdate, @IsH_FBalanceUpdate, @IsEmbroideryBalanceUpdate, @IsCutBActualStartDateUpdate, @IsCutBBalanceUpdate, @IsAutoCutUpdate, @IsLaserCutUpdate, @IsHuasenCutUpdate, @IsCutBStartDateUpdate, @IsAtomCutAUpdate, @IsAtomCutBUpdate, @IsLaserCutAUpdate, @IsLaserCutBUpdate, @IsHuasenCutAUpdate, @IsHuasenCutBUpdate, @IsComelzCutAUpdate, @IsComelzCutBUpdate, @Reviser",
+                                                                            @ProductNo, @Sequence, @SewingLine, @SewingStartDate, @SewingFinishDate, @SewingQuota, @SewingPrep, @SewingActualStartDate, @SewingActualFinishDate, @SewingActualStartDateAuto, @SewingActualFinishDateAuto, @SewingBalance, @CutAStartDate, @CutAFinishDate, @CutAQuota, @CutAActualStartDate, @CutAActualFinishDate, @CutABalance, @PrintingBalance, @H_FBalance, @EmbroideryBalance, @CutBActualStartDate, @CutBBalance, @AutoCut, @LaserCut, @HuasenCut, @CutBStartDate, @AtomCutA, @AtomCutB, @LaserCutA, @LaserCutB, @HuasenCutA, @HuasenCutB, @ComelzCutA, @ComelzCutB, @IsSequenceUpdate, @IsSewingLineUpdate, @IsSewingStartDateUpdate, @IsSewingFinishDateUpdate, @IsSewingQuotaUpdate, @IsSewingPrepUpdate, @IsSewingActualStartDateUpdate, @IsSewingActualFinishDateUpdate, @IsSewingActualStartDateAutoUpdate, @IsSewingActualFinishDateAutoUpdate, @IsSewingBalanceUpdate, @IsCutAStartDateUpdate, @IsCutAFinishDateUpdate, @IsCutAQuotaUpdate, @IsCutAActualStartDateUpdate, @IsCutAActualFinishDateUpdate, @IsCutABalanceUpdate, @IsPrintingBalanceUpdate, @IsH_FBalanceUpdate, @IsEmbroideryBalanceUpdate, @IsCutBActualStartDateUpdate, @IsCutBBalanceUpdate, @IsAutoCutUpdate, @IsLaserCutUpdate, @IsHuasenCutUpdate, @IsCutBStartDateUpdate, @IsAtomCutAUpdate, @IsAtomCutBUpdate, @IsLaserCutAUpdate, @IsLaserCutBUpdate, @IsHuasenCutAUpdate, @IsHuasenCutBUpdate, @IsComelzCutAUpdate, @IsComelzCutBUpdate, @Reviser) > 0)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
+        // Not Use
         public static bool InsertSequence(SewingMasterModel model)
         {
             var @ProductNo = new SqlParameter("@ProductNo", model.ProductNo);
@@ -201,14 +220,17 @@ namespace MasterSchedule.Controllers
             var @SewingStartDate = new SqlParameter("@SewingStartDate", model.SewingStartDate);
             var @SewingFinishDate = new SqlParameter("@SewingFinishDate", model.SewingFinishDate);
 
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand("EXEC spm_InsertSewingMasterSequence @ProductNo,@Sequence,@SewingStartDate,@SewingFinishDate", @ProductNo, @Sequence, @SewingStartDate, @SewingFinishDate) > 0)
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                if (db.ExecuteStoreCommand("EXEC spm_InsertSewingMasterSequence @ProductNo,@Sequence,@SewingStartDate,@SewingFinishDate", @ProductNo, @Sequence, @SewingStartDate, @SewingFinishDate) > 0)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
+        // Not Use
         public static bool InsertSewing(SewingMasterModel model)
         {
             var @ProductNo = new SqlParameter("@ProductNo", model.ProductNo);
@@ -220,14 +242,17 @@ namespace MasterSchedule.Controllers
             var @SewingActualFinishDate = new SqlParameter("@SewingActualFinishDate", model.SewingActualFinishDate);
             var @SewingBalance = new SqlParameter("@SewingBalance", model.SewingBalance);
 
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand("EXEC spm_InsertSewingMasterSewing @ProductNo,@SewingLine,@SewingStartDate,@SewingFinishDate,@SewingQuota,@SewingActualStartDate,@SewingActualFinishDate,@SewingBalance", @ProductNo, @SewingLine, @SewingStartDate, @SewingFinishDate, @SewingQuota, @SewingActualStartDate, @SewingActualFinishDate, @SewingBalance) > 0)
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                if (db.ExecuteStoreCommand("EXEC spm_InsertSewingMasterSewing @ProductNo,@SewingLine,@SewingStartDate,@SewingFinishDate,@SewingQuota,@SewingActualStartDate,@SewingActualFinishDate,@SewingBalance", @ProductNo, @SewingLine, @SewingStartDate, @SewingFinishDate, @SewingQuota, @SewingActualStartDate, @SewingActualFinishDate, @SewingBalance) > 0)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
+        // Not Use
         public static bool InsertCutPrep(SewingMasterModel model)
         {
             var @ProductNo = new SqlParameter("@ProductNo", model.ProductNo);
@@ -243,12 +268,14 @@ namespace MasterSchedule.Controllers
             var @CutBBalance = new SqlParameter("@CutBBalance", model.CutBBalance);
             var @AutoCut = new SqlParameter("@AutoCut", model.AutoCut);
 
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand("EXEC spm_InsertSewingMasterCutPrep @ProductNo, @CutAStartDate, @CutAFinishDate, @CutAQuota, @CutAActualStartDate, @CutAActualFinishDate, @CutABalance, @PrintingBalance, @H_FBalance, @EmbroideryBalance, @CutBBalance, @AutoCut", @ProductNo, @CutAStartDate, @CutAFinishDate, @CutAQuota, @CutAActualStartDate, @CutAActualFinishDate, @CutABalance, @PrintingBalance, @H_FBalance, @EmbroideryBalance, @CutBBalance, @AutoCut) > 0)
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                if (db.ExecuteStoreCommand("EXEC spm_InsertSewingMasterCutPrep @ProductNo, @CutAStartDate, @CutAFinishDate, @CutAQuota, @CutAActualStartDate, @CutAActualFinishDate, @CutABalance, @PrintingBalance, @H_FBalance, @EmbroideryBalance, @CutBBalance, @AutoCut", @ProductNo, @CutAStartDate, @CutAFinishDate, @CutAQuota, @CutAActualStartDate, @CutAActualFinishDate, @CutABalance, @PrintingBalance, @H_FBalance, @EmbroideryBalance, @CutBBalance, @AutoCut) > 0)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
     }
 }

@@ -400,7 +400,7 @@ namespace MasterSchedule
 
         private void miImportOrders_Click(object sender, RoutedEventArgs e)
         {
-            ImportOrdersWindow window = new ImportOrdersWindow();
+            ImportOrdersWindow window = new ImportOrdersWindow(account);
             window.ShowDialog();
         }
 
@@ -418,7 +418,7 @@ namespace MasterSchedule
 
         private void miUpdateOrders_Click(object sender, RoutedEventArgs e)
         {
-            UpdateOrdersWindow window = new UpdateOrdersWindow();
+            UpdateOrdersWindow window = new UpdateOrdersWindow(account);
             window.Show();
         }
 
@@ -898,6 +898,12 @@ namespace MasterSchedule
             window.Show();
         }
 
+        private void miPrintSizeRun_Click(object sender, RoutedEventArgs e)
+        {
+            PrintSizeRunWindow window = new PrintSizeRunWindow();
+            window.Show();
+        }
+
         private void Window_StateChanged(object sender, EventArgs e)
         {
             if (this.WindowState == System.Windows.WindowState.Minimized && loaded == true)
@@ -993,8 +999,10 @@ namespace MasterSchedule
                 "1.2.6.5: " + "Update: Release Painting (Input OSMaterial WHMasterFile), ReleasePainting col DeliveryDetailReport 'SV'.\n" +
                 "1.2.6.7: " + "Update: Sync OutsoleMaterialArrivalDate 'SV'.\n" +
                 "1.2.6.9: " + "Update: SewingStart > CutAStart 18days, Speed Outsole (Inventory, Delivery) Reports 'SV'.\n" +
-                "1.2.7.0: " + "Update: Add ComelzCutAB Column, Custom CutprepPrintReport. 'SV'.\n"+
-                "1.2.7.3: " + "Update: Counter WorkingTime OSMWHChecking, Speed Report OSMWH, OSMWHChecking View Detail 'SV', col OSMatsArrival UpperDetailReport; Keys,Input Reject 'TL'.";
+                "1.2.7.0: " + "Update: Add ComelzCutAB Column, Custom CutprepPrintReport. 'SV'.\n" +
+                "1.2.7.3: " + "Update: Counter WorkingTime OSMWHChecking, Speed Report OSMWH, OSMWHChecking View Detail 'SV', col OSMatsArrival UpperDetailReport; Keys,Input Reject 'TL'.\n" +
+                "1.2.7.4: " + "Update: PO OsMasterFile Empty, Reviser PO 'SV'.\n" +
+                "1.2.7.6: " + "Update: Print Size Run Report 'SV'.";
             //MessageBox.Show(version, string.Format("Current Version: {0}", AssemblyHelper.Version()), MessageBoxButton.OK, MessageBoxImage.Information);
             UpdateHistoryWindow window = new UpdateHistoryWindow(version, AssemblyHelper.Version());
             window.Show();

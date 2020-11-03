@@ -22,8 +22,10 @@ namespace MasterSchedule.Views
         BackgroundWorker bwLoad;
         BackgroundWorker bwImport;
         List<OrdersModel> ordersToImportList;
-        public ImportOrdersWindow()
+        AccountModel acc;
+        public ImportOrdersWindow( AccountModel acc )
         {
+            this.acc = acc;
             filePath = "";
             ordersList = new List<OrdersModel>();
             bwLoad = new BackgroundWorker();
@@ -145,6 +147,7 @@ namespace MasterSchedule.Views
                             country = countryValue.ToString();
                         }
                         orders.Country = country;
+                        orders.Reviser = acc.UserName;
 
                         ordersList.Add(orders);
                     }
@@ -189,18 +192,6 @@ namespace MasterSchedule.Views
                 this.Cursor = Cursors.Wait;
                 btnImport.IsEnabled = false;
                 ordersToImportList = dgOrders.Items.OfType<OrdersModel>().ToList();
-                // No Mean
-                //var productNoList = ordersToImportList.Select(s => s.ProductNo).Distinct().ToList();
-                //int index = 0;
-                //Dictionary<int, string> indexPO = new Dictionary<int, string>();
-                //foreach (var productNo in productNoList)
-                //{
-                //    indexPO.Add(index, productNo);
-                //    index++;
-                //}
-
-                // get any value if you want.
-                //string po9 = indexPO.Where(w => w.Key == 9).FirstOrDefault().Value.ToString();
                 bwImport.RunWorkerAsync();
             }
         }

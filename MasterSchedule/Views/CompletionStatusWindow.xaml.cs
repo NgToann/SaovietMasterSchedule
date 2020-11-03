@@ -78,11 +78,11 @@ namespace MasterSchedule.Views
 
         void threadLoad_DoWork(object sender, DoWorkEventArgs e)
         {
-            orderList = OrdersController.SelectFull(etdStart, etdEnd);
-            sewingMasterList = SewingMasterController.SelectFull(etdStart, etdEnd);
-            outsoleMasterList = OutsoleMasterController.SelectFull(etdStart, etdEnd);
-            assemblyMasterList = AssemblyMasterController.SelectFull(etdStart, etdEnd);
-            orderExtraList = OrderExtraController.SelectFull(etdStart, etdEnd);
+            orderList           = OrdersController.SelectFull(etdStart, etdEnd);
+            sewingMasterList    = SewingMasterController.SelectFull(etdStart, etdEnd);
+            outsoleMasterList   = OutsoleMasterController.SelectFull(etdStart, etdEnd);
+            assemblyMasterList  = AssemblyMasterController.SelectFull(etdStart, etdEnd);
+            orderExtraList      = OrderExtraController.SelectFull(etdStart, etdEnd);
 
             List<String> productNoList = sewingMasterList.Select(r => r.ProductNo).Distinct().ToList();
             foreach (string productNo in productNoList)

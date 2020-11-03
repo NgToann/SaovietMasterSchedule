@@ -12,18 +12,19 @@ namespace MasterSchedule.Controllers
     {
         public static List<SewingOutputModel> SelectByAssemblyMaster()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-
-            return db.ExecuteStoreQuery<SewingOutputModel>("EXEC spm_SelectSewingOutputByAssemblyMaster").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<SewingOutputModel>("EXEC spm_SelectSewingOutputByAssemblyMaster").ToList();
+            }
         }
 
         public static List<SewingOutputModel> Select(string productNo)
         {
             var @ProductNo = new SqlParameter("@ProductNo", productNo);
-            
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-
-            return db.ExecuteStoreQuery<SewingOutputModel>("EXEC spm_SelectSewingOutputByProductNo @ProductNo", @ProductNo).ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<SewingOutputModel>("EXEC spm_SelectSewingOutputByProductNo @ProductNo", @ProductNo).ToList();
+            }
         }  
 
         public static bool Insert(SewingOutputModel model)
@@ -32,21 +33,23 @@ namespace MasterSchedule.Controllers
             var @SizeNo = new SqlParameter("@SizeNo", model.SizeNo);
             var @Quantity = new SqlParameter("@Quantity", model.Quantity);
 
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-
-            if (db.ExecuteStoreCommand("EXEC spm_InsertSewingOutput @ProductNo,@SizeNo,@Quantity", @ProductNo, @SizeNo, @Quantity) >= 1)
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                if (db.ExecuteStoreCommand("EXEC spm_InsertSewingOutput @ProductNo,@SizeNo,@Quantity", @ProductNo, @SizeNo, @Quantity) >= 1)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
         public static List<SewingOutputModel> SelectByAssemblyRelease(string reportId)
         {
             var @ReportId = new SqlParameter("@ReportId", reportId);
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-
-            return db.ExecuteStoreQuery<SewingOutputModel>("EXEC spm_SelectSewingOutputByAssemblyReleaseByReportId @ReportId", @ReportId).ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<SewingOutputModel>("EXEC spm_SelectSewingOutputByAssemblyReleaseByReportId @ReportId", @ReportId).ToList();
+            }
         }
     }
 }

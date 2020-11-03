@@ -208,85 +208,6 @@ namespace MasterSchedule.Views
                 }
                 outsoleMasterView.MemoId = memoId;
 
-                //// Fix Code
-                //List<OutsoleMaterialModel> outsoleMaterialQuantityZero = new List<OutsoleMaterialModel>();
-                //outsoleMaterialQuantityZero = outsoleMaterialList.Where(w => w.Quantity == 0 && w.ProductNo == order.ProductNo).ToList();
-                //List<int> outsoleSupplierIdList = new List<int>();
-                //outsoleSupplierIdList = outsoleMaterialQuantityZero.Select(s => s.OutsoleSupplierId).Distinct().ToList();
-                //List<OutsoleRawMaterialModel> outsoleRawMaterialNotSupplied = new List<OutsoleRawMaterialModel>();
-                //foreach (int supplierId in outsoleSupplierIdList)
-                //{
-                //    OutsoleRawMaterialModel outsoleRawMaterialBySupplierId = new OutsoleRawMaterialModel();
-                //    outsoleRawMaterialBySupplierId = outsoleRawMaterialList.FirstOrDefault(f => f.ProductNo == order.ProductNo && f.OutsoleSupplierId == supplierId);
-                //    if (outsoleRawMaterialBySupplierId != null)
-                //        outsoleRawMaterialNotSupplied.Add(outsoleRawMaterialBySupplierId);
-                //}
-
-                //if (outsoleRawMaterialNotSupplied.Count > 0)
-                //{
-                //    List<RawMaterialModel> rawMaterialTypeList = rawMaterialList.Where(r => r.ProductNo == order.ProductNo && r.MaterialTypeId == 6).ToList();
-                //    OutsoleRawMaterialModel outsoleRaw = outsoleRawMaterialNotSupplied.OrderBy(o => o.ETD).LastOrDefault();
-                //    outsoleMasterView.OSMatsArrival = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", outsoleRaw.ETD);
-                //    outsoleMasterView.OSMatsArrivalForeground = Brushes.Black;
-                //    outsoleMasterView.OSMatsArrivalBackground = Brushes.Transparent;
-                //    if (outsoleRaw.ETD < DateTime.Now.Date)
-                //    {
-                //        outsoleMasterView.OSMatsArrivalBackground = Brushes.Red;
-                //    }
-                //    else
-                //    {
-                //        if (rawMaterialTypeList.Where(r => String.IsNullOrEmpty(r.Remarks) == false).Count() > 0)
-                //        {
-                //            outsoleMasterView.OSMatsArrivalBackground = Brushes.Yellow;
-                //        }
-                //    }
-                //}
-                //else
-                //{
-                //    // Normal code
-                //    MaterialArrivalViewModel materialArrivalOutsole = MaterialArrival(order.ProductNo, materialIdOutsoleArray);
-                //    outsoleMasterView.OSMatsArrivalOrginal = dtDefault;
-                //    if (materialArrivalOutsole != null)
-                //    {
-                //        outsoleMasterView.OSMatsArrival = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", materialArrivalOutsole.Date);
-                //        outsoleMasterView.OSMatsArrivalOrginal = materialArrivalOutsole.Date;
-                //        outsoleMasterView.OSMatsArrivalForeground = materialArrivalOutsole.Foreground;
-                //        outsoleMasterView.OSMatsArrivalBackground = materialArrivalOutsole.Background;
-                //    }
-                //}
-
-                // only for outsole material type
-                //var osRawMaterial = outsoleRawMaterialList.Where(w => w.ProductNo == order.ProductNo).ToList();
-                //var actualDateList = osRawMaterial.Select(s => s.ActualDate).ToList();
-                //if (actualDateList.Count() > 0 && actualDateList.Contains(dtDefault) == false)
-                //{
-                //    outsoleMasterView.OSMatsArrival = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", actualDateList.Max());
-                //    outsoleMasterView.OSMatsArrivalForeground = Brushes.Blue;
-                //    outsoleMasterView.OSMatsArrivalBackground = Brushes.Transparent;
-                //}
-                //else
-                //{
-                //    var etdDateList = osRawMaterial.Select(s => s.ETD).ToList();
-                //    if (etdDateList.Count() > 0)
-                //    {
-                //        outsoleMasterView.OSMatsArrival = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", etdDateList.Max());
-                //        outsoleMasterView.OSMatsArrivalForeground = Brushes.Black;
-                //        outsoleMasterView.OSMatsArrivalBackground = Brushes.Transparent;
-                //        if (etdDateList.Max() < DateTime.Now.Date)
-                //        {
-                //            outsoleMasterView.OSMatsArrivalBackground = Brushes.Red;
-                //        }
-                //        else
-                //        {
-                //            var rawMaterial_PO = rawMaterialList.Where(w => w.ProductNo == order.ProductNo && materialIdOutsoleArray.Contains(w.MaterialTypeId) == true).ToList();
-                //            if (rawMaterial_PO.Where(w => String.IsNullOrEmpty(w.Remarks) == false).Count() > 0)
-                //            {
-                //                outsoleMasterView.OSMatsArrivalBackground = Brushes.Yellow;
-                //            }
-                //        }
-                //    }
-                //}
-
                 // Outsole Material Follow Material Input
                 var rawMaterialViewModelNew = rawMaterialViewModelNewList.FirstOrDefault(f => f.ProductNo == order.ProductNo);
                 outsoleMasterView.OSMatsArrivalForeground = Brushes.Blue;
@@ -330,6 +251,23 @@ namespace MasterSchedule.Views
                     outsoleMasterView.OutsoleActualFinishDateAuto = TimeHelper.ConvertDateToView(outsoleMaster.OutsoleActualFinishDateAuto);
                     outsoleMasterView.OutsoleBalance = outsoleMaster.OutsoleBalance;
                     outsoleMasterView.Remarks = outsoleMaster.Remarks;
+
+                    double perCent = (double)outsoleMaster.WHCurrentCheck / (double)order.Quantity * 100;
+                    perCent = perCent > 100 ? 100 : perCent;
+                    string percentView = string.Format("{0}%", (int)perCent);
+                    if (percentView.Equals("0%"))
+                        percentView = "";
+                    outsoleMasterView.OutsoleWHCheckingCurrent = percentView;
+                    outsoleMasterView.OutsoleWHCheckingCurrentBackground = Brushes.Transparent;
+                    if ((int)perCent >= 50)
+                    {
+                        outsoleMasterView.OutsoleWHCheckingCurrentBackground = Brushes.Yellow;
+                    }
+                    if (outsoleMaster.WHCurrentCheck >= order.Quantity)
+                    {
+                        outsoleMasterView.OutsoleWHCheckingCurrent = string.Format("{0:M/d}", outsoleMaster.WHLastDateCheck);
+                        outsoleMasterView.OutsoleWHCheckingCurrentBackground = Brushes.Transparent;
+                    }
                 }
                 else
                 {
@@ -345,38 +283,6 @@ namespace MasterSchedule.Views
                     outsoleMasterView.OutsoleBalance = "";
                     outsoleMasterView.Remarks = "";
                 }
-
-                //RawMaterialModel outsoleRawMaterial = rawMaterialList.FirstOrDefault(f => f.ProductNo == order.ProductNo && materialIdOutsoleArray.Contains(f.MaterialTypeId));
-                //if (outsoleRawMaterial != null)
-                //{
-                //    outsoleMasterView.OutsoleWHBalance = outsoleRawMaterial.Remarks;
-                //}
-                //else
-                //{
-                //    outsoleMasterView.OutsoleWHBalance = "";
-                //}
-
-                // Load Outsole_Remarks from OutsoleMaterial
-                //var outsoleMaterial_PO = outsoleMaterialList.Where(w => w.ProductNo == order.ProductNo).ToList();
-                //var osMaterialSumBySupplier = outsoleMaterial_PO.GroupBy(
-                //                                                    g => g.OutsoleSupplierId)
-                //                                                    .Select(s => new
-                //                                                    {
-                //                                                        PO = order.ProductNo,
-                //                                                        Supplier = s.Key,
-                //                                                        ActualDelivery = outsoleMaterial_PO.Where(w => w.OutsoleSupplierId == s.Key)
-                //                                                                                           .Sum(su => su.Quantity - su.QuantityReject)
-                //                                                    }).ToList();
-
-                //// if pot no one delivery. not show the balance quantity.
-                //if (osMaterialSumBySupplier.Count > 0 && order.Quantity - osMaterialSumBySupplier.Min(m => m.ActualDelivery) > 0)
-                //{
-                //    // show the balance
-                //    outsoleMasterView.OutsoleWHBalance = (order.Quantity - osMaterialSumBySupplier.Min(m => m.ActualDelivery)).ToString();
-                //    // if no one delivery, show blank
-                //    if (outsoleMaterial_PO.Sum(s => s.Quantity) == 0)
-                //        outsoleMasterView.OutsoleWHBalance = "";
-                //}
 
                 SewingMasterModel sewingMaster = sewingMasterList.FirstOrDefault(f => f.ProductNo == order.ProductNo);
                 if (sewingMaster != null)
@@ -432,72 +338,6 @@ namespace MasterSchedule.Views
                 {
                     DateTime releasedToWHInspectionDate = outsoleReleaseMaterialToWHInspectionList_D1.OrderBy(o => o.ModifiedTime).LastOrDefault().ModifiedTime;
                     outsoleMasterView.ReleasedToWHInspectionQuantity = string.Format("{0:M/d}", releasedToWHInspectionDate);
-                }
-
-                // Outsole Material WH Checking Current Min(Size)                
-
-                //if (order.ProductNo == "109A-3861")
-                //{
-                //    var x = order.ProductNo;
-                //}
-                //var osMWHCheckingCurrentByPO = outsoleMaterialCheckingWHList.Where(w => w.ProductNo == order.ProductNo).ToList();
-                //if (osMWHCheckingCurrentByPO.Count() > 0)
-                //{
-                //    int totalOSCheckedMin = 0;
-                //    var supplierIdList = outsoleRawMaterialList.Where(w => w.ProductNo == order.ProductNo).Select(s => s.OutsoleSupplierId).Distinct().ToList();
-                //    List<Int32> sizeCheckedCurrentList = new List<int>();
-                //    var sizeRunByPO = sizeRunList.Where(w => w.ProductNo == order.ProductNo).ToList();
-                //    foreach (var sizeRun in sizeRunByPO)
-                //    {
-                //        string sizeCompare = String.IsNullOrEmpty(sizeRun.OutsoleSize) == false ? sizeRun.OutsoleSize : sizeRun.SizeNo;
-                //        var osMWHCheckingCurrentByPOBySize = osMWHCheckingCurrentByPO.Where(w => w.SizeNo == sizeCompare).ToList();
-                //        List<Int32> checkBySupp = new List<int>();
-                //        if (osMWHCheckingCurrentByPOBySize.Where(w => w.Quantity > 0).Select(s => s.OutsoleSupplierId).Distinct().Count() == supplierIdList.Count())
-                //        {
-                //            foreach (var suppId in supplierIdList)
-                //            {
-                //                checkBySupp.Add(osMWHCheckingCurrentByPOBySize.Where(w => w.SizeNo == sizeCompare && w.OutsoleSupplierId == suppId).Sum(s => s.Quantity));
-                //            }
-                //            sizeCheckedCurrentList.Add(checkBySupp.Min());
-                //        }
-                //    }
-
-                //    totalOSCheckedMin = sizeCheckedCurrentList.Sum();
-
-                //    if (totalOSCheckedMin > 0)
-                //    {
-                //        double perCent = (double)totalOSCheckedMin / (double)order.Quantity * 100;
-                //        string percentView = string.Format("{0}%", Math.Round(perCent, 0, MidpointRounding.AwayFromZero));
-                //        if (percentView.Equals("0%"))
-                //            percentView = "";
-
-                //        outsoleMasterView.OutsoleWHCheckingCurrent = percentView;
-                //        if (totalOSCheckedMin >= order.Quantity / 2)
-                //        {
-                //            outsoleMasterView.OutsoleWHCheckingCurrentBackground = Brushes.Yellow;
-                //        }
-                //        if (totalOSCheckedMin == order.Quantity)
-                //        {
-                //            outsoleMasterView.OutsoleWHCheckingCurrent = string.Format("{0:M/d}", osMWHCheckingCurrentByPO.LastOrDefault().CheckingDate);
-                //            outsoleMasterView.OutsoleWHCheckingCurrentBackground = Brushes.Transparent;
-                //        }
-                //    }
-                //}
-                double perCent = (double)outsoleMaster.WHCurrentCheck / (double)order.Quantity * 100;
-                perCent = perCent > 100 ? 100 : perCent;
-                string percentView = string.Format("{0}%", (int)perCent);
-                if (percentView.Equals("0%"))
-                    percentView = "";
-                outsoleMasterView.OutsoleWHCheckingCurrent = percentView;
-                outsoleMasterView.OutsoleWHCheckingCurrentBackground = Brushes.Transparent;
-                if ((int)perCent >= 50)
-                {
-                    outsoleMasterView.OutsoleWHCheckingCurrentBackground = Brushes.Yellow;
-                }
-                if (outsoleMaster.WHCurrentCheck >= order.Quantity)
-                {
-                    outsoleMasterView.OutsoleWHCheckingCurrent = string.Format("{0:M/d}", outsoleMaster.WHLastDateCheck);
-                    outsoleMasterView.OutsoleWHCheckingCurrentBackground = Brushes.Transparent;
                 }
 
                 outsoleMasterViewList.Add(outsoleMasterView);
@@ -566,7 +406,7 @@ namespace MasterSchedule.Views
 
         private void bwReload_DoWork(object sender, DoWorkEventArgs e)
         {
-            outsoleMasterList = OutsoleMasterController.Select();
+            outsoleMasterList = OutsoleMasterController.Select_1();
         }
 
         private void bwReload_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

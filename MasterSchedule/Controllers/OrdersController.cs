@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Reflection;
-
 using MasterSchedule.Models;
 using MasterSchedule.Entities;
 using System.Data.SqlClient;
@@ -13,90 +10,117 @@ namespace MasterSchedule.Controllers
     {
         public static List<OrdersModel> Select()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrders").ToList();
+            using (var db = new SaovietMasterScheduleEntities()) {
+                return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrders").ToList();
+            };
         }
 
         public static List<OrdersModel> SelectFull(DateTime etdStart, DateTime etdEnd)
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
+            
             var @ETDStart = new SqlParameter("@ETDStart", etdStart);
             var @ETDEnd = new SqlParameter("@ETDEnd", etdEnd);
-            return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersFull @ETDStart, @ETDEnd", ETDStart, ETDEnd).ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersFull @ETDStart, @ETDEnd", ETDStart, ETDEnd).ToList();
+            };
         }
 
         public static List<OrdersModel> SelectSubString()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersSubString").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersSubString").ToList();
+            };
         }
         
         public static OrdersModel SelectByArticleNo6(string articleNo)
         {
             var @ArticleNo = new SqlParameter("@ArticleNo", articleNo);
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByArticle6Char @ArticleNo", @ArticleNo).FirstOrDefault();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByArticle6Char @ArticleNo", @ArticleNo).FirstOrDefault();
+            };
         }
 
         // IsEnable = 1
         public static List<OrdersModel> SelectByOutsoleRawMaterial()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByOutsoleRawMaterial").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByOutsoleRawMaterial").ToList();
+            };
         }
         
         // IsEnable = 1 || 0
         public static List<OrdersModel> SelectByOutsoleRawMaterialFull(DateTime etdStart, DateTime etdEnd)
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
+            
             var @ETDStart = new SqlParameter("@ETDStart", etdStart);
             var @ETDEnd = new SqlParameter("@ETDEnd", etdEnd);
-            return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByOutsoleRawMaterialFull @ETDStart, @ETDEnd", @ETDStart, @ETDEnd).ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByOutsoleRawMaterialFull @ETDStart, @ETDEnd", @ETDStart, @ETDEnd).ToList();
+            };
         }
 
         public static List<OrdersModel> SelectByUpperComponentRawMaterial()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByUpperComponentRawMaterial").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByUpperComponentRawMaterial").ToList();
+            };
         }
 
         public static List<OrdersModel> SelectByOutsoleMaterial()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByOutsoleMaterial").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByOutsoleMaterial").ToList();
+            };
         }
 
         public static List<OrdersModel> SelectByAssemblyMaster()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByAssemblyMaster").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByAssemblyMaster").ToList();
+            };
         }
 
         public static List<OrdersModel> SelectByOutsoleMaterialReject()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByOutsoleMaterialReject").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByOutsoleMaterialReject").ToList();
+            };
         }
 
         public static List<OrdersModel> SelectBySewingMaster()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersBySewingMaster").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersBySewingMaster").ToList();
+            };
         }
         
         public static OrdersModel SelectTop1(string productNo)
         {
             var @ProductNo = new SqlParameter("@ProductNo", productNo);
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByProductNo @ProductNo", @ProductNo).FirstOrDefault();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByProductNo @ProductNo", @ProductNo).FirstOrDefault();
+            };
         }
 
         public static List<OrdersModel> SelectByOutsoleReleaseMaterial(string reportId)
         {
             var @ReportId = new SqlParameter("@ReportId", reportId);
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
 
-            return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByOutsoleReleaseMaterialByReportId @ReportId", @ReportId).ToList();
+                return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByOutsoleReleaseMaterialByReportId @ReportId", @ReportId).ToList();
+            };
         }
 
         public static List<OrdersModel> SelectByOutsoleReleaseMaterialToWHInspection(string reportId)
@@ -111,73 +135,103 @@ namespace MasterSchedule.Controllers
         public static List<OrdersModel> SelectByAssemblyRelease(string reportId)
         {
             var @ReportId = new SqlParameter("@ReportId", reportId);
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
 
-            return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByAssemblyReleaseByReportId @ReportId", @ReportId).ToList();
+                return db.ExecuteStoreQuery<OrdersModel>("EXEC spm_SelectOrdersByAssemblyReleaseByReportId @ReportId", @ReportId).ToList();
+            };
         }
 
         public static bool Insert(OrdersModel model)
         {
-            var @ProductNo = new SqlParameter("@ProductNo", model.ProductNo);
-            var @ETD = new SqlParameter("@ETD", model.ETD);
-            var @ArticleNo = new SqlParameter("@ArticleNo", model.ArticleNo);
-            var @ShoeName = new SqlParameter("@ShoeName", model.ShoeName);
-            var @Quantity = new SqlParameter("@Quantity", model.Quantity);
-            var @PatternNo = new SqlParameter("@PatternNo", model.PatternNo);
-            var @MidsoleCode = new SqlParameter("@MidsoleCode", model.MidsoleCode);
-            var @OutsoleCode = new SqlParameter("@OutsoleCode", model.OutsoleCode);
-            var @LastCode = new SqlParameter("@LastCode", model.LastCode);
-            var @Country = new SqlParameter("@Country", model.Country);
-            var @GTNPONo = new SqlParameter("@GTNPONo", model.GTNPONo);
-            var @UCustomerCode = new SqlParameter("@UCustomerCode", model.UCustomerCode);
+            string computerName = "";
+            try { computerName = System.Environment.MachineName; }
+            catch { computerName = ""; }
 
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand("EXEC spm_InsertOrders_1 @ProductNo,@ETD,@ArticleNo,@ShoeName,@Quantity,@PatternNo,@MidsoleCode,@OutsoleCode,@LastCode,@Country,@GTNPONo,@UCustomerCode", @ProductNo, @ETD, @ArticleNo, @ShoeName, @Quantity, @PatternNo, @MidsoleCode, @OutsoleCode, @LastCode, @Country, @GTNPONo, @UCustomerCode) > 0)
+            var @ProductNo      = new SqlParameter("@ProductNo", model.ProductNo);
+            var @ETD            = new SqlParameter("@ETD", model.ETD);
+            var @ArticleNo      = new SqlParameter("@ArticleNo", model.ArticleNo);
+            var @ShoeName       = new SqlParameter("@ShoeName", model.ShoeName);
+            var @Quantity       = new SqlParameter("@Quantity", model.Quantity);
+            var @PatternNo      = new SqlParameter("@PatternNo", model.PatternNo);
+            var @MidsoleCode    = new SqlParameter("@MidsoleCode", model.MidsoleCode);
+            var @OutsoleCode    = new SqlParameter("@OutsoleCode", model.OutsoleCode);
+            var @LastCode       = new SqlParameter("@LastCode", model.LastCode);
+            var @Country        = new SqlParameter("@Country", model.Country);
+            var @GTNPONo        = new SqlParameter("@GTNPONo", model.GTNPONo);
+            var @UCustomerCode  = new SqlParameter("@UCustomerCode", model.UCustomerCode);
+            var @Reviser        = new SqlParameter("@Reviser", String.Format("{0}-{1}", model.Reviser, computerName));
+
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
-            }
-            return false;
+                if (db.ExecuteStoreCommand("EXEC spm_InsertOrders_2 @ProductNo, @ETD, @ArticleNo, @ShoeName, @Quantity, @PatternNo, @MidsoleCode, @OutsoleCode, @LastCode, @Country, @GTNPONo, @UCustomerCode, @Reviser",
+                                                                    @ProductNo, @ETD, @ArticleNo, @ShoeName, @Quantity, @PatternNo, @MidsoleCode, @OutsoleCode, @LastCode, @Country, @GTNPONo, @UCustomerCode, @Reviser) > 0)
+                {
+                    return true;
+                }
+                return false;
+            };
         }
 
-        public static bool Update(string productNo, bool isEnable)
+        public static bool Update(string productNo, bool isEnable, string reviser)
         {
+            string computerName = "";
+            try { computerName = System.Environment.MachineName; }
+            catch { computerName = ""; }
+
             var @ProductNo = new SqlParameter("@ProductNo", productNo);
             var @IsEnable = new SqlParameter("@IsEnable", isEnable);
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand("EXEC spm_UpdateOrdersOfIsEnable @ProductNo, @IsEnable", @ProductNo, @IsEnable) > 0)
-            {
-                return true;
-            }
-            return false;
+            var @Reviser = new SqlParameter("@Reviser", String.Format("{0}-{1}", reviser, computerName));
+
+            using (var db = new SaovietMasterScheduleEntities()) {
+                if (db.ExecuteStoreCommand("EXEC spm_UpdateOrdersOfIsEnable_1 @ProductNo, @IsEnable, @Reviser",
+                                                                          @ProductNo, @IsEnable, @Reviser) > 0)
+                {
+                    return true;
+                }
+                return false;
+            };
         }
 
         public static bool Update(OrdersModel model)
         {
-            var @ProductNo = new SqlParameter("@ProductNo", model.ProductNo);
-            var @GTNPONo = new SqlParameter("@GTNPONo", model.GTNPONo);
-            var @UCustomerCode = new SqlParameter("@UCustomerCode", model.UCustomerCode);
-            var @ETD = new SqlParameter("@ETD", model.ETD);
-            var @ArticleNo = new SqlParameter("@ArticleNo", model.ArticleNo);
-            var @ShoeName = new SqlParameter("@ShoeName", model.ShoeName);
-            var @Quantity = new SqlParameter("@Quantity", model.Quantity);
-            var @PatternNo = new SqlParameter("@PatternNo", model.PatternNo);
-            var @MidsoleCode = new SqlParameter("@MidsoleCode", model.MidsoleCode);
-            var @OutsoleCode = new SqlParameter("@OutsoleCode", model.OutsoleCode);
-            var @LastCode = new SqlParameter("@LastCode", model.LastCode);
-            var @Country = new SqlParameter("@Country", model.Country);
-            var @IsEnable = new SqlParameter("@IsEnable", model.IsEnable);
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand("EXEC spm_UpdateOrders_1 @ProductNo,@GTNPONo,@UCustomerCode,@ETD,@ArticleNo,@ShoeName,@Quantity,@PatternNo,@MidsoleCode,@OutsoleCode,@LastCode,@Country,@IsEnable", @ProductNo, @GTNPONo, @UCustomerCode, @ETD, @ArticleNo, @ShoeName, @Quantity, @PatternNo, @MidsoleCode, @OutsoleCode, @LastCode, @Country, @IsEnable) > 0)
+            string computerName = "";
+            try { computerName = System.Environment.MachineName; }
+            catch { computerName = ""; }
+
+            var @ProductNo      = new SqlParameter("@ProductNo", model.ProductNo);
+            var @GTNPONo        = new SqlParameter("@GTNPONo", model.GTNPONo);
+            var @UCustomerCode  = new SqlParameter("@UCustomerCode", model.UCustomerCode);
+            var @ETD            = new SqlParameter("@ETD", model.ETD);
+            var @ArticleNo      = new SqlParameter("@ArticleNo", model.ArticleNo);
+            var @ShoeName       = new SqlParameter("@ShoeName", model.ShoeName);
+            var @Quantity       = new SqlParameter("@Quantity", model.Quantity);
+            var @PatternNo      = new SqlParameter("@PatternNo", model.PatternNo);
+            var @MidsoleCode    = new SqlParameter("@MidsoleCode", model.MidsoleCode);
+            var @OutsoleCode    = new SqlParameter("@OutsoleCode", model.OutsoleCode);
+            var @LastCode       = new SqlParameter("@LastCode", model.LastCode);
+            var @Country        = new SqlParameter("@Country", model.Country);
+            var @IsEnable       = new SqlParameter("@IsEnable", model.IsEnable);
+            var @Reviser        = new SqlParameter("@Reviser", String.Format("{0}-{1}", model.Reviser, computerName));
+
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                if (db.ExecuteStoreCommand("EXEC spm_UpdateOrders_2 @ProductNo, @GTNPONo, @UCustomerCode, @ETD, @ArticleNo, @ShoeName, @Quantity, @PatternNo, @MidsoleCode, @OutsoleCode, @LastCode, @Country, @IsEnable, @Reviser",
+                                                                @ProductNo, @GTNPONo, @UCustomerCode, @ETD, @ArticleNo, @ShoeName, @Quantity, @PatternNo, @MidsoleCode, @OutsoleCode, @LastCode, @Country, @IsEnable, @Reviser) > 0)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
 
         public static bool Update(OrdersModel model, List<String> updateWhatList)
         {
             //var propertyList = typeof(OrdersModel).GetProperties().Select(s=>s.Name.ToString()).ToList();
+            string computerName = "";
+            try { computerName = System.Environment.MachineName; }
+            catch { computerName = ""; }
 
             var @ProductNo = new SqlParameter("@ProductNo", model.ProductNo);
 
@@ -236,40 +290,30 @@ namespace MasterSchedule.Controllers
             bool isUpdateUCustomerCode = updateWhatList.Contains("UCustomerCode");
             var @IsUpdateUCustomerCode = new SqlParameter("@IsUpdateUCustomerCode", isUpdateUCustomerCode);
 
+            var @Reviser = new SqlParameter("@Reviser", String.Format("{0}-{1}", model.Reviser, computerName));
+
             using (var db = new SaovietMasterScheduleEntities())
             {
-                if (db.ExecuteStoreCommand("EXEC spm_UpdateOrdersSpecify @ProductNo, @GTNPONo, @IsUpdateGTNPONo, @UCustomerCode, @IsUpdateUCustomerCode, @ETD, @IsUpdateETD, @ArticleNo, @IsUpdateArticleNo, @ShoeName, @IsUpdateShoeName, @Quantity, @IsUpdateQuantity, @PatternNo, @IsUpdatePatternNo, @MidsoleCode, @IsUpdateMidsoleCode, @OutsoleCode, @IsUpdateOutsoleCode, @LastCode ,@IsUpdateLastCode, @Country, @IsUpdateCountry",
-                                                                         @ProductNo, @GTNPONo, @IsUpdateGTNPONo, @UCustomerCode, @IsUpdateUCustomerCode, @ETD, @IsUpdateETD, @ArticleNo, @IsUpdateArticleNo, @ShoeName, @IsUpdateShoeName, @Quantity, @IsUpdateQuantity, @PatternNo, @IsUpdatePatternNo, @MidsoleCode, @IsUpdateMidsoleCode, @OutsoleCode, @IsUpdateOutsoleCode, @LastCode, @IsUpdateLastCode, @Country, @IsUpdateCountry) > 0)
+                if (db.ExecuteStoreCommand("EXEC spm_UpdateOrdersSpecify_1 @ProductNo, @GTNPONo, @IsUpdateGTNPONo, @UCustomerCode, @IsUpdateUCustomerCode, @ETD, @IsUpdateETD, @ArticleNo, @IsUpdateArticleNo, @ShoeName, @IsUpdateShoeName, @Quantity, @IsUpdateQuantity, @PatternNo, @IsUpdatePatternNo, @MidsoleCode, @IsUpdateMidsoleCode, @OutsoleCode, @IsUpdateOutsoleCode, @LastCode ,@IsUpdateLastCode, @Country, @IsUpdateCountry, @Reviser",
+                                                                           @ProductNo, @GTNPONo, @IsUpdateGTNPONo, @UCustomerCode, @IsUpdateUCustomerCode, @ETD, @IsUpdateETD, @ArticleNo, @IsUpdateArticleNo, @ShoeName, @IsUpdateShoeName, @Quantity, @IsUpdateQuantity, @PatternNo, @IsUpdatePatternNo, @MidsoleCode, @IsUpdateMidsoleCode, @OutsoleCode, @IsUpdateOutsoleCode, @LastCode, @IsUpdateLastCode, @Country, @IsUpdateCountry, @Reviser) > 0)
                 {
                     return true;
                 }
                 return false;
             };
         }
-        /*
-         @ProductNo,
-         @GTNPONo, @IsUpdateGTNPONo,
-         @UCustomerCode, @IsUpdateCustomerCode,
-         @ETD, @IsUpdateETD,
-	     @ArticleNo, @IsUpdateArticleNo,
-	    @ShoeName, @IsUpdateShoeName,
-	    @Quantity,@IsUpdateQuantity,
-	    @PatternNo ,@IsUpdatePatternNo,
-	    @MidsoleCode ,@IsUpdateMidsoleCode,
-	    @OutsoleCode ,@IsUpdateOutsoleCode,
-	    @LastCode ,@IsUpdateLastCode,
-	    @Country,@IsUpdateCountry
-         */
 
         public static bool Delete(string productNo)
         {
             var @ProductNo = new SqlParameter("@ProductNo", productNo);
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand("EXEC spm_DeleteOrders @ProductNo", @ProductNo) > 0)
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
-            }
-            return false;
+                if (db.ExecuteStoreCommand("EXEC spm_DeleteOrders @ProductNo", @ProductNo) > 0)
+                {
+                    return true;
+                }
+                return false;
+            };
         }
     }
 }

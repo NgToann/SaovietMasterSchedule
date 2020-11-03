@@ -26,7 +26,6 @@ namespace MasterSchedule.Views
         List<UpperComponentMaterialModel> upperComponentMaterialList;
         List<UpperComponentRawMaterialModel> upperComponentRawMaterialList;
         List<Int32> upperComponentIDShowInGridviewList;
-        List<RawMaterialModel> rawMaterialList;
 
         public UpperComponentWHDeliveryWindow()
         {

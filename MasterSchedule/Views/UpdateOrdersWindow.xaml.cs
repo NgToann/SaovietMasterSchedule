@@ -41,9 +41,10 @@ namespace MasterSchedule.Views
 
         BackgroundWorker bwSearchArticleNo;
         BackgroundWorker bwUpdateSizeMapByArticleNo;
-
-        public UpdateOrdersWindow()
+        AccountModel account;
+        public UpdateOrdersWindow(AccountModel account)
         {
+            this.account = account;
             bwSearch = new BackgroundWorker();
             bwSearch.DoWork += new DoWorkEventHandler(bwSearch_DoWork);
             bwSearch.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwSearch_RunWorkerCompleted);
@@ -171,6 +172,7 @@ namespace MasterSchedule.Views
                 this.Cursor = Cursors.Wait;
                 btnUpdateOrder.IsEnabled = false;
                 ordersToUpdate = dgOrder.Items.OfType<OrdersModel>().FirstOrDefault();
+                ordersToUpdate.Reviser = account.UserName;
                 bwUpdateOrders.RunWorkerAsync();
             }
         }
@@ -670,7 +672,7 @@ namespace MasterSchedule.Views
 
         private void btnUpdateCSDPatternNo_Click(object sender, RoutedEventArgs e)
         {
-            UpdateSpecifyOrderWindow window = new UpdateSpecifyOrderWindow();
+            UpdateSpecifyOrderWindow window = new UpdateSpecifyOrderWindow(account);
             window.Show();
         }
     }

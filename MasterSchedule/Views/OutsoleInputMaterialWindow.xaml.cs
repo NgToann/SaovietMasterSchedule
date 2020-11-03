@@ -1103,7 +1103,6 @@ namespace MasterSchedule.Views
                         var releasedBySize = releasePaintingListByDate.FirstOrDefault(f => f.SizeNo == sizeRun.SizeNo);
                         if (releasedBySize != null && releasedBySize.Quantity > 0)
                             dr[String.Format("Column{0}", i)] = releasedBySize.Quantity;
-
                     }
 
                     int totalReleasedByDate = releasePaintingListByDate.Sum(s => s.Quantity);

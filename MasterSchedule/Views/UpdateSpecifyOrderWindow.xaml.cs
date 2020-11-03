@@ -28,8 +28,10 @@ namespace MasterSchedule.Views
         List<OrdersModel> ordersToImportList;
 
         List<String> updateWhatList;
-        public UpdateSpecifyOrderWindow()
+        AccountModel acc;
+        public UpdateSpecifyOrderWindow(AccountModel acc)
         {
+            this.acc = acc;
             filePath = "";
             updateWhatList = new List<String>();
 
@@ -197,6 +199,7 @@ namespace MasterSchedule.Views
                             country = countryValue.ToString();
                         }
                         orders.Country = country;
+                        orders.Reviser = acc.UserName;
 
                         ordersList.Add(orders);
                     }

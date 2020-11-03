@@ -113,6 +113,7 @@
     <Compile Include="Controllers\OutsoleReleaseWHInspectionController.cs" />
     <Compile Include="Controllers\OutsoleWHFGController.cs" />
     <Compile Include="Controllers\PhaseController.cs" />
+    <Compile Include="Controllers\PrintSizeRunController.cs" />
     <Compile Include="Controllers\PrivateDefineController.cs" />
     <Compile Include="Controllers\ProductNoReviseController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
@@ -187,6 +188,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>OutsoleWHAccumulatingDataSet.xsd</DependentUpon>
     </Compile>
+    <Compile Include="DataSets\PrintSizeRunDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PrintSizeRunDataSet.xsd</DependentUpon>
+    </Compile>
     <Compile Include="DataSets\SewingSummaryDataset.cs">
       <DependentUpon>SewingSummaryDataset.xsd</DependentUpon>
     </Compile>
@@ -218,6 +224,7 @@
     <Compile Include="Models\OutsoleWHDeliveryReportModel.cs" />
     <Compile Include="Models\OutsoleWHFGModel.cs" />
     <Compile Include="Models\PhaseModel.cs" />
+    <Compile Include="Models\PrintSizeRunModel.cs" />
     <Compile Include="Models\PrivateDefineModel.cs" />
     <Compile Include="Models\ProductNoReviseModel.cs" />
     <Compile Include="Models\OutsoleMaterialReleasePaintingModel.cs" />
@@ -380,6 +387,12 @@
     </Compile>
     <Compile Include="Views\PopupOSWHRejectWindow.xaml.cs">
       <DependentUpon>PopupOSWHRejectWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PrintSizeRunReportWindow.xaml.cs">
+      <DependentUpon>PrintSizeRunReportWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PrintSizeRunWindow.xaml.cs">
+      <DependentUpon>PrintSizeRunWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SockliningInputWindow.xaml.cs">
       <DependentUpon>SockliningInputWindow.xaml</DependentUpon>
@@ -979,6 +992,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\PrintSizeRunReportWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PrintSizeRunWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\SockliningInputWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1250,6 +1271,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Reports\OutsoleWHInventoryDetailReport.rdlc" />
+    <EmbeddedResource Include="Reports\PrinSizeRunReport.rdlc" />
     <EmbeddedResource Include="Reports\SewingScheduleDelayReport.rdlc" />
     <EmbeddedResource Include="Reports\SockliningMasterReport.rdlc">
       <SubType>Designer</SubType>
@@ -1461,6 +1483,17 @@
     </None>
     <None Include="DataSets\DelayDataSet.xss">
       <DependentUpon>DelayDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="DataSets\PrintSizeRunDataSet.xsc">
+      <DependentUpon>PrintSizeRunDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="DataSets\PrintSizeRunDataSet.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>PrintSizeRunDataSet.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="DataSets\PrintSizeRunDataSet.xss">
+      <DependentUpon>PrintSizeRunDataSet.xsd</DependentUpon>
     </None>
     <None Include="DataSets\SewingSummaryDataset.xsc">
       <DependentUpon>SewingSummaryDataset.xsd</DependentUpon>
@@ -1734,6 +1767,7 @@
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OutSoleWHInventoryDetailDataSet+OutSoleWHInventoryDetailTableRowChangeEvent.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OutSoleWHInventoryDetailDataSet+OutSoleWHInventoryDetailTableRowChangeEventHandler.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OutSoleWHInventoryDetailDataSet.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.PrintSizeRunDataSet.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.SewingMasterDataSet+SewingMasterTableDataTable.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.SewingMasterDataSet+SewingMasterTableRow.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.SewingMasterDataSet+SewingMasterTableRowChangeEvent.datasource" />

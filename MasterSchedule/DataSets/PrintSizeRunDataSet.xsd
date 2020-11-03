@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="PrintSizeRunDataSet" targetNamespace="http://tempuri.org/PrintSizeRunDataSet.xsd" xmlns:mstns="http://tempuri.org/PrintSizeRunDataSet.xsd" xmlns="http://tempuri.org/PrintSizeRunDataSet.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="PrintSizeRunDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="PrintSizeRunDataSet" msprop:Generator_UserDSName="PrintSizeRunDataSet">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="PrintSizeRunDataTable" msprop:Generator_TableClassName="PrintSizeRunDataTableDataTable" msprop:Generator_TableVarName="tablePrintSizeRunDataTable" msprop:Generator_RowChangedName="PrintSizeRunDataTableRowChanged" msprop:Generator_TablePropName="PrintSizeRunDataTable" msprop:Generator_RowDeletingName="PrintSizeRunDataTableRowDeleting" msprop:Generator_RowChangingName="PrintSizeRunDataTableRowChanging" msprop:Generator_RowEvHandlerName="PrintSizeRunDataTableRowChangeEventHandler" msprop:Generator_RowDeletedName="PrintSizeRunDataTableRowDeleted" msprop:Generator_RowClassName="PrintSizeRunDataTableRow" msprop:Generator_UserTableName="PrintSizeRunDataTable" msprop:Generator_RowEvArgName="PrintSizeRunDataTableRowChangeEvent">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ProductNo" msprop:Generator_ColumnVarNameInTable="columnProductNo" msprop:Generator_ColumnPropNameInRow="ProductNo" msprop:Generator_ColumnPropNameInTable="ProductNoColumn" msprop:Generator_UserColumnName="ProductNo" type="xs:string" minOccurs="0" />
+              <xs:element name="SizeNo" msprop:Generator_ColumnVarNameInTable="columnSizeNo" msprop:Generator_ColumnPropNameInRow="SizeNo" msprop:Generator_ColumnPropNameInTable="SizeNoColumn" msprop:Generator_UserColumnName="SizeNo" type="xs:string" minOccurs="0" />
+              <xs:element name="SizeNoDouble" msprop:Generator_ColumnVarNameInTable="columnSizeNoDouble" msprop:Generator_ColumnPropNameInRow="SizeNoDouble" msprop:Generator_ColumnPropNameInTable="SizeNoDoubleColumn" msprop:Generator_UserColumnName="SizeNoDouble" type="xs:double" minOccurs="0" />
+              <xs:element name="Quantity" msprop:Generator_ColumnVarNameInTable="columnQuantity" msprop:Generator_ColumnPropNameInRow="Quantity" msprop:Generator_ColumnPropNameInTable="QuantityColumn" msprop:Generator_UserColumnName="Quantity" type="xs:string" minOccurs="0" />
+              <xs:element name="EFD" msprop:Generator_ColumnVarNameInTable="columnEFD" msprop:Generator_ColumnPropNameInRow="EFD" msprop:Generator_ColumnPropNameInTable="EFDColumn" msprop:Generator_UserColumnName="EFD" type="xs:string" minOccurs="0" />
+              <xs:element name="SewingStartDate" msprop:Generator_ColumnVarNameInTable="columnSewingStartDate" msprop:Generator_ColumnPropNameInRow="SewingStartDate" msprop:Generator_ColumnPropNameInTable="SewingStartDateColumn" msprop:Generator_UserColumnName="SewingStartDate" type="xs:string" minOccurs="0" />
+              <xs:element name="OutsoleSize" msprop:Generator_ColumnVarNameInTable="columnOutsoleSize" msprop:Generator_ColumnPropNameInRow="OutsoleSize" msprop:Generator_ColumnPropNameInTable="OutsoleSizeColumn" msprop:Generator_UserColumnName="OutsoleSize" type="xs:string" minOccurs="0" />
+              <xs:element name="MidsoleSize" msprop:Generator_ColumnVarNameInTable="columnMidsoleSize" msprop:Generator_ColumnPropNameInRow="MidsoleSize" msprop:Generator_ColumnPropNameInTable="MidsoleSizeColumn" msprop:Generator_UserColumnName="MidsoleSize" type="xs:string" minOccurs="0" />
+              <xs:element name="ShoeName" msprop:Generator_ColumnVarNameInTable="columnShoeName" msprop:Generator_ColumnPropNameInRow="ShoeName" msprop:Generator_ColumnPropNameInTable="ShoeNameColumn" msprop:Generator_UserColumnName="ShoeName" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

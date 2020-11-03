@@ -13,9 +13,6 @@ using MasterSchedule.Controllers;
 
 namespace MasterSchedule.Views
 {
-    /// <summary>
-    /// Interaction logic for UpdateMachineWindow.xaml
-    /// </summary>
     public partial class EditMachineWindow : Window
     {
         MachineViewModel machineClicked;
@@ -30,15 +27,15 @@ namespace MasterSchedule.Views
         {
             this.machineClicked = machineClicked;
 
-            bwLoad = new BackgroundWorker();
-            bwLoad.DoWork += new DoWorkEventHandler(bwLoad_DoWork);
-            bwLoad.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwLoad_RunWorkerCompleted);
+            bwLoad                      = new BackgroundWorker();
+            bwLoad.DoWork               += new DoWorkEventHandler(bwLoad_DoWork);
+            bwLoad.RunWorkerCompleted   += new RunWorkerCompletedEventHandler(bwLoad_RunWorkerCompleted);
 
-            bwDo = new BackgroundWorker();
-            bwDo.DoWork += BwDo_DoWork;
+            bwDo                    = new BackgroundWorker();
+            bwDo.DoWork             += BwDo_DoWork;
             bwDo.RunWorkerCompleted += BwDo_RunWorkerCompleted;
 
-            phaseList = new List<PhaseModel>();
+            phaseList   = new List<PhaseModel>();
             machineList = new List<MachineModel>();
             InitializeComponent();
         }
@@ -75,7 +72,6 @@ namespace MasterSchedule.Views
             {
                 var model = new MachineModel();
                 ConvertViewModelToModel(machineClicked, model);
-                // dont understand the reason why it not get the phaseselected from machineclicked viewmodel ?
                 model.PhaseSelected = phaseList.FirstOrDefault(f => f.PhaseID == machineClicked.PhaseSelected.PhaseID);
                 gridMain.DataContext = model;
                 this.Title = "Master Schedule - Update Machine";
@@ -84,14 +80,14 @@ namespace MasterSchedule.Views
             }
             else
             {
-                var newModel = new MachineModel();
-                newModel.IsMachine = true;
-                newModel.PhaseSelected = phaseList.FirstOrDefault();
-                newModel.MachineID = machineList.Max(m => m.MachineID) + 1;
-                gridMain.DataContext = newModel;
-                this.Title = "Master Schedule - Add New Machine";
-                btnUpdate.Content = "Add";
-                excuteMode = EExcute.AddNew;
+                var newModel            = new MachineModel();
+                newModel.IsMachine      = true;
+                newModel.PhaseSelected  = phaseList.FirstOrDefault();
+                newModel.MachineID      = machineList.Max(m => m.MachineID) + 1;
+                gridMain.DataContext    = newModel;
+                this.Title              = "Master Schedule - Add New Machine";
+                btnUpdate.Content       = "Add";
+                excuteMode              = EExcute.AddNew;
             }
             this.Cursor = null;
         }

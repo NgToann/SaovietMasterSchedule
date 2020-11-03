@@ -94,5 +94,7 @@ namespace MasterSchedule.Models
         public bool IsUpdateHuasenCutB { get; set; }
         public bool IsUpdateComelzCutA { get; set; }
         public bool IsUpdateComelzCutB { get; set; }
+
+        public string Reviser { get; set; }
     }
 }

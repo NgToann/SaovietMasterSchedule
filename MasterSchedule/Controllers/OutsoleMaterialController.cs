@@ -12,70 +12,85 @@ namespace MasterSchedule.Controllers
     {
         public static List<OutsoleMaterialModel> Select()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OutsoleMaterialModel>("EXEC spm_SelectOutsoleMaterial_1").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleMaterialModel>("EXEC spm_SelectOutsoleMaterial_1").ToList();
+            }
         }
 
         public static List<OutsoleMaterialModel> SelectReject()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OutsoleMaterialModel>("EXEC spm_SelectOutsoleMaterialReject").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleMaterialModel>("EXEC spm_SelectOutsoleMaterialReject").ToList();
+            }
         }
 
         public static List<OutsoleMaterialModel> Select(string productNo)
         {
             var @ProductNo = new SqlParameter("@ProductNo", productNo);
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OutsoleMaterialModel>("EXEC spm_SelectOutsoleMaterialByProductNo @ProductNo", @ProductNo).ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleMaterialModel>("EXEC spm_SelectOutsoleMaterialByProductNo @ProductNo", @ProductNo).ToList();
+            }
         }
 
         // IsEnable = 1
         public static List<OutsoleMaterialModel> SelectByOutsoleRawMaterial()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OutsoleMaterialModel>("EXEC spm_SelectOutsoleMaterialByOutsoleRawMaterial").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleMaterialModel>("EXEC spm_SelectOutsoleMaterialByOutsoleRawMaterial").ToList();
+            }
         }
 
         // IsEnable = 0 || 1
         public static List<OutsoleMaterialModel> SelectByOutsoleRawMaterialFull(DateTime etdStart, DateTime etdEnd)
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
             var @ETDStart = new SqlParameter("@ETDStart", etdStart);
             var @ETDEnd = new SqlParameter("@ETDEnd", etdEnd);
-            return db.ExecuteStoreQuery<OutsoleMaterialModel>("EXEC spm_SelectOutsoleMaterialByOutsoleRawMaterialFull @ETDStart, @ETDEnd", ETDStart, ETDEnd).ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleMaterialModel>("EXEC spm_SelectOutsoleMaterialByOutsoleRawMaterialFull @ETDStart, @ETDEnd", ETDStart, ETDEnd).ToList();
+            }
         }
 
         public static List<OutsoleMaterialModel> SelectByOutsoleReleaseMaterial(string reportId)
         {
             var @ReportId = new SqlParameter("@ReportId", reportId);
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-
-            return db.ExecuteStoreQuery<OutsoleMaterialModel>("EXEC spm_SelectOutsoleMaterialByOutsoleReleaseMaterialByReportId @ReportId", @ReportId).ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleMaterialModel>("EXEC spm_SelectOutsoleMaterialByOutsoleReleaseMaterialByReportId @ReportId", @ReportId).ToList();
+            }
         }
 
         public static List<OutsoleMaterialModel> SelectByOutsoleReleaseMaterialToWHInspection(string reportId)
         {
             var @ReportId = new SqlParameter("@ReportId", reportId);
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OutsoleMaterialModel>("EXEC spm_SelectOutsoleMaterialByOutsoleReleaseMaterialToWHInspectionByReportId @ReportId", @ReportId).ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleMaterialModel>("EXEC spm_SelectOutsoleMaterialByOutsoleReleaseMaterialToWHInspectionByReportId @ReportId", @ReportId).ToList();
+            }
         }
 
         public static bool Insert(OutsoleMaterialModel model)
         {
-            var @ProductNo = new SqlParameter("@ProductNo", model.ProductNo);
-            var @OutsoleSupplierId = new SqlParameter("@OutsoleSupplierId", model.OutsoleSupplierId);
-            var @SizeNo = new SqlParameter("@SizeNo", model.SizeNo);
-            var @Quantity = new SqlParameter("@Quantity", model.Quantity);
-            var @QuantityReject = new SqlParameter("@QuantityReject", model.QuantityReject);
-            var @RejectAssembly = new SqlParameter("@RejectAssembly", model.RejectAssembly);
+            var @ProductNo          = new SqlParameter("@ProductNo", model.ProductNo);
+            var @OutsoleSupplierId  = new SqlParameter("@OutsoleSupplierId", model.OutsoleSupplierId);
+            var @SizeNo             = new SqlParameter("@SizeNo", model.SizeNo);
+            var @Quantity           = new SqlParameter("@Quantity", model.Quantity);
+            var @QuantityReject     = new SqlParameter("@QuantityReject", model.QuantityReject);
+            var @RejectAssembly     = new SqlParameter("@RejectAssembly", model.RejectAssembly);
 
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-
-            if (db.ExecuteStoreCommand("EXEC spm_InsertOutsoleMaterial_3 @ProductNo,@OutsoleSupplierId,@SizeNo,@Quantity,@QuantityReject,@RejectAssembly", @ProductNo, @OutsoleSupplierId, @SizeNo, @Quantity, @QuantityReject, @RejectAssembly) >= 1)
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                if (db.ExecuteStoreCommand("EXEC spm_InsertOutsoleMaterial_3    @ProductNo, @OutsoleSupplierId, @SizeNo, @Quantity, @QuantityReject, @RejectAssembly",
+                                                                                @ProductNo, @OutsoleSupplierId, @SizeNo, @Quantity, @QuantityReject, @RejectAssembly) >= 1)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
         public static bool UpdateRejectFromOutsoleMaterialDetail(OutsoleMaterialModel model)
@@ -85,13 +100,15 @@ namespace MasterSchedule.Controllers
             var @SizeNo = new SqlParameter("@SizeNo", model.SizeNo);
             var @QuantityReject = new SqlParameter("@QuantityReject", model.QuantityReject);
 
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-
-            if (db.ExecuteStoreCommand("EXEC spm_UpdateOutsoleMaterialFromOutsoleMaterialDetail @ProductNo,@OutsoleSupplierId,@SizeNo,@QuantityReject", @ProductNo, @OutsoleSupplierId, @SizeNo, @QuantityReject) >= 1)
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                if (db.ExecuteStoreCommand("EXEC spm_UpdateOutsoleMaterialFromOutsoleMaterialDetail @ProductNo, @OutsoleSupplierId, @SizeNo, @QuantityReject", 
+                                                                                                    @ProductNo, @OutsoleSupplierId, @SizeNo, @QuantityReject) >= 1)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
         /// <summary>
@@ -117,14 +134,15 @@ namespace MasterSchedule.Controllers
             var @UpdateRejectAssembly = new SqlParameter("@UpdateRejectAssembly", updateRejectAssembly);
             var @UpdateRejectStockfit = new SqlParameter("@UpdateRejectStockfit", updateRejectStockfit);
 
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-
-            if (db.ExecuteStoreCommand("EXEC spm_UpdateOutsoleMaterial_2 @ProductNo, @OutsoleSupplierId, @SizeNo, @Quantity, @QuantityReject, @RejectAssembly, @RejectStockfit, @UpdateReject, @UpdateQuantity, @UpdateRejectAssembly, @UpdateRejectStockfit", 
-                                                                         @ProductNo, @OutsoleSupplierId, @SizeNo, @Quantity, @QuantityReject, @RejectAssembly, @RejectStockfit, @UpdateReject, @UpdateQuantity, @UpdateRejectAssembly, @UpdateRejectStockfit) >= 1)
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                if (db.ExecuteStoreCommand("EXEC spm_UpdateOutsoleMaterial_2    @ProductNo, @OutsoleSupplierId, @SizeNo, @Quantity, @QuantityReject, @RejectAssembly, @RejectStockfit, @UpdateReject, @UpdateQuantity, @UpdateRejectAssembly, @UpdateRejectStockfit",
+                                                                                @ProductNo, @OutsoleSupplierId, @SizeNo, @Quantity, @QuantityReject, @RejectAssembly, @RejectStockfit, @UpdateReject, @UpdateQuantity, @UpdateRejectAssembly, @UpdateRejectStockfit) >= 1)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
     }
 }

@@ -59,8 +59,7 @@ namespace MasterSchedule
             if (configSection.SectionInformation.IsProtected == false)
             {
                 //Uses the Windows Data Protection API (DPAPI) to encrypt the configuration section using a machine-specific secret key.
-                configSection.SectionInformation.ProtectSection(
-                    "DataProtectionConfigurationProvider");
+                configSection.SectionInformation.ProtectSection("DataProtectionConfigurationProvider");
                 config.Save();
             }
 

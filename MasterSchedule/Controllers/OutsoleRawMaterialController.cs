@@ -15,26 +15,28 @@ namespace MasterSchedule.Controllers
             var @ProductNo = new SqlParameter("@ProductNo", model.ProductNo);
             var @OutsoleSupplierId = new SqlParameter("@OutsoleSupplierId", model.OutsoleSupplierId);
             var @ETD = new SqlParameter("@ETD", model.ETD);
-
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand("EXEC spm_InsertOutsoleRawMaterial @ProductNo, @OutsoleSupplierId, @ETD", @ProductNo, @OutsoleSupplierId, @ETD) > 0)
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                if (db.ExecuteStoreCommand("EXEC spm_InsertOutsoleRawMaterial @ProductNo, @OutsoleSupplierId, @ETD", @ProductNo, @OutsoleSupplierId, @ETD) > 0)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
         public static bool Delete(string productNo, int outsoleSupplierId)
         {
             var @ProductNo = new SqlParameter("@ProductNo", productNo);
             var @OutsoleSupplierId = new SqlParameter("@OutsoleSupplierId", outsoleSupplierId);
-
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand("EXEC spm_DeleteOutsoleRawMaterial @ProductNo, @OutsoleSupplierId", @ProductNo, @OutsoleSupplierId) > 0)
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                if (db.ExecuteStoreCommand("EXEC spm_DeleteOutsoleRawMaterial @ProductNo, @OutsoleSupplierId", @ProductNo, @OutsoleSupplierId) > 0)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
         public static bool UpdateActualDate(OutsoleRawMaterialModel model)
@@ -42,37 +44,43 @@ namespace MasterSchedule.Controllers
             var @ProductNo = new SqlParameter("@ProductNo", model.ProductNo);
             var @OutsoleSupplierId = new SqlParameter("@OutsoleSupplierId", model.OutsoleSupplierId);
             var @ActualDate = new SqlParameter("@ActualDate", model.ActualDate);
-
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand("EXEC spm_UpdateOutsoleRawMaterialActualDate @ProductNo, @OutsoleSupplierId, @ActualDate", @ProductNo, @OutsoleSupplierId, @ActualDate) > 0)
+            using (var db = new SaovietMasterScheduleEntities())
             {
-                return true;
+                if (db.ExecuteStoreCommand("EXEC spm_UpdateOutsoleRawMaterialActualDate @ProductNo, @OutsoleSupplierId, @ActualDate", @ProductNo, @OutsoleSupplierId, @ActualDate) > 0)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
         // IsEnable = 1
         public static List<OutsoleRawMaterialModel> Select()
-        {            
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OutsoleRawMaterialModel>("EXEC spm_SelectOutsoleRawMaterial").ToList();
+        {
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleRawMaterialModel>("EXEC spm_SelectOutsoleRawMaterial").ToList();
+            }
         }
 
         // IsEnable = 1 || 0
         public static List<OutsoleRawMaterialModel> SelectFull (DateTime etdStart, DateTime etdEnd)
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-
             var @ETDStart = new SqlParameter("@ETDStart", etdStart);
             var @ETDEnd = new SqlParameter("@ETDEnd", etdEnd);
-            return db.ExecuteStoreQuery<OutsoleRawMaterialModel>("EXEC spm_SelectOutsoleRawMaterialFull @ETDStart, @ETDEnd", ETDStart, ETDEnd).ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleRawMaterialModel>("EXEC spm_SelectOutsoleRawMaterialFull @ETDStart, @ETDEnd", ETDStart, ETDEnd).ToList();
+            }
         }
 
         public static List<OutsoleRawMaterialModel> Select(string productNo)
         {
             var @ProductNo = new SqlParameter("@ProductNo", productNo);
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OutsoleRawMaterialModel>("EXEC spm_SelectOutsoleRawMaterialByProductNo @ProductNo", @ProductNo).ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleRawMaterialModel>("EXEC spm_SelectOutsoleRawMaterialByProductNo @ProductNo", @ProductNo).ToList();
+            }
         }
 
         public static bool IsFull(List<SizeRunModel> sizeRunList, List<OutsoleRawMaterialModel> outsoleRawMaterialList, List<OutsoleMaterialModel> outsoleMaterialList)
@@ -96,8 +104,10 @@ namespace MasterSchedule.Controllers
         public static List<OutsoleRawMaterialModel> SelectOutsoleRawMaterialNotInOutsoleMaterial(string productNo)
         {
             var @ProductNo = new SqlParameter("@ProductNo", productNo);
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            return db.ExecuteStoreQuery<OutsoleRawMaterialModel>("EXEC spm_SelectOutsoleRawMaterialNotInOutSoleMaterial @ProductNo", @ProductNo).ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleRawMaterialModel>("EXEC spm_SelectOutsoleRawMaterialNotInOutSoleMaterial @ProductNo", @ProductNo).ToList();
+            }
         }
     }
 }

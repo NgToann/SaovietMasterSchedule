@@ -1,18 +1,14 @@
-﻿using System;
+﻿using MasterSchedule.Models;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Media;
-
-using MasterSchedule.Models;
-using MasterSchedule.Controllers;
-using System.Data;
-using System.ComponentModel;
 using System.Windows.Input;
-using MasterSchedule.ViewModels;
+using System.Windows.Media;
 namespace MasterSchedule.Views
 {
     /// <summary>
@@ -27,25 +23,22 @@ namespace MasterSchedule.Views
         List<OutsoleSuppliersModel> outsoleSupplierList;
         List<AssemblyReleaseModel> assemblyReleaseList;
         List<OutsoleOutputModel> outsoleOutputList;
-        //OutsoleWHInventoryViewModel osWHInventory;
         BackgroundWorker bwLoad;
         bool viewByOutsoleLine;
 
         public OutsoleWHInventoryDetailWindow(List<String> productNoList, List<OrdersModel> orderList, List<OutsoleReleaseMaterialModel> outsoleReleaseMaterialList, List<OutsoleSuppliersModel> outsoleSupplierList, List<OutsoleMaterialModel> outsoleMaterialList, List<AssemblyReleaseModel> assemblyReleaseList, List<OutsoleOutputModel> outsoleOutputList, bool viewByOutsoleLine)
-        //public OutsoleWHInventoryDetailWindow(OutsoleWHInventoryViewModel osWHInventory)
         {
-            this.productNoList = productNoList;
-            this.orderList = orderList;
-            this.outsoleMaterialList = outsoleMaterialList;
+            this.productNoList              = productNoList;
+            this.orderList                  = orderList;
+            this.outsoleMaterialList        = outsoleMaterialList;
             this.outsoleReleaseMaterialList = outsoleReleaseMaterialList;
-            this.outsoleSupplierList = outsoleSupplierList;
-            this.assemblyReleaseList = assemblyReleaseList;
-            this.outsoleOutputList = outsoleOutputList;
-            this.viewByOutsoleLine = viewByOutsoleLine;
-            //this.osWHInventory = osWHInventory;
+            this.outsoleSupplierList        = outsoleSupplierList;
+            this.assemblyReleaseList        = assemblyReleaseList;
+            this.outsoleOutputList          = outsoleOutputList;
+            this.viewByOutsoleLine          = viewByOutsoleLine;
 
-            bwLoad = new BackgroundWorker();
-            bwLoad.DoWork += new DoWorkEventHandler(bwLoad_DoWork);
+            bwLoad          = new BackgroundWorker();
+            bwLoad.DoWork   += new DoWorkEventHandler(bwLoad_DoWork);
             bwLoad.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwLoad_RunWorkerCompleted);
 
             InitializeComponent();
@@ -82,7 +75,6 @@ namespace MasterSchedule.Views
                 DataGridTextColumn column1_1_1 = new DataGridTextColumn();
                 column1_1_1.Header = "Article No.";
                 column1_1_1.Binding = new Binding("ArticleNo");
-                //column1_1_1.FontWeight = FontWeights.Bold;
                 dgInventory.Columns.Add(column1_1_1);
                 Binding bindingWidth1_1_1 = new Binding();
                 bindingWidth1_1_1.Source = column1_1_1;
@@ -107,7 +99,6 @@ namespace MasterSchedule.Views
                     baseColumn = 0;
                     column_OutsoleCode.Visibility = Visibility.Collapsed;
                 }
-                //column_OutsoleCode.Width = 0;
                 else
                 {
                     baseColumn = 1;
@@ -136,9 +127,7 @@ namespace MasterSchedule.Views
                 column1_2.Header = "Quantity";
                 Binding bindingQuantity = new Binding();
                 bindingQuantity.Path = new PropertyPath("Quantity");
-                //binding.StringFormat = "dd-MMM";
                 column1_2.Binding = bindingQuantity;
-                //column1_2.FontWeight = FontWeights.Bold;
                 dgInventory.Columns.Add(column1_2);
                 Binding bindingWidth1_2 = new Binding();
                 bindingWidth1_2.Source = column1_2;
@@ -152,9 +141,7 @@ namespace MasterSchedule.Views
                 column1_3.Header = "Release";
                 Binding bindingRelease = new Binding();
                 bindingRelease.Path = new PropertyPath("Release");
-                //binding.StringFormat = "dd-MMM";
                 column1_3.Binding = bindingRelease;
-                //column1_2.FontWeight = FontWeights.Bold;
                 dgInventory.Columns.Add(column1_3);
                 Binding bindingWidth1_3 = new Binding();
                 bindingWidth1_3.Source = column1_3;
@@ -168,7 +155,6 @@ namespace MasterSchedule.Views
                     OutsoleSuppliersModel outsoleSupplier = outsoleSupplierList[i];
                     dt.Columns.Add(String.Format("Column{0}", i), typeof(Int32));
                     DataGridTextColumn column = new DataGridTextColumn();
-                    //column.SetValue(TagProperty, sizeRun.SizeNo);
                     column.Header = outsoleSupplier.Name;
                     column.Binding = new Binding(String.Format("Column{0}", i));
 
@@ -228,9 +214,6 @@ namespace MasterSchedule.Views
 
                 foreach (string productNo in productNoList)
                 {
-                    //var outsoleMaterialDetailPerPOList = OutsoleMaterialDetailController.Select(productNo).ToList();
-                    //List<OutsoleMaterialModel> outsoleMaterialList_D1 = outsoleMaterialList.Where(o => o.ProductNo == productNo).ToList();
-                    //List<OutsoleReleaseMaterialModel> outsoleReleaseMaterialList_D1 = outsoleReleaseMaterialList.Where(o => o.ProductNo == productNo).ToList();
                     var outsoleMaterialListByPO = outsoleMaterialList.Where(w => w.ProductNo == productNo).ToList();
                     var outsoleOutputListByPO = outsoleOutputList.Where(w => w.ProductNo == productNo).ToList();
                     var assemblyReleaseListByPO = assemblyReleaseList.Where(w => w.ProductNo == productNo).ToList();
@@ -251,17 +234,16 @@ namespace MasterSchedule.Views
                     int qtyMaterialTotalToCheck = 0;
                     for (int i = 0; i <= outsoleSupplierList.Count - 1; i++)
                     {
-                        OutsoleSuppliersModel supplier = outsoleSupplierList[i];
-                        //List<OutsoleMaterialModel> outsoleMaterialList_D2 = outsoleMaterialList_D1.Where(o => o.OutsoleSupplierId == outsoleSupplier.OutsoleSupplierId).ToList();
+                        var supplier = outsoleSupplierList[i];
                         var outsoleMaterialListBySupp = outsoleMaterialListByPO.Where(w => w.OutsoleSupplierId == supplier.OutsoleSupplierId).ToList();
+                        if (outsoleMaterialListBySupp.Count() == 0)
+                            continue;
 
                         int qtyMaterialTotal = 0;
                         int qtyReleaseTotal = 0;
                         foreach (string sizeNo in sizeNoList)
                         {
-                            //int qtyMax = outsoleMaterialList_D2.Where(o => o.SizeNo == sizeNo).Sum(o => (o.Quantity - o.QuantityReject));
                             int qtyDelivery = outsoleMaterialListBySupp.Where(w => w.SizeNo == sizeNo).Sum(s => s.Quantity - s.QuantityReject);
-                            //int qtyRelease = outsoleReleaseMaterialList_D1.Where(o => o.SizeNo == sizeNo).Sum(o => o.Quantity);
                             int qtyRelease = outsoleReleaseListByPO.Where(o => o.SizeNo == sizeNo).Sum(o => o.Quantity);
 
                             int qtyMaterial = qtyDelivery - qtyRelease;
@@ -275,16 +257,6 @@ namespace MasterSchedule.Views
                         }
                         dr["Release"] = qtyReleaseTotal;
                         dr[String.Format("Column{0}", i)] = qtyMaterialTotal;
-
-                        //var outsoleMaterialDetailPerPOPerSupplierList = outsoleMaterialDetailPerPOList.Where(w => w.OutsoleSupplierId == outsoleSupplierList[i].OutsoleSupplierId).ToList();
-                        //if (outsoleMaterialDetailPerPOPerSupplierList.Count > 0)
-                        //{
-                        //    int qtyMaterialDetail = outsoleMaterialDetailPerPOPerSupplierList.Sum(s => s.Quantity);
-                        //    if (qtyMaterialDetail != 0 && qtyMaterialDetail < order.Quantity)
-                        //        dr[String.Format("Column{0}Background", i)] = Brushes.Yellow;
-                        //    if (qtyMaterialDetail != 0 && qtyMaterialDetail >= order.Quantity)
-                        //        dr[String.Format("Column{0}Background", i)] = Brushes.Green;
-                        //}
                     }
                     int qtyMatchingTotal = 0;
                     foreach (string sizeNo in sizeNoList)
@@ -304,7 +276,6 @@ namespace MasterSchedule.Views
                     int finishedOutsole = osOutput - assRelease;
                     dr["FinishedOutsole"] = finishedOutsole > 0 ? finishedOutsole : 0;
 
-                    //if (qtyMaterialTotalToCheck != 0)
                     if (finishedOutsole == 0 && qtyMatchingTotal == 0 && qtyMaterialTotalToCheck == 0)
                         continue;
                     dt.Rows.Add(dr);

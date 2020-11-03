@@ -976,7 +976,7 @@ namespace MasterSchedule.Views
         {
             foreach (var model in rawMaterialViewToRemoveList)
             {
-                OrdersController.Update(model.ProductNo, false);
+                OrdersController.Update(model.ProductNo, false, account.UserName);
             }
         }
 

@@ -1877,36 +1877,36 @@ namespace MasterSchedule.Views
 
                 model.IsSequenceUpdate = isSequenceEditing;
 
-                model.IsSewingLineUpdate = sewingLineUpdateList.Contains(productNo);
-                model.IsSewingStartDateUpdate = lineSewingEditingList.Contains(sewingLine);
-                model.IsSewingFinishDateUpdate = lineSewingEditingList.Contains(sewingLine);
-                model.IsSewingQuotaUpdate = sewingQuotaUpdateList.Contains(productNo);
+                model.IsSewingLineUpdate                    = sewingLineUpdateList.Contains(productNo);
+                model.IsSewingStartDateUpdate               = lineSewingEditingList.Contains(sewingLine);
+                model.IsSewingFinishDateUpdate              = lineSewingEditingList.Contains(sewingLine);
+                model.IsSewingQuotaUpdate                   = sewingQuotaUpdateList.Contains(productNo);
 
-                model.IsSewingPrepUpdate = sewingPrepUpdateList.Contains(productNo);
+                model.IsSewingPrepUpdate                    = sewingPrepUpdateList.Contains(productNo);
 
-                model.IsSewingActualStartDateUpdate = sewingActualStartDateUpdateList.Contains(productNo);
-                model.IsSewingActualFinishDateUpdate = sewingActualFinishDateUpdateList.Contains(productNo);
+                model.IsSewingActualStartDateUpdate         = sewingActualStartDateUpdateList.Contains(productNo);
+                model.IsSewingActualFinishDateUpdate        = sewingActualFinishDateUpdateList.Contains(productNo);
 
-                model.IsSewingActualStartDateAutoUpdate = sewingActualStartDateUpdateAutoList.Contains(productNo);
-                model.IsSewingActualFinishDateAutoUpdate = sewingActualFinishDateUpdateAutoList.Contains(productNo);
+                model.IsSewingActualStartDateAutoUpdate     = sewingActualStartDateUpdateAutoList.Contains(productNo);
+                model.IsSewingActualFinishDateAutoUpdate    = sewingActualFinishDateUpdateAutoList.Contains(productNo);
 
-                model.IsSewingBalanceUpdate = sewingBalanceUpdateList.Contains(productNo);
+                model.IsSewingBalanceUpdate         = sewingBalanceUpdateList.Contains(productNo);
 
-                model.IsCutAStartDateUpdate = lineCutPrepEditingList.Contains(sewingLine);
-                model.IsCutAFinishDateUpdate = lineCutPrepEditingList.Contains(sewingLine);
-                model.IsCutAQuotaUpdate = cutAQuotaUpdateList.Contains(productNo);
-                model.IsCutAActualStartDateUpdate = cutAActualStartDateUpdateList.Contains(productNo);
-                model.IsCutAActualFinishDateUpdate = cutAActualFinishDateUpdateList.Contains(productNo);
-                model.IsCutABalanceUpdate = cutABalanceUpdateList.Contains(productNo);
+                model.IsCutAStartDateUpdate         = lineCutPrepEditingList.Contains(sewingLine);
+                model.IsCutAFinishDateUpdate        = lineCutPrepEditingList.Contains(sewingLine);
+                model.IsCutAQuotaUpdate             = cutAQuotaUpdateList.Contains(productNo);
+                model.IsCutAActualStartDateUpdate   = cutAActualStartDateUpdateList.Contains(productNo);
+                model.IsCutAActualFinishDateUpdate  = cutAActualFinishDateUpdateList.Contains(productNo);
+                model.IsCutABalanceUpdate           = cutABalanceUpdateList.Contains(productNo);
 
-                model.IsPrintingBalanceUpdate = printingBalanceUpdateList.Contains(productNo);
-                model.IsH_FBalanceUpdate = h_fBalanceUpdateList.Contains(productNo);
-                model.IsEmbroideryBalanceUpdate = embroideryBalanceUpdateList.Contains(productNo);
-                model.IsCutBActualStartDateUpdate = cutBActualStartDateUpdateList.Contains(productNo);
-                model.IsCutBBalanceUpdate = cutBBalanceUpdateList.Contains(productNo);
-                model.IsAutoCutUpdate = autoCutUpdateList.Contains(productNo);
-                model.IsLaserCutUpdate = laserCutUpdateList.Contains(productNo);
-                model.IsHuasenCutUpdate = huasenCutUpdateList.Contains(productNo);
+                model.IsPrintingBalanceUpdate       = printingBalanceUpdateList.Contains(productNo);
+                model.IsH_FBalanceUpdate            = h_fBalanceUpdateList.Contains(productNo);
+                model.IsEmbroideryBalanceUpdate     = embroideryBalanceUpdateList.Contains(productNo);
+                model.IsCutBActualStartDateUpdate   = cutBActualStartDateUpdateList.Contains(productNo);
+                model.IsCutBBalanceUpdate   = cutBBalanceUpdateList.Contains(productNo);
+                model.IsAutoCutUpdate       = autoCutUpdateList.Contains(productNo);
+                model.IsLaserCutUpdate      = laserCutUpdateList.Contains(productNo);
+                model.IsHuasenCutUpdate     = huasenCutUpdateList.Contains(productNo);
 
                 model.IsUpdateCutBStartDate = cutBStartDateUpdateList.Contains(productNo);
                 model.IsUpdateAtomCutA      = atomCutAUpdateList.Contains(productNo);
@@ -1960,23 +1960,8 @@ namespace MasterSchedule.Views
                     model.IsUpdateComelzCutB == true
                     )
                 {
-
+                    model.Reviser = account.UserName;
                     SewingMasterController.Insert_2(model);
-
-                    //Dispatcher.Invoke(new Action(() =>
-                    //{
-                    //    dgSewingMaster.ScrollIntoView(sewingMasterViewToInsert);
-                    //    dgSewingMaster.SelectedItem = sewingMasterViewToInsert;
-                    //}));
-
-                    // Insert ProductNoRevise
-                    //var productNoReviseInsertModel = new ProductNoReviseModel()
-                    //{
-                    //    ProductNo = model.ProductNo,
-                    //    ReviseDate = DateTime.Now.Date,
-                    //    SectionId = _SECTIONID
-                    //};
-                    //ProductNoReviseController.Insert(productNoReviseInsertModel);
                 }
             }
         }

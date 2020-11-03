@@ -102,6 +102,7 @@
                     <MenuItem x:Name="miSockliningMasterReport" Header="Sock-lining" Click="miSockliningMasterReport_Click"/>
                     <MenuItem x:Name="miOutsoleMasterReport" Header="Outsole" Click="miOutsoleMasterReport_Click"/>
                     <MenuItem x:Name="miAssemblyMasterReport" Header="Assembly" Click="miAssemblyMasterReport_Click"/>
+                    <MenuItem x:Name="miPrintSizeRun" Header="Size Run" Click="miPrintSizeRun_Click"/>
                 </MenuItem>
                 <MenuItem Header="Production Status">
                     <MenuItem x:Name="miOutsoleDeliveryStatus"  Header="O/S Delivery Status" Click="miOutsoleDeliveryStatus_Click"/>

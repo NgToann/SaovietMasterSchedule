@@ -33,49 +33,49 @@ namespace MasterSchedule.Views
             foreach (CutprepMasterExportViewModel cutprepMasterExportView in cutprepMasterExportViewList)
             {
                 DataRow dr = dt.NewRow();
-                dr["Sequence"] = cutprepMasterExportView.Sequence;
+                dr["Sequence"]  = cutprepMasterExportView.Sequence;
                 dr["ProductNo"] = cutprepMasterExportView.ProductNo;
-                dr["Country"] = cutprepMasterExportView.Country;
-                dr["ShoeName"] = cutprepMasterExportView.ShoeName;
+                dr["Country"]   = cutprepMasterExportView.Country;
+                dr["ShoeName"]  = cutprepMasterExportView.ShoeName;
                 dr["ArticleNo"] = cutprepMasterExportView.ArticleNo;
                 dr["PatternNo"] = cutprepMasterExportView.PatternNo;
-                dr["Quantity"] = cutprepMasterExportView.Quantity;
-                dr["ETD"] = cutprepMasterExportView.ETD;
-                dr["SewingLine"] = cutprepMasterExportView.SewingLine;
-                dr["UpperMatsArrival"] = cutprepMasterExportView.UpperMatsArrival;
-                dr["SewingStartDate"] = cutprepMasterExportView.SewingStartDate;
-                dr["SewingQuota"] = cutprepMasterExportView.SewingQuota;
-                dr["SewingBalance"] = cutprepMasterExportView.SewingBalance;
-                dr["CutAStartDate"] = cutprepMasterExportView.CutAStartDate;
-                dr["CutAFinishDate"] = cutprepMasterExportView.CutAFinishDate;
-                dr["CutAQuota"] = cutprepMasterExportView.CutAQuota;
-                dr["AutoCut"] = cutprepMasterExportView.AutoCut;
-                dr["LaserCut"] = cutprepMasterExportView.LaserCut;
-                dr["HuasenCut"] = cutprepMasterExportView.HuasenCut;
-                dr["CutABalance"] = cutprepMasterExportView.CutABalance;
-                dr["PrintingBalance"] = cutprepMasterExportView.PrintingBalance;
-                dr["H_FBalance"] = cutprepMasterExportView.H_FBalance;
+                dr["Quantity"]  = cutprepMasterExportView.Quantity;
+                dr["ETD"]       = cutprepMasterExportView.ETD;
+                dr["SewingLine"]        = cutprepMasterExportView.SewingLine;
+                dr["UpperMatsArrival"]  = cutprepMasterExportView.UpperMatsArrival;
+                dr["SewingStartDate"]   = cutprepMasterExportView.SewingStartDate;
+                dr["SewingQuota"]       = cutprepMasterExportView.SewingQuota;
+                dr["SewingBalance"]     = cutprepMasterExportView.SewingBalance;
+                dr["CutAStartDate"]     = cutprepMasterExportView.CutAStartDate;
+                dr["CutAFinishDate"]    = cutprepMasterExportView.CutAFinishDate;
+                dr["CutAQuota"]         = cutprepMasterExportView.CutAQuota;
+                dr["AutoCut"]           = cutprepMasterExportView.AutoCut;
+                dr["LaserCut"]          = cutprepMasterExportView.LaserCut;
+                dr["HuasenCut"]         = cutprepMasterExportView.HuasenCut;
+                dr["CutABalance"]       = cutprepMasterExportView.CutABalance;
+                dr["PrintingBalance"]   = cutprepMasterExportView.PrintingBalance;
+                dr["H_FBalance"]        = cutprepMasterExportView.H_FBalance;
                 dr["EmbroideryBalance"] = cutprepMasterExportView.EmbroideryBalance;
-                dr["CutBBalance"] = cutprepMasterExportView.CutBBalance;
-                dr["IsUpperMatsArrivalOk"] = cutprepMasterExportView.IsUpperMatsArrivalOk;
-                dr["IsHaveMemo"] = !string.IsNullOrEmpty(cutprepMasterExportView.MemoId);
+                dr["CutBBalance"]       = cutprepMasterExportView.CutBBalance;
+                dr["IsUpperMatsArrivalOk"]  = cutprepMasterExportView.IsUpperMatsArrivalOk;
+                dr["IsHaveMemo"]            = !string.IsNullOrEmpty(cutprepMasterExportView.MemoId);
 
-                dr["CutBStartDate"] = cutprepMasterExportView.CutBStartDate;
-                dr["AtomCutA"] = cutprepMasterExportView.AtomCutA;
-                dr["AtomCutB"] = cutprepMasterExportView.AtomCutB;
-                dr["LaserCutA"] = cutprepMasterExportView.LaserCutA;
-                dr["LaserCutB"] = cutprepMasterExportView.LaserCutB;
-                dr["HuasenCutA"] = cutprepMasterExportView.HuasenCutA;
-                dr["HuasenCutB"] = cutprepMasterExportView.HuasenCutB;
-                dr["ComelzCutA"] = cutprepMasterExportView.ComelzCutA;
-                dr["ComelzCutB"] = cutprepMasterExportView.ComelzCutB;
+                dr["CutBStartDate"]     = cutprepMasterExportView.CutBStartDate;
+                dr["AtomCutA"]          = cutprepMasterExportView.AtomCutA;
+                dr["AtomCutB"]          = cutprepMasterExportView.AtomCutB;
+                dr["LaserCutA"]         = cutprepMasterExportView.LaserCutA;
+                dr["LaserCutB"]         = cutprepMasterExportView.LaserCutB;
+                dr["HuasenCutA"]        = cutprepMasterExportView.HuasenCutA;
+                dr["HuasenCutB"]        = cutprepMasterExportView.HuasenCutB;
+                dr["ComelzCutA"]        = cutprepMasterExportView.ComelzCutA;
+                dr["ComelzCutB"]        = cutprepMasterExportView.ComelzCutB;
 
                 dt.Rows.Add(dr);
             }
 
 
             //ReportParameter rp = new ReportParameter("Line", line);
-            // Hidden =iif(Parameters!ShowProductNo.Value="1", false, true)
+            // Hidden = IIF(Parameters!ShowProductNo.Value="1", false, true)
             var parameterList = new List<ReportParameter>();
             parameterList.Add(new ReportParameter("Line", line));
             var propertyList = typeof(CutprepMasterExportViewModel).GetProperties().ToList();

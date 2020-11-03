@@ -12,7 +12,6 @@ namespace MasterSchedule.Controllers
     public class OutsoleMaterialDetailController
     {
        private static SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-
        public static List<OutsoleMaterialDetailModel> SelectAll()
        {
            return db.ExecuteStoreQuery<OutsoleMaterialDetailModel>("EXEC spm_SelectOutsoleMaterialDetailAll").ToList();

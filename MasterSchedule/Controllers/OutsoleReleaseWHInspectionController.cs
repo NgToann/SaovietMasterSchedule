@@ -21,24 +21,27 @@ namespace MasterSchedule.Controllers
 
         public static List<OutsoleReleaseMaterialModel> SelectReportId()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-
-            return db.ExecuteStoreQuery<OutsoleReleaseMaterialModel>("EXEC spm_SelectOutsoleReleaseMaterialToWHInspectionReportId").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleReleaseMaterialModel>("EXEC spm_SelectOutsoleReleaseMaterialToWHInspectionReportId").ToList();
+            }
         }
 
         public static List<OutsoleReleaseMaterialModel> Select(string reportId, string productNo)
         {
             var @ReportId = new SqlParameter("@ReportId", reportId);
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-
-            return db.ExecuteStoreQuery<OutsoleReleaseMaterialModel>("EXEC spm_SelectOutsoleReleaseMaterialToWHInspectionByReportId @ReportId", @ReportId).ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleReleaseMaterialModel>("EXEC spm_SelectOutsoleReleaseMaterialToWHInspectionByReportId @ReportId", @ReportId).ToList();
+            }
         }
 
         public static List<OutsoleReleaseMaterialModel> SelectOutsoleReleaseToWHInspectionByOutsoleMaster()
         {
-            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-
-            return db.ExecuteStoreQuery<OutsoleReleaseMaterialModel>("EXEC spm_SelectOutsoleReleaseMaterialToWHInspectionByOutsoleMaster").ToList();
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleReleaseMaterialModel>("EXEC spm_SelectOutsoleReleaseMaterialToWHInspectionByOutsoleMaster").ToList();
+            }
         }
 
         public static bool Insert(OutsoleReleaseMaterialModel model)
