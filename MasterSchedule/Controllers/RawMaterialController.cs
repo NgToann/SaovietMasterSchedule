@@ -84,6 +84,7 @@ namespace MasterSchedule.Controllers
         {
             using (var db = new SaovietMasterScheduleEntities())
             {
+                db.CommandTimeout = 90;
                 return db.ExecuteStoreQuery<RawMaterialViewModelNew>("EXEC spm_SelectRawMaterialViewModel").ToList();
             };
         }

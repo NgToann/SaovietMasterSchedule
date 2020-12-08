@@ -103,6 +103,8 @@
     <Compile Include="Controllers\InsockSuppliersController.cs" />
     <Compile Include="Controllers\MachineController.cs" />
     <Compile Include="Controllers\MachineRequestController.cs" />
+    <Compile Include="Controllers\MaterialDeliveryController.cs" />
+    <Compile Include="Controllers\MaterialPlanController.cs" />
     <Compile Include="Controllers\OSWHWorkingTimeController.cs" />
     <Compile Include="Controllers\OutsoleMaterialCheckingController.cs" />
     <Compile Include="Controllers\OutsoleMaterialDetailController.cs" />
@@ -116,8 +118,10 @@
     <Compile Include="Controllers\PrintSizeRunController.cs" />
     <Compile Include="Controllers\PrivateDefineController.cs" />
     <Compile Include="Controllers\ProductNoReviseController.cs" />
+    <Compile Include="Controllers\RejectController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SockliningInputController.cs" />
+    <Compile Include="Controllers\SupplierController.cs" />
     <Compile Include="Controllers\UpperComponentController.cs" />
     <Compile Include="Controllers\UpperComponentMaterialController.cs" />
     <Compile Include="Controllers\UpperComponentRawMaterialController.cs" />
@@ -212,6 +216,8 @@
     <Compile Include="Models\InsockSuppliersModel.cs" />
     <Compile Include="Models\MachineModel.cs" />
     <Compile Include="Models\MachineRequestModel.cs" />
+    <Compile Include="Models\MaterialDeliveryModel.cs" />
+    <Compile Include="Models\MaterialPlanModel.cs" />
     <Compile Include="Models\OSWHWorkingTimeModel.cs" />
     <Compile Include="Models\OutsoleMaterialBalanceReportModel.cs" />
     <Compile Include="Models\OutsoleMaterialCheckingModel.cs" />
@@ -228,12 +234,16 @@
     <Compile Include="Models\PrivateDefineModel.cs" />
     <Compile Include="Models\ProductNoReviseModel.cs" />
     <Compile Include="Models\OutsoleMaterialReleasePaintingModel.cs" />
+    <Compile Include="Models\RejectModel.cs" />
+    <Compile Include="Models\ReportOSMaterialCheckDetailModel.cs" />
+    <Compile Include="Models\ReportOSMaterialCheckWHInventoryModel.cs" />
     <Compile Include="Models\ReportOSMWHCheckingModel.cs" />
     <Compile Include="Models\ReportOutsoleInventoryModel.cs" />
     <Compile Include="Models\ReportOutsoleMaterialDeliveryFromToModel.cs" />
     <Compile Include="Models\ReportOutsoleMaterialDeliverySummary.cs" />
     <Compile Include="Models\ReportSewingSummaryModel.cs" />
     <Compile Include="Models\SockliningInputModel.cs" />
+    <Compile Include="Models\SupplierModel.cs" />
     <Compile Include="Models\UpperComponentMaterialModel.cs" />
     <Compile Include="Models\UpperComponentModel.cs" />
     <Compile Include="Models\UpperComponentRawMaterialModel.cs" />
@@ -246,11 +256,17 @@
     <Compile Include="ViewModels\SewingMasterViewModelNew.cs" />
     <Compile Include="ViewModels\UpperComponentWHInventoryViewModel.cs" />
     <Compile Include="ViewModels\UpperComponentRawMaterialViewModel.cs" />
+    <Compile Include="Views\AddMaterialPlanForProductNoWindow.xaml.cs">
+      <DependentUpon>AddMaterialPlanForProductNoWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\AddOutsoleMaterialRackPositionWindow.xaml.cs">
       <DependentUpon>AddOutsoleMaterialRackPositionWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\AddOutsoleMaterialRejectToRackWindow.xaml.cs">
       <DependentUpon>AddOutsoleMaterialRejectToRackWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AddRejectForMaterialWindow.xaml.cs">
+      <DependentUpon>AddRejectForMaterialWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\AssemblyMasterFilterWindow.xaml.cs">
       <DependentUpon>AssemblyMasterFilterWindow.xaml</DependentUpon>
@@ -307,11 +323,17 @@
     <Compile Include="Views\ImportMachineWindow.xaml.cs">
       <DependentUpon>ImportMachineWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ImportSizeRunNewWindow.xaml.cs">
+      <DependentUpon>ImportSizeRunNewWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ImportUpperComponentEFDWindow.xaml.cs">
       <DependentUpon>ImportUpperComponentEFDWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ImportUpperMaterialScheduleWindow.xaml.cs">
       <DependentUpon>ImportUpperMaterialScheduleWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\InputAccessoriesWindow.xaml.cs">
+      <DependentUpon>InputAccessoriesWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\InsockDeliveryDetailWindow.xaml.cs">
       <DependentUpon>InsockDeliveryDetailWindow.xaml</DependentUpon>
@@ -816,11 +838,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\AddMaterialPlanForProductNoWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\AddOutsoleMaterialRackPositionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\AddOutsoleMaterialRejectToRackWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AddRejectForMaterialWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -884,11 +914,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ImportSizeRunNewWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ImportUpperComponentEFDWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ImportUpperMaterialScheduleWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\InputAccessoriesWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1954,6 +1992,35 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\update.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\mini_refresh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\viewDetail.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\information.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\large_chart.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\search.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\mini_add.png" />
+    <Resource Include="Images\mini_minus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\btn_down.png" />
+    <Resource Include="Images\btn_up.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\pencil.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

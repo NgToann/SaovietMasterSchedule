@@ -1,0 +1,195 @@
+﻿<Window x:Class="MasterSchedule.Views.InputAccessoriesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MasterSchedule.Views" Loaded="Window_Loaded" KeyUp="Window_KeyUp"
+        mc:Ignorable="d" FontSize="13" WindowStartupLocation="CenterScreen" WindowState="Maximized"
+        Title="MasterSchedule - Input Accessories Delivery" MinHeight="450" MinWidth="800">
+    <Grid Margin="2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <GroupBox Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
+            <GroupBox.Header>
+                <StackPanel Orientation="Horizontal">
+                    <Border Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
+                        <TextBlock Text="Accessories Information" Foreground="Black" Padding="10,0,10,0" VerticalAlignment="Center"/>
+                    </Border>
+                    <Button Margin="5,0,0,0" x:Name="btnAddNewAccessory" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" ToolTip="Add New" Cursor="Hand" Click="btnAddNewAccessory_Click">
+                        <Button.Content>
+                            <Image Width="16" Height="16" Source="/Images/mini_add.png"/>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
+            </GroupBox.Header>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <DataGrid MaxHeight="100" x:Name="dgAccessoriesInfor" AutoGenerateColumns="False" AlternationCount="2" AlternatingRowBackground="LightCyan" CanUserSortColumns="False"
+                      CanUserAddRows="False" SelectionUnit="Cell" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" LoadingRow="dgAccessoriesInfor_LoadingRow" RowHeaderWidth="NaN"
+                      IsReadOnly="True" FontFamily="Times New Roman" FontSize="14" MouseLeftButtonDown="dgAccessoriesInfor_MouseLeftButtonDown">
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Setter Property="Padding" Value="2"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Foreground" Value="Black"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="FontWeight" Value="Semibold"/>
+                                    <Setter Property="BorderThickness" Value="0,0,0,0"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.CellStyle>
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            <Setter Property="FontSize" Value="15"/>
+                            <Setter Property="Background" Value="LightSteelBlue"/>
+                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="BorderBrush" Value="Gray"/>
+                            <Setter Property="BorderThickness" Value="0.5,0.5,0.5,0"/>
+                            <Setter Property="Padding" Value="5"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Name" SortMemberPath="ProvideAccessories" ClipboardContentBinding="{Binding ProvideAccessories}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ProvideAccessories}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="4,2,4,2"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn x:Name="colSupplier" Header="Supplier" SortMemberPath="Name" ClipboardContentBinding="{Binding Name}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock MinWidth="120" Text="{Binding Name}" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Padding="4,2,4,2" Cursor="Hand" ToolTip="Delivery Detail">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="OrangeRed"/>
+                                                        <Setter Property="Foreground" Value="White"/>
+                                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="ETD" SortMemberPath="ETD" ClipboardContentBinding="{Binding ETD}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ETD, StringFormat=MM/dd/yyyy}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="2"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Actual Date" SortMemberPath="ActualDate" ClipboardContentBinding="{Binding ActualDate}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ActualDate, StringFormat=MM/dd/yyyy}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="2"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Remarks" SortMemberPath="Remarks" ClipboardContentBinding="{Binding Remarks}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Remarks}" MaxWidth="300" TextWrapping="Wrap" VerticalAlignment="Center" Padding="4,2,4,2"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button x:Name="btnEdit" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" Cursor="Hand" VerticalAlignment="Center" HorizontalAlignment="Center" Click="btnEdit_Click">
+                                        <Button.Content>
+                                            <Image Width="14" Height="14" Source="/Images/pencil.png"/>
+                                        </Button.Content>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="1" Margin="0,2,0,0" Template="{DynamicResource ResourceKey=GroupBoxTemplateNoPadding}">
+            <GroupBox.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <Border Background="{DynamicResource ResourceKey=GroupHeaderBg}" Style="{DynamicResource ResourceKey=BorderStyle}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="tblDeliveryDetailOf" Foreground="Blue" FontWeight="Regular" FontSize="14" Padding="10,0,10,0" VerticalAlignment="Center"/>
+                                <DatePicker x:Name="dpDeliveryDate" VerticalContentAlignment="Center" SelectedDateChanged="dpDeliveryDate_SelectedDateChanged" Cursor="Hand"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                    <Button x:Name="btnSave" Grid.Column="2" Content="    Save    " Template="{DynamicResource ResourceKey=ButtonTemplate}" Cursor="Hand" Click="btnSave_Click"/>
+                </Grid>
+            </GroupBox.Header>
+            <Grid>
+                <DataGrid x:Name="dgDeliveryDetail" AutoGenerateColumns="False" AlternationCount="2" AlternatingRowBackground="LightCyan" CanUserSortColumns="False"
+                      CanUserAddRows="False" SelectionUnit="Cell" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" LoadingRow="dgDeliveryDetail_LoadingRow" RowHeaderWidth="NaN"
+                      FontFamily="Times New Roman" FontSize="14" BeginningEdit="dgDeliveryDetail_BeginningEdit" CellEditEnding="dgDeliveryDetail_CellEditEnding">
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Foreground" Value="Black"/>
+                                    <Setter Property="Background" Value="DeepSkyBlue"/>
+                                    <Setter Property="FontWeight" Value="Semibold"/>
+                                    <Setter Property="BorderThickness" Value="0,0,0,0"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.CellStyle>
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <Setter Property="FontWeight" Value="SemiBold"/>
+                            <Setter Property="FontSize" Value="15"/>
+                            <Setter Property="Background" Value="LightGray"/>
+                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="BorderBrush" Value="Gray"/>
+                            <Setter Property="BorderThickness" Value="0.5,0.5,0.5,0"/>
+                            <Setter Property="Padding" Value="5"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                </DataGrid>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="2" Margin="0,2,0,0" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
+            <GroupBox.Header>
+                <Border Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
+                    <TextBlock Text="List of Defects" Foreground="Red" Padding="10,0,10,0"/>
+                </Border>
+            </GroupBox.Header>
+            <Grid x:Name="gridError">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>

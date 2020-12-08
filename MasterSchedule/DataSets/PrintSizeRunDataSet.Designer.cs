@@ -297,6 +297,22 @@ namespace MasterSchedule.DataSets {
             
             private global::System.Data.DataColumn columnShoeName;
             
+            private global::System.Data.DataColumn columnTotalQuantity;
+            
+            private global::System.Data.DataColumn columnTotalQuantityPrint;
+            
+            private global::System.Data.DataColumn columnLastSize;
+            
+            private global::System.Data.DataColumn columnSizeTitle;
+            
+            private global::System.Data.DataColumn columnSizeDisplay;
+            
+            private global::System.Data.DataColumn columnShowOSSize;
+            
+            private global::System.Data.DataColumn columnShowMidsoleSize;
+            
+            private global::System.Data.DataColumn columnShowLastSize;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public PrintSizeRunDataTableDataTable() {
@@ -404,6 +420,70 @@ namespace MasterSchedule.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn TotalQuantityColumn {
+                get {
+                    return this.columnTotalQuantity;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn TotalQuantityPrintColumn {
+                get {
+                    return this.columnTotalQuantityPrint;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn LastSizeColumn {
+                get {
+                    return this.columnLastSize;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn SizeTitleColumn {
+                get {
+                    return this.columnSizeTitle;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn SizeDisplayColumn {
+                get {
+                    return this.columnSizeDisplay;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ShowOSSizeColumn {
+                get {
+                    return this.columnShowOSSize;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ShowMidsoleSizeColumn {
+                get {
+                    return this.columnShowMidsoleSize;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn ShowLastSizeColumn {
+                get {
+                    return this.columnShowLastSize;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -439,7 +519,24 @@ namespace MasterSchedule.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public PrintSizeRunDataTableRow AddPrintSizeRunDataTableRow(string ProductNo, string SizeNo, double SizeNoDouble, string Quantity, string EFD, string SewingStartDate, string OutsoleSize, string MidsoleSize, string ShoeName) {
+            public PrintSizeRunDataTableRow AddPrintSizeRunDataTableRow(
+                        string ProductNo, 
+                        string SizeNo, 
+                        double SizeNoDouble, 
+                        string Quantity, 
+                        string EFD, 
+                        string SewingStartDate, 
+                        string OutsoleSize, 
+                        string MidsoleSize, 
+                        string ShoeName, 
+                        string TotalQuantity, 
+                        string TotalQuantityPrint, 
+                        string LastSize, 
+                        string SizeTitle, 
+                        string SizeDisplay, 
+                        string ShowOSSize, 
+                        bool ShowMidsoleSize, 
+                        bool ShowLastSize) {
                 PrintSizeRunDataTableRow rowPrintSizeRunDataTableRow = ((PrintSizeRunDataTableRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         ProductNo,
@@ -450,7 +547,15 @@ namespace MasterSchedule.DataSets {
                         SewingStartDate,
                         OutsoleSize,
                         MidsoleSize,
-                        ShoeName};
+                        ShoeName,
+                        TotalQuantity,
+                        TotalQuantityPrint,
+                        LastSize,
+                        SizeTitle,
+                        SizeDisplay,
+                        ShowOSSize,
+                        ShowMidsoleSize,
+                        ShowLastSize};
                 rowPrintSizeRunDataTableRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowPrintSizeRunDataTableRow);
                 return rowPrintSizeRunDataTableRow;
@@ -482,6 +587,14 @@ namespace MasterSchedule.DataSets {
                 this.columnOutsoleSize = base.Columns["OutsoleSize"];
                 this.columnMidsoleSize = base.Columns["MidsoleSize"];
                 this.columnShoeName = base.Columns["ShoeName"];
+                this.columnTotalQuantity = base.Columns["TotalQuantity"];
+                this.columnTotalQuantityPrint = base.Columns["TotalQuantityPrint"];
+                this.columnLastSize = base.Columns["LastSize"];
+                this.columnSizeTitle = base.Columns["SizeTitle"];
+                this.columnSizeDisplay = base.Columns["SizeDisplay"];
+                this.columnShowOSSize = base.Columns["ShowOSSize"];
+                this.columnShowMidsoleSize = base.Columns["ShowMidsoleSize"];
+                this.columnShowLastSize = base.Columns["ShowLastSize"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -505,6 +618,22 @@ namespace MasterSchedule.DataSets {
                 base.Columns.Add(this.columnMidsoleSize);
                 this.columnShoeName = new global::System.Data.DataColumn("ShoeName", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnShoeName);
+                this.columnTotalQuantity = new global::System.Data.DataColumn("TotalQuantity", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnTotalQuantity);
+                this.columnTotalQuantityPrint = new global::System.Data.DataColumn("TotalQuantityPrint", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnTotalQuantityPrint);
+                this.columnLastSize = new global::System.Data.DataColumn("LastSize", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnLastSize);
+                this.columnSizeTitle = new global::System.Data.DataColumn("SizeTitle", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnSizeTitle);
+                this.columnSizeDisplay = new global::System.Data.DataColumn("SizeDisplay", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnSizeDisplay);
+                this.columnShowOSSize = new global::System.Data.DataColumn("ShowOSSize", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnShowOSSize);
+                this.columnShowMidsoleSize = new global::System.Data.DataColumn("ShowMidsoleSize", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnShowMidsoleSize);
+                this.columnShowLastSize = new global::System.Data.DataColumn("ShowLastSize", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnShowLastSize);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -792,6 +921,136 @@ namespace MasterSchedule.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string TotalQuantity {
+                get {
+                    try {
+                        return ((string)(this[this.tablePrintSizeRunDataTable.TotalQuantityColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'TotalQuantity\' in table \'PrintSizeRunDataTable\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablePrintSizeRunDataTable.TotalQuantityColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string TotalQuantityPrint {
+                get {
+                    try {
+                        return ((string)(this[this.tablePrintSizeRunDataTable.TotalQuantityPrintColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'TotalQuantityPrint\' in table \'PrintSizeRunDataTable\' is DBN" +
+                                "ull.", e);
+                    }
+                }
+                set {
+                    this[this.tablePrintSizeRunDataTable.TotalQuantityPrintColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string LastSize {
+                get {
+                    try {
+                        return ((string)(this[this.tablePrintSizeRunDataTable.LastSizeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'LastSize\' in table \'PrintSizeRunDataTable\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablePrintSizeRunDataTable.LastSizeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string SizeTitle {
+                get {
+                    try {
+                        return ((string)(this[this.tablePrintSizeRunDataTable.SizeTitleColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'SizeTitle\' in table \'PrintSizeRunDataTable\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablePrintSizeRunDataTable.SizeTitleColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string SizeDisplay {
+                get {
+                    try {
+                        return ((string)(this[this.tablePrintSizeRunDataTable.SizeDisplayColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'SizeDisplay\' in table \'PrintSizeRunDataTable\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablePrintSizeRunDataTable.SizeDisplayColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string ShowOSSize {
+                get {
+                    try {
+                        return ((string)(this[this.tablePrintSizeRunDataTable.ShowOSSizeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ShowOSSize\' in table \'PrintSizeRunDataTable\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablePrintSizeRunDataTable.ShowOSSizeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool ShowMidsoleSize {
+                get {
+                    try {
+                        return ((bool)(this[this.tablePrintSizeRunDataTable.ShowMidsoleSizeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ShowMidsoleSize\' in table \'PrintSizeRunDataTable\' is DBNull" +
+                                ".", e);
+                    }
+                }
+                set {
+                    this[this.tablePrintSizeRunDataTable.ShowMidsoleSizeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool ShowLastSize {
+                get {
+                    try {
+                        return ((bool)(this[this.tablePrintSizeRunDataTable.ShowLastSizeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ShowLastSize\' in table \'PrintSizeRunDataTable\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tablePrintSizeRunDataTable.ShowLastSizeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsProductNoNull() {
                 return this.IsNull(this.tablePrintSizeRunDataTable.ProductNoColumn);
             }
@@ -896,6 +1155,102 @@ namespace MasterSchedule.DataSets {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetShoeNameNull() {
                 this[this.tablePrintSizeRunDataTable.ShoeNameColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsTotalQuantityNull() {
+                return this.IsNull(this.tablePrintSizeRunDataTable.TotalQuantityColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetTotalQuantityNull() {
+                this[this.tablePrintSizeRunDataTable.TotalQuantityColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsTotalQuantityPrintNull() {
+                return this.IsNull(this.tablePrintSizeRunDataTable.TotalQuantityPrintColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetTotalQuantityPrintNull() {
+                this[this.tablePrintSizeRunDataTable.TotalQuantityPrintColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsLastSizeNull() {
+                return this.IsNull(this.tablePrintSizeRunDataTable.LastSizeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetLastSizeNull() {
+                this[this.tablePrintSizeRunDataTable.LastSizeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsSizeTitleNull() {
+                return this.IsNull(this.tablePrintSizeRunDataTable.SizeTitleColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetSizeTitleNull() {
+                this[this.tablePrintSizeRunDataTable.SizeTitleColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsSizeDisplayNull() {
+                return this.IsNull(this.tablePrintSizeRunDataTable.SizeDisplayColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetSizeDisplayNull() {
+                this[this.tablePrintSizeRunDataTable.SizeDisplayColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsShowOSSizeNull() {
+                return this.IsNull(this.tablePrintSizeRunDataTable.ShowOSSizeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetShowOSSizeNull() {
+                this[this.tablePrintSizeRunDataTable.ShowOSSizeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsShowMidsoleSizeNull() {
+                return this.IsNull(this.tablePrintSizeRunDataTable.ShowMidsoleSizeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetShowMidsoleSizeNull() {
+                this[this.tablePrintSizeRunDataTable.ShowMidsoleSizeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsShowLastSizeNull() {
+                return this.IsNull(this.tablePrintSizeRunDataTable.ShowLastSizeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetShowLastSizeNull() {
+                this[this.tablePrintSizeRunDataTable.ShowLastSizeColumn] = global::System.Convert.DBNull;
             }
         }
         

@@ -407,6 +407,7 @@ namespace MasterSchedule
         private void miInportSizeRun_Click(object sender, RoutedEventArgs e)
         {
             ImportSizeRunWindow window = new ImportSizeRunWindow();
+            //ImportSizeRunNewWindow window = new ImportSizeRunNewWindow(account);
             window.ShowDialog();
         }
 
@@ -900,7 +901,13 @@ namespace MasterSchedule
 
         private void miPrintSizeRun_Click(object sender, RoutedEventArgs e)
         {
-            PrintSizeRunWindow window = new PrintSizeRunWindow();
+            PrintSizeRunWindow window = new PrintSizeRunWindow("");
+            window.Show();
+        }
+
+        private void miInportSizeRunAndOrders_Click(object sender, RoutedEventArgs e)
+        {
+            ImportSizeRunNewWindow window = new ImportSizeRunNewWindow(account);
             window.Show();
         }
 
@@ -1002,7 +1009,10 @@ namespace MasterSchedule
                 "1.2.7.0: " + "Update: Add ComelzCutAB Column, Custom CutprepPrintReport. 'SV'.\n" +
                 "1.2.7.3: " + "Update: Counter WorkingTime OSMWHChecking, Speed Report OSMWH, OSMWHChecking View Detail 'SV', col OSMatsArrival UpperDetailReport; Keys,Input Reject 'TL'.\n" +
                 "1.2.7.4: " + "Update: PO OsMasterFile Empty, Reviser PO 'SV'.\n" +
-                "1.2.7.6: " + "Update: Print Size Run Report 'SV'.";
+                "1.2.7.8: " + "Update: Print Size Run Report, Add Import SizeRunAndOrders 'SV'.\n" +
+                "1.2.7.9: " + "Update: Add LastSize (SizeRun) 'SV'\n"+
+                "1.2.8.1: " + "Update: Combine Reject O/SWHMasterFile and O/SMaterial Check 'SV', Hidden OSSize \n" +
+                "1.2.8.2: " + "Update: Add OSMaterialWHCheck Inventory Report 'SV'";
             //MessageBox.Show(version, string.Format("Current Version: {0}", AssemblyHelper.Version()), MessageBoxButton.OK, MessageBoxImage.Information);
             UpdateHistoryWindow window = new UpdateHistoryWindow(version, AssemblyHelper.Version());
             window.Show();

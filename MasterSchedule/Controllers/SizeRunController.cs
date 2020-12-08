@@ -102,14 +102,33 @@ namespace MasterSchedule.Controllers
 
         public static bool Insert(SizeRunModel model)
         {
-            var @ProductNo = new SqlParameter("@ProductNo", model.ProductNo);
-            var @SizeNo = new SqlParameter("@SizeNo", model.SizeNo);
-            var @Quantity = new SqlParameter("@Quantity", model.Quantity);
+            var @ProductNo  = new SqlParameter("@ProductNo", model.ProductNo);
+            var @SizeNo     = new SqlParameter("@SizeNo", model.SizeNo);
+            var @Quantity   = new SqlParameter("@Quantity", model.Quantity);
 
             using (var db = new SaovietMasterScheduleEntities())
             {
                 if (db.ExecuteStoreCommand("EXEC spm_InsertSizeRun  @ProductNo, @SizeNo, @Quantity",
                                                                     @ProductNo, @SizeNo, @Quantity) > 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+        public static bool InsertNew(SizeRunModel model)
+        {
+            var @ProductNo      = new SqlParameter("@ProductNo",    model.ProductNo);
+            var @SizeNo         = new SqlParameter("@SizeNo",       model.SizeNo);
+            var @Quantity       = new SqlParameter("@Quantity",     model.Quantity);
+            var @OutsoleSize    = new SqlParameter("@OutsoleSize",  model.OutsoleSize);
+            var @MidsoleSize    = new SqlParameter("@MidsoleSize",  model.MidsoleSize);
+            var @LastSize       = new SqlParameter("@LastSize",     model.LastSize);
+
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                if (db.ExecuteStoreCommand("EXEC spm_InsertSizeRun_2  @ProductNo, @SizeNo, @Quantity, @OutsoleSize, @MidsoleSize, @LastSize",
+                                                                      @ProductNo, @SizeNo, @Quantity, @OutsoleSize, @MidsoleSize, @LastSize) > 0)
                 {
                     return true;
                 }

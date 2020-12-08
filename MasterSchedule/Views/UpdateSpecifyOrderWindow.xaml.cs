@@ -123,19 +123,21 @@ namespace MasterSchedule.Views
                 excelWorksheet = (Excel.Worksheet)excelWorkbook.Worksheets[1];
                 excelRange = excelWorksheet.UsedRange;
                 progressBar.Dispatcher.Invoke((Action)(() => progressBar.Maximum = excelRange.Rows.Count));
-                for (int i = 2; i <= excelRange.Rows.Count; i++)
+                for (int i = 5; i <= excelRange.Rows.Count; i++)
                 {
-                    var orders = new OrdersModel();
                     var productNoValue = (excelRange.Cells[i, 4] as Excel.Range).Value2;
                     if (productNoValue != null)
                     {
+                        string productNo = productNoValue.ToString();
+                        // Order
+                        var order = new OrdersModel();
                         string UCustomerCode = "";
                         var uCustomerCodeValue = (excelRange.Cells[i, 2] as Excel.Range).Value2;
                         if (uCustomerCodeValue != null)
                         {
                             UCustomerCode = uCustomerCodeValue.ToString();
                         }
-                        orders.UCustomerCode = UCustomerCode;
+                        order.UCustomerCode = UCustomerCode;
 
                         string GTNPONo = "";
                         var GTNPONoValue = (excelRange.Cells[i, 3] as Excel.Range).Value2;
@@ -143,65 +145,66 @@ namespace MasterSchedule.Views
                         {
                             GTNPONo = GTNPONoValue.ToString();
                         }
-                        orders.GTNPONo = GTNPONo;
+                        order.GTNPONo = GTNPONo;
 
-                        string productNo = productNoValue.ToString();
-                        orders.ProductNo = productNo;
+                        order.ProductNo = productNo;
 
-                        //DateTime csd = new DateTime(2000, 1, 1, 0, 0, 0);
-                        //DateTime.TryParse((excelRange.Cells[i, 5] as Excel.Range).Value2.ToString(), out csd);
                         double csdOADate = 0;
-                        Double.TryParse((excelRange.Cells[i, 6] as Excel.Range).Value2.ToString(), out csdOADate);
+                        Double.TryParse((excelRange.Cells[i, 5] as Excel.Range).Value2.ToString(), out csdOADate);
                         DateTime csd = DateTime.FromOADate(csdOADate);
-                        orders.ETD = csd.AddDays(-10);
+                        order.ETD = csd.AddDays(-10);
 
-                        string articleNo = (excelRange.Cells[i, 7] as Excel.Range).Value2.ToString();
-                        orders.ArticleNo = articleNo;
+                        string articleNo = (excelRange.Cells[i, 6] as Excel.Range).Value2.ToString();
+                        order.ArticleNo = articleNo;
 
-                        string shoeName = (excelRange.Cells[i, 8] as Excel.Range).Value2.ToString();
-                        orders.ShoeName = shoeName;
+                        string shoeName = (excelRange.Cells[i, 7] as Excel.Range).Value2.ToString();
+                        order.ShoeName = shoeName;
 
                         int quantity = 0;
-                        int.TryParse((excelRange.Cells[i, 9] as Excel.Range).Value2.ToString(), out quantity);
-                        orders.Quantity = quantity;
+                        int.TryParse((excelRange.Cells[i, 8] as Excel.Range).Value2.ToString(), out quantity);
+                        order.Quantity = quantity;
 
-                        string patternNo = (excelRange.Cells[i, 11] as Excel.Range).Value2.ToString();
-                        orders.PatternNo = patternNo;
+                        string patternNo = (excelRange.Cells[i, 12] as Excel.Range).Value2.ToString();
+                        order.PatternNo = patternNo;
 
-                        var midsoleCodeValue = (excelRange.Cells[i, 12] as Excel.Range).Value2;
+                        var midsoleCodeValue = (excelRange.Cells[i, 13] as Excel.Range).Value2;
                         string midsoleCode = "";
                         if (midsoleCodeValue != null)
                         {
                             midsoleCode = midsoleCodeValue.ToString();
                         }
-                        orders.MidsoleCode = midsoleCode;
+                        order.MidsoleCode = midsoleCode;
 
-                        var outsoleCodeValue = (excelRange.Cells[i, 13] as Excel.Range).Value2;
+                        var outsoleCodeValue = (excelRange.Cells[i, 14] as Excel.Range).Value2;
                         string outsoleCode = "";
                         if (outsoleCodeValue != null)
                         {
                             outsoleCode = outsoleCodeValue.ToString();
                         }
-                        orders.OutsoleCode = outsoleCode;
+                        order.OutsoleCode = outsoleCode;
 
-                        var lastCodeValue = (excelRange.Cells[i, 14] as Excel.Range).Value2;
+                        var lastCodeValue = (excelRange.Cells[i, 15] as Excel.Range).Value2;
                         string lastCode = "";
                         if (lastCodeValue != null)
                         {
                             lastCode = lastCodeValue.ToString();
                         }
-                        orders.LastCode = lastCode;
+                        order.LastCode = lastCode;
 
-                        var countryValue = (excelRange.Cells[i, 15] as Excel.Range).Value2;
+                        var countryValue = (excelRange.Cells[i, 16] as Excel.Range).Value2;
                         string country = "";
                         if (countryValue != null)
                         {
                             country = countryValue.ToString();
                         }
-                        orders.Country = country;
-                        orders.Reviser = acc.UserName;
+                        order.Country = country;
+                        order.Reviser = acc.UserName;
 
-                        ordersList.Add(orders);
+                        ordersList.Add(order);
+                    }
+                    else
+                    {
+                        i = i + 4;
                     }
                     progressBar.Dispatcher.Invoke((Action)(() => progressBar.Value = i));
                 }
@@ -299,6 +302,11 @@ namespace MasterSchedule.Views
             }
             lblStatus.Text = "Updated !";
             MessageBox.Show("Update Completed!", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
-        }   
+        }
+
+        private void dgOrders_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            e.Row.Header = e.Row.GetIndex() + 1;
+        }
     }
 }

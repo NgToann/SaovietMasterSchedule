@@ -32,6 +32,7 @@ namespace MasterSchedule.Views
         List<OutsoleMaterialBalanceReportModel> outsoleMaterialBalanceReportList;
         //List<OutsoleMaterialBalanceReportModel> outsoleMaterialRejectReportList;
         List<OutsoleMaterialBalanceReportModel> outsoleMaterialAllReportList;
+        private PrivateDefineModel def;
 
         DataTable dtRejectAssemblyStockfit;
         string parTitle = "Reject/Lacking Report for STOCKFIT";
@@ -63,6 +64,7 @@ namespace MasterSchedule.Views
             outsoleMaterialAllReportList = new List<OutsoleMaterialBalanceReportModel>();
 
             sizeRunList = new List<SizeRunModel>();
+            def = new PrivateDefineModel();
 
             dtRejectAssemblyStockfit = new DataTable();
 
@@ -76,6 +78,7 @@ namespace MasterSchedule.Views
             orderList = OrdersController.SelectByOutsoleMaterialReject();
             outsoleRawMaterialList = OutsoleRawMaterialController.Select();
             sizeRunList = SizeRunController.SelectIsEnable();
+            def = PrivateDefineController.GetDefine();
 
             DataTable dt = new OutsoleMaterialRejectDataSet().Tables["OutsoleMaterialRejectTable"];
             DataTable dt1 = new OutsoleMaterialRejectDataSet().Tables["OutsoleMaterialRejectTable"];
@@ -129,8 +132,12 @@ namespace MasterSchedule.Views
 
                 dr["SizeNo"] = outsoleMaterialReject.SizeNo;
                 dr1["SizeNo"] = outsoleMaterialReject.SizeNo;
-                dr["SizeOutsole"] = sizeNoOutsole;
-                dr1["SizeOutsole"] = sizeNoOutsole;
+                if (def.ShowOSSizeValue)
+                {
+                    dr["SizeOutsole"] = sizeNoOutsole;
+                    dr1["SizeOutsole"] = sizeNoOutsole;
+                }
+                
 
                 if (outsoleMaterialReject.QuantityReject > 0)
                 {
@@ -236,7 +243,8 @@ namespace MasterSchedule.Views
                 Double.TryParse(sizeNoString, out sizeNoDouble);
                 dr["SizeNoDouble"] = sizeNoDouble;
                 dr["SizeNo"] = outsoleMaterialBalance.SizeNo;
-                dr["SizeOutsole"] = sizeNoDisplay;
+                if (def.ShowOSSizeValue)
+                    dr["SizeOutsole"] = sizeNoDisplay;
                 dr["QuantityDelivery"] = outsoleMaterialBalance.QuantityDelivery;
                 dr["QuantityBalance"] = outsoleMaterialBalance.QuantityBalance;
                 dr["QuantityOrder"] = outsoleMaterialBalance.QuantityOrder;
@@ -310,7 +318,8 @@ namespace MasterSchedule.Views
                 Double.TryParse(sizeNoString, out sizeNoDouble);
                 dr["SizeNoDouble"] = sizeNoDouble;
                 dr["SizeNo"] = outsoleMaterialAll.SizeNo;
-                dr["SizeOutsole"] = sizeNoDisplay;
+                if (def.ShowOSSizeValue)
+                    dr["SizeOutsole"] = sizeNoDisplay;
 
                 int balance = outsoleMaterialAll.QuantityBalance + outsoleMaterialAll.QuantityReject;
                 if (balance != 0)

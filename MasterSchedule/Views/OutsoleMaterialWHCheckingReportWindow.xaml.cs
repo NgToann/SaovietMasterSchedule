@@ -6,7 +6,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using MasterSchedule.Controllers;
 using MasterSchedule.DataSets;
 using MasterSchedule.Models;
@@ -21,6 +23,8 @@ namespace MasterSchedule.Views
     {
         BackgroundWorker bwSearch;
         BackgroundWorker bwLoad;
+        BackgroundWorker bwLoadWHInventory;
+        BackgroundWorker bwViewDetail;
         //List<ReportOSMWHCheckingModel> reportOSMWHCheckingList;
         List<ReportOSMWHCheckingModel> reportViewList;
         List<OutsoleSuppliersModel> supplierList;
@@ -32,7 +36,15 @@ namespace MasterSchedule.Views
         DateTime dtDefault = new DateTime(2000, 01, 01);
 
         List<ReportOSMWHCheckingModel> reportNewList;
+        List<ReportOSMaterialCheckWHInventoryModel> osMaterialCheckWHInventoryList;
+        List<ReportOSMaterialCheckDetailModel> osMatCheckDetailList;
+        List<SizeRunModel> sizeRunList;
+        List<OutsoleMaterialModel> OSMaterialList;
 
+        List<OutsoleMaterialModel> OSMaterialFilter;
+        List<ReportOSMaterialCheckDetailModel> OSMatCheckFilter;
+
+        Button btnViewDetailClicked;
         public OutsoleMaterialWHCheckingReportWindow()
         {
             bwLoad = new BackgroundWorker();
@@ -43,12 +55,29 @@ namespace MasterSchedule.Views
             bwSearch.DoWork += BwSearch_DoWork;
             bwSearch.RunWorkerCompleted += BwSearch_RunWorkerCompleted;
 
+            bwLoadWHInventory = new BackgroundWorker();
+            bwLoadWHInventory.DoWork += BwLoadWHInventory_DoWork; 
+            bwLoadWHInventory.RunWorkerCompleted += BwLoadWHInventory_RunWorkerCompleted;
+
+            bwViewDetail = new BackgroundWorker();
+            bwViewDetail.DoWork += BwViewDetail_DoWork;
+            bwViewDetail.RunWorkerCompleted += BwViewDetail_RunWorkerCompleted;
+
             //reportOSMWHCheckingList = new List<ReportOSMWHCheckingModel>();
             reportViewList          = new List<ReportOSMWHCheckingModel>();
             supplierList            = new List<OutsoleSuppliersModel>();
             supplierClicked         = new OutsoleSuppliersModel();
 
             reportNewList           = new List<ReportOSMWHCheckingModel>();
+            osMaterialCheckWHInventoryList  = new List<ReportOSMaterialCheckWHInventoryModel>();
+            osMatCheckDetailList            = new List<ReportOSMaterialCheckDetailModel>();
+            sizeRunList     = new List<SizeRunModel>();
+            OSMaterialList  = new List<OutsoleMaterialModel>();
+
+            OSMaterialFilter = new List<OutsoleMaterialModel>();
+            OSMatCheckFilter = new List<ReportOSMaterialCheckDetailModel>();
+
+            btnViewDetailClicked = new Button();
 
             InitializeComponent();
         }
@@ -64,6 +93,12 @@ namespace MasterSchedule.Views
                 searchTo = dpTo.SelectedDate.Value;
                 bwLoad.RunWorkerAsync();
             }
+
+            if (bwLoadWHInventory.IsBusy == false)
+            {
+                btnRefreshWHInventory.IsEnabled = false;
+                bwLoadWHInventory.RunWorkerAsync();
+            }
         }
         private void BwLoad_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -72,6 +107,8 @@ namespace MasterSchedule.Views
             if (supplierFromSourceList.Count() > 0)
                 supplierFromSourceList = supplierFromSourceList.OrderBy(o => o.Name).ToList();
             supplierList.AddRange(supplierFromSourceList);
+
+            osMaterialCheckWHInventoryList = ReportController.SelectOSMaterialWHInventory();
         }
         private void BwLoad_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -474,6 +511,337 @@ namespace MasterSchedule.Views
             if (supplierClicked != null && supplierClicked.OutsoleSupplierId != -999)
                 reportViewList = reportNewList.Where(w => w.OutsoleSupplierId == supplierClicked.OutsoleSupplierId).ToList();
             CreateData(reportViewList, searchFrom, searchTo);
+        }
+
+        private void btnRefreshWHInventory_Click(object sender, RoutedEventArgs e)
+        {
+            if (bwLoadWHInventory.IsBusy == false)
+            {
+                this.Cursor = Cursors.Wait;
+                btnRefreshWHInventory.IsEnabled = false;
+                bwLoadWHInventory.RunWorkerAsync();
+            }
+        }
+        private void BwLoadWHInventory_DoWork(object sender, DoWorkEventArgs e)
+        {
+            // Excute Query
+            try {
+                osMaterialCheckWHInventoryList = ReportController.SelectOSMaterialWHInventory();
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    MessageBox.Show(ex.Message.ToString(), this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                }));
+            }
+        }
+
+        private void dgInventoryByOutsole_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            e.Row.Header = e.Row.GetIndex() + 1;
+        }
+
+        private void dgDetail_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            e.Row.Header = e.Row.GetIndex() + 1;
+        }
+
+        private void BwLoadWHInventory_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            btnRefreshWHInventory.IsEnabled = true;
+            dgInventoryByOutsole.ItemsSource = osMaterialCheckWHInventoryList;
+            if (osMaterialCheckWHInventoryList.Count() > 0)
+                dgInventoryByOutsole.SelectedItem = osMaterialCheckWHInventoryList.FirstOrDefault();
+            dgInventoryByOutsole.Items.Refresh();
+            this.Cursor = null;
+        }
+
+        private void btnViewDetail_Click(object sender, RoutedEventArgs e)
+        {
+            btnViewDetailClicked = sender as Button;
+            var rowClicked = dgInventoryByOutsole.CurrentItem as ReportOSMaterialCheckWHInventoryModel;
+            if (rowClicked == null)
+                return;
+            if (bwViewDetail.IsBusy == false)
+            {
+                firstLoadDetail = false;
+                tblTitleReportDetail.Text = "";
+                cboSupplierInventory.ItemsSource = null;
+                txtPOFilter.Text = "";
+
+                this.Cursor = Cursors.Wait;
+                btnViewDetailClicked.IsEnabled = false;
+                bwViewDetail.RunWorkerAsync(rowClicked);
+            }
+        }
+        
+        bool firstLoadDetail = false;
+        private void BwViewDetail_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var rowClicked = e.Argument as ReportOSMaterialCheckWHInventoryModel;
+            osMatCheckDetailList    = ReportController.SelectOSMaterialCheckByOSCode(rowClicked.OutsoleCode);
+            sizeRunList             = SizeRunController.SelectPerOutsoleCode(rowClicked.OutsoleCode);
+            OSMaterialList          = OutsoleMaterialController.SelectByOSCode(rowClicked.OutsoleCode);
+
+            // CREATE COLUMNS
+            Dispatcher.Invoke(new Action(() =>
+            {
+                tblTitleReportDetail.Text = String.Format("List of detail O/S Code: {0}", rowClicked.OutsoleCode);
+                LoadDataInventory(OSMaterialList, osMatCheckDetailList);
+            }));
+        }
+        private void BwViewDetail_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            // Binding Combobox Supplier
+            var supplierInventoryList = new List<OutsoleSuppliersModel>();
+            supplierInventoryList.Add(new OutsoleSuppliersModel { Name = "-- Select a Supplier --", OutsoleSupplierId = -999 });
+            supplierInventoryList.AddRange(supplierList.Where(w => OSMaterialList.Select(s => s.OutsoleSupplierId).Distinct().ToList().Contains(w.OutsoleSupplierId)).ToList());
+            cboSupplierInventory.ItemsSource = supplierInventoryList;
+            cboSupplierInventory.SelectedItem = supplierInventoryList.FirstOrDefault();
+
+            btnViewDetailClicked.IsEnabled = true;
+            this.Cursor = null;
+
+            firstLoadDetail = true;
+        }
+        private void LoadDataInventory(List<OutsoleMaterialModel> OSMaterialList, List<ReportOSMaterialCheckDetailModel> osMatCheckDetailList)
+        {
+            var sizeList = OSMaterialList.Select(s => s.SizeNo).Distinct().ToList();
+            var regex = new Regex("[a-z]|[A-Z]");
+            var sizeNoList = sizeList.Select(s => s).Distinct().OrderBy(s => regex.IsMatch(s) ? Double.Parse(regex.Replace(s, "100")) : Double.Parse(s)).ToList();
+
+            DataTable dt = new DataTable();
+            dgDetail.Columns.Clear();
+
+            //Column ProductNo
+            dt.Columns.Add("ProductNo", typeof(String));
+            DataGridTemplateColumn colPO = new DataGridTemplateColumn();
+            colPO.Header = String.Format("ProductNo");
+            DataTemplate templatePO = new DataTemplate();
+            FrameworkElementFactory tblPO = new FrameworkElementFactory(typeof(TextBlock));
+            templatePO.VisualTree = tblPO;
+            tblPO.SetBinding(TextBlock.TextProperty, new Binding(String.Format("ProductNo")));
+            tblPO.SetValue(TextBlock.VerticalAlignmentProperty, VerticalAlignment.Center);
+            tblPO.SetValue(TextBlock.PaddingProperty, new Thickness(3, 0, 3, 0));
+            colPO.CellTemplate = templatePO;
+            colPO.ClipboardContentBinding = new Binding(String.Format("ProductNo"));
+            dgDetail.Columns.Add(colPO);
+
+            dt.Columns.Add("Name", typeof(String));
+            DataGridTemplateColumn colSupplierName = new DataGridTemplateColumn();
+            colSupplierName.Header = String.Format("Supplier");
+            DataTemplate templateSupplierName = new DataTemplate();
+            FrameworkElementFactory tblSupplierName = new FrameworkElementFactory(typeof(TextBlock));
+            templateSupplierName.VisualTree = tblSupplierName;
+            tblSupplierName.SetBinding(TextBlock.TextProperty, new Binding(String.Format("Name")));
+            tblSupplierName.SetValue(TextBlock.VerticalAlignmentProperty, VerticalAlignment.Center);
+            tblSupplierName.SetValue(TextBlock.PaddingProperty, new Thickness(3, 0, 3, 0));
+            colSupplierName.CellTemplate = templateSupplierName;
+            colSupplierName.ClipboardContentBinding = new Binding(String.Format("Name"));
+            dgDetail.Columns.Add(colSupplierName);
+
+            foreach (var sizeNo in sizeNoList)
+            {
+                string sizeBinding = sizeNo.Contains(".") ? sizeNo.Replace(".", "@") : sizeNo;
+
+                dt.Columns.Add(String.Format("Column{0}", sizeBinding), typeof(String));
+                dt.Columns.Add(String.Format("ColumnForeground{0}", sizeBinding), typeof(SolidColorBrush));
+                DataGridTemplateColumn colQuantity = new DataGridTemplateColumn();
+                colQuantity.Header = String.Format(sizeNo);
+                colQuantity.Width = 40;
+                DataTemplate templateQuantity = new DataTemplate();
+                FrameworkElementFactory tblQuantity = new FrameworkElementFactory(typeof(TextBlock));
+                templateQuantity.VisualTree = tblQuantity;
+                tblQuantity.SetBinding(TextBlock.TextProperty, new Binding(String.Format("Column{0}", sizeBinding)));
+                tblQuantity.SetValue(TextBlock.ForegroundProperty, new Binding(String.Format("ColumnForeground{0}", sizeBinding)));
+                tblQuantity.SetValue(TextBlock.PaddingProperty, new Thickness(3, 3, 3, 3));
+                tblQuantity.SetValue(TextBlock.VerticalAlignmentProperty, VerticalAlignment.Center);
+                tblQuantity.SetValue(TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+
+                colQuantity.CellTemplate = templateQuantity;
+                colQuantity.ClipboardContentBinding = new Binding(String.Format("Column{0}", sizeBinding));
+                dgDetail.Columns.Add(colQuantity);
+            }
+
+            dt.Columns.Add("Total", typeof(Int32));
+            DataGridTemplateColumn colTotal = new DataGridTemplateColumn();
+            colTotal.Header = String.Format("Total");
+            DataTemplate templateTotal = new DataTemplate();
+            FrameworkElementFactory tblTotal = new FrameworkElementFactory(typeof(TextBlock));
+            templateTotal.VisualTree = tblTotal;
+            tblTotal.SetBinding(TextBlock.TextProperty, new Binding(String.Format("Total")));
+            tblTotal.SetValue(TextBlock.VerticalAlignmentProperty, VerticalAlignment.Center);
+            tblTotal.SetValue(TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+            tblTotal.SetValue(TextBlock.PaddingProperty, new Thickness(3, 3, 3, 3));
+            colTotal.CellTemplate = templateTotal;
+            colTotal.ClipboardContentBinding = new Binding(String.Format("Total"));
+            dgDetail.Columns.Add(colTotal);
+
+            // Binding Data
+            var productNoList = OSMaterialList.Select(s => s.ProductNo).Distinct().ToList();
+            if (productNoList.Count() > 0)
+                productNoList = productNoList.OrderBy(o => o).ToList();
+            foreach (var productNo in productNoList)
+            {
+                var osMatCheckByPO = osMatCheckDetailList.Where(w => w.ProductNo.Equals(productNo)).ToList();
+                var sizeRunByPO = sizeRunList.Where(w => w.ProductNo.Equals(productNo)).ToList();
+
+                var osMaterialByPO = OSMaterialList.Where(w => w.ProductNo.Equals(productNo)).ToList();
+                var supplierIdList = osMaterialByPO.Select(s => s.OutsoleSupplierId).Distinct().ToList();
+
+                // If PO not yet deliver
+                if (osMaterialByPO.Count() == 0)
+                    continue;
+
+                var addPO = false;
+                foreach (var supplierId in supplierIdList)
+                {
+                    var osMaterialBySupp = osMaterialByPO.Where(w => w.OutsoleSupplierId.Equals(supplierId)).ToList();
+                    // If Supplier not yet deliver
+                    if (osMaterialBySupp.Count() == 0)
+                        continue;
+                    var sizeNoListBySupp = osMaterialBySupp.Select(s => s.SizeNo).Distinct().ToList();
+                    var osMatCheckBySupp = osMatCheckByPO.Where(w => w.OutsoleSupplierId.Equals(supplierId)).ToList();
+
+                    int totalDelivery = osMaterialBySupp.Sum(s => s.Quantity);
+                    int totalChecked = osMatCheckBySupp.Sum(s => s.Checked + s.QtyReturn);
+
+                    if (totalDelivery == totalChecked)
+                        continue;
+
+                    DataRow dr = dt.NewRow();
+                    if (addPO == false)
+                    {
+                        dr["ProductNo"] = productNo;
+                        addPO = true;
+                    }
+                    var rowColor = Brushes.Black;
+                    if (totalChecked == 0)
+                        rowColor = Brushes.Red;
+
+                    dr["Name"] = osMaterialBySupp.FirstOrDefault().Name;
+                    int totalNotCheck = 0;
+                    List<string> sizeOSAddedList = new List<string>();
+                    foreach (var sizeNo in sizeNoListBySupp)
+                    {
+                        string sizeBinding = sizeNo.Contains(".") ? sizeNo.Replace(".", "@") : sizeNo;
+                        var sizeRunByOrderSize = sizeRunByPO.FirstOrDefault(f => f.SizeNo == sizeNo);
+                        var sizeOSListBySizeOrder = sizeRunByPO.Where(w => w.OutsoleSize == sizeRunByOrderSize.OutsoleSize
+                                                                        && !String.IsNullOrEmpty(w.OutsoleSize)).Select(s => s.OutsoleSize).ToList();
+
+                        int qtyDelivery = osMaterialBySupp.FirstOrDefault(f => f.SizeNo.Equals(sizeNo)).Quantity;
+                        int qtyChecked = 0, qtyNotCheck = 0;
+                        
+                        if (sizeOSListBySizeOrder.Count() > 1)
+                        {
+                            if (!sizeOSAddedList.Contains(sizeOSListBySizeOrder.FirstOrDefault()))
+                            {
+                                foreach (var sizeOS in sizeOSListBySizeOrder.Distinct())
+                                {
+                                    var sizeOrderListBySizeOS = sizeRunByPO.Where(w => w.OutsoleSize.Equals(sizeOS)).Select(s => s.SizeNo).ToList();
+                                    qtyDelivery = osMaterialBySupp.Where(w => sizeOrderListBySizeOS.Contains(w.SizeNo)).Sum(s => s.Quantity);
+
+                                    var osMatCheckBySize = osMatCheckBySupp.FirstOrDefault(f => f.SizeNo.Equals(sizeOS));
+                                    if (osMatCheckBySize != null)
+                                        qtyChecked += osMatCheckBySize.Checked + osMatCheckBySize.QtyReturn;
+                                    sizeOSAddedList.Add(sizeOSListBySizeOrder.FirstOrDefault());
+                                }
+                                qtyNotCheck = qtyDelivery - qtyChecked;
+                            }
+                        }
+                        else if (sizeOSListBySizeOrder.Count() > 0)
+                        {
+                            qtyChecked = osMatCheckBySupp.Where(w => w.SizeNo == sizeOSListBySizeOrder.FirstOrDefault()).Sum(s => s.Checked + s.QtyReturn);
+                            qtyNotCheck = qtyDelivery - qtyChecked;
+                        }
+                        else
+                        {
+                            qtyChecked = osMatCheckBySupp.Where(w => w.SizeNo == sizeRunByOrderSize.SizeNo).Sum(s => s.Checked + s.QtyReturn);
+                            qtyNotCheck = qtyDelivery - qtyChecked;
+                        }
+
+                        if (qtyNotCheck > 0)
+                        {
+                            dr[String.Format("Column{0}", sizeBinding)] = qtyNotCheck;
+                            dr[String.Format("ColumnForeground{0}", sizeBinding)] = rowColor;
+                            totalNotCheck += qtyNotCheck;
+                        }
+                    }
+                    if (totalNotCheck > 0)
+                        dr["Total"] = totalNotCheck;
+                    dt.Rows.Add(dr);
+                }
+            }
+            dgDetail.ItemsSource = dt.AsDataView();
+            dgDetail.Items.Refresh();
+        }
+
+        private void cboSupplierInventory_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string filterWhat = txtPOFilter.Text.Trim().ToUpper().ToString();
+            if (firstLoadDetail == true)
+            {
+                var supplierClicked = cboSupplierInventory.SelectedItem as OutsoleSuppliersModel;
+                if (supplierClicked.OutsoleSupplierId != -999)
+                {
+                    OSMaterialFilter = OSMaterialList.Where(w => w.OutsoleSupplierId == supplierClicked.OutsoleSupplierId).ToList();
+                    OSMatCheckFilter = osMatCheckDetailList.Where(w => w.OutsoleSupplierId == supplierClicked.OutsoleSupplierId).ToList();
+                }
+                else
+                {
+                    OSMaterialFilter = OSMaterialList.ToList();
+                    OSMatCheckFilter = osMatCheckDetailList.ToList();
+                }
+                if (!String.IsNullOrEmpty(filterWhat))
+                {
+                    OSMaterialFilter = OSMaterialFilter.Where(w => w.ProductNo.Contains(filterWhat)).ToList();
+                    OSMatCheckFilter = osMatCheckDetailList.Where(w => w.ProductNo.Contains(filterWhat)).ToList();
+                }
+                LoadDataInventory(OSMaterialFilter, OSMatCheckFilter);
+            }
+        }
+        
+        private void btnFilter_Click(object sender, RoutedEventArgs e)
+        {
+            string filterWhat = txtPOFilter.Text.Trim().ToUpper().ToString();
+            var supplierClicked = cboSupplierInventory.SelectedItem as OutsoleSuppliersModel;
+            if (firstLoadDetail == true)
+            {
+                if (!String.IsNullOrEmpty(filterWhat))
+                {
+                    OSMaterialFilter = OSMaterialList.Where(w => w.ProductNo.Contains(filterWhat)).ToList();
+                    OSMatCheckFilter = osMatCheckDetailList.Where(w => w.ProductNo.Contains(filterWhat)).ToList();
+                }
+                else
+                {
+                    OSMaterialFilter = OSMaterialList.ToList();
+                    OSMatCheckFilter = osMatCheckDetailList.ToList();
+                }
+
+                if (supplierClicked.OutsoleSupplierId != -999)
+                {
+                    OSMaterialFilter = OSMaterialFilter.Where(w => w.OutsoleSupplierId == supplierClicked.OutsoleSupplierId).ToList();
+                    OSMatCheckFilter = OSMatCheckFilter.Where(w => w.OutsoleSupplierId == supplierClicked.OutsoleSupplierId).ToList();
+                }
+                else
+                {
+                    OSMaterialFilter = OSMaterialFilter.ToList();
+                    OSMatCheckFilter = OSMatCheckFilter.ToList();
+                }
+                LoadDataInventory(OSMaterialFilter, OSMatCheckFilter);
+            }
+        }
+        
+        private void txtPOFilter_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            btnSearch.IsDefault = false;
+            btnFilter.IsDefault = true;
+        }
+        private void txtPoSearch_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            btnFilter.IsDefault = false;
+            btnSearch.IsDefault = true;
         }
     }
 }

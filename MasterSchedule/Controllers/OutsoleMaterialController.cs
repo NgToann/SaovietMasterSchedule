@@ -34,6 +34,15 @@ namespace MasterSchedule.Controllers
                 return db.ExecuteStoreQuery<OutsoleMaterialModel>("EXEC spm_SelectOutsoleMaterialByProductNo @ProductNo", @ProductNo).ToList();
             }
         }
+        //
+        public static List<OutsoleMaterialModel> SelectByOSCode(string osCode)
+        {
+            var @OutsoleCode = new SqlParameter("@OutsoleCode", osCode);
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleMaterialModel>("EXEC spm_SelectOutsoleMaterialByOutsoleCode @OutsoleCode", @OutsoleCode).ToList();
+            }
+        }
 
         // IsEnable = 1
         public static List<OutsoleMaterialModel> SelectByOutsoleRawMaterial()
@@ -93,12 +102,30 @@ namespace MasterSchedule.Controllers
             }
         }
 
+        public static bool UpdateByOSCheck(OutsoleMaterialModel model)
+        {
+            var @ProductNo          = new SqlParameter("@ProductNo", model.ProductNo);
+            var @OutsoleSupplierId  = new SqlParameter("@OutsoleSupplierId", model.OutsoleSupplierId);
+            var @SizeNo             = new SqlParameter("@SizeNo", model.SizeNo);
+            var @QuantityReject     = new SqlParameter("@QuantityReject", model.QuantityReject);
+
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                if (db.ExecuteStoreCommand("EXEC spm_UpdateOutsoleMaterialByOSCheck @ProductNo, @OutsoleSupplierId, @SizeNo, @QuantityReject",
+                                                                                    @ProductNo, @OutsoleSupplierId, @SizeNo, @QuantityReject) >= 1)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         public static bool UpdateRejectFromOutsoleMaterialDetail(OutsoleMaterialModel model)
         {
-            var @ProductNo = new SqlParameter("@ProductNo", model.ProductNo);
-            var @OutsoleSupplierId = new SqlParameter("@OutsoleSupplierId", model.OutsoleSupplierId);
-            var @SizeNo = new SqlParameter("@SizeNo", model.SizeNo);
-            var @QuantityReject = new SqlParameter("@QuantityReject", model.QuantityReject);
+            var @ProductNo          = new SqlParameter("@ProductNo", model.ProductNo);
+            var @OutsoleSupplierId  = new SqlParameter("@OutsoleSupplierId", model.OutsoleSupplierId);
+            var @SizeNo             = new SqlParameter("@SizeNo", model.SizeNo);
+            var @QuantityReject     = new SqlParameter("@QuantityReject", model.QuantityReject);
 
             using (var db = new SaovietMasterScheduleEntities())
             {

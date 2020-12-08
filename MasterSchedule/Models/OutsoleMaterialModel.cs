@@ -9,6 +9,7 @@ namespace MasterSchedule.Models
     {
         public string ProductNo { get; set; }
         public int OutsoleSupplierId { get; set; }
+        public string Name { get; set; }
         public string SizeNo { get; set; }
         public int Quantity { get; set; }
         public int QuantityReject { get; set; }

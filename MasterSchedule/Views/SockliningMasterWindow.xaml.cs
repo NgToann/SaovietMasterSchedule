@@ -55,6 +55,7 @@ namespace MasterSchedule.Views
         List<String> insockBalanceUpdateList;
 
         RawMaterialSearchBoxWindow searchBox;
+        List<String> productNoPrintList;
 
         public SockliningMasterWindow(AccountModel account)
         {
@@ -97,6 +98,7 @@ namespace MasterSchedule.Views
             insoleBalanceUpdateList = new List<String>();
             insockBalanceUpdateList = new List<String>();
 
+            productNoPrintList = new List<string>();
             searchBox = new RawMaterialSearchBoxWindow();
 
         }
@@ -1035,6 +1037,7 @@ namespace MasterSchedule.Views
                     if (sockliningMasterView != null)
                     {
                         sockliningMasterView.ProductNoBackground = Brushes.Transparent;
+                        productNoPrintList.RemoveAll(r => r.Equals(sockliningMasterView.ProductNo));
                     }
                 }
             }
@@ -1044,6 +1047,8 @@ namespace MasterSchedule.Views
                 if (sockliningMasterView != null)
                 {
                     sockliningMasterView.ProductNoBackground = Brushes.RoyalBlue;
+                    if (!productNoPrintList.Contains(sockliningMasterView.ProductNo))
+                        productNoPrintList.Add(sockliningMasterView.ProductNo);
                 }
             }
         }
@@ -1117,7 +1122,15 @@ namespace MasterSchedule.Views
                 this.Cursor = Cursors.Wait;
                 bwInsert.RunWorkerAsync();
             }
-        }   
-
+        }
+        private void miPrintSizeRun_Click(object sender, RoutedEventArgs e)
+        {
+            if (productNoPrintList.Count <= 0 || MessageBox.Show(String.Format("Confirm Print {0} PO ?", productNoPrintList.Count()), this.Title, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+            {
+                return;
+            }
+            PrintSizeRunWindow window = new PrintSizeRunWindow(String.Join("; ", productNoPrintList));
+            window.Show();
+        }
     }
 }

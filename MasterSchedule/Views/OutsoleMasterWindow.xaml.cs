@@ -483,8 +483,14 @@ namespace MasterSchedule.Views
                         int dayOutsoleAddition = 0;
                         for (int i = 0; i <= outsoleMasterViewLineList.Count - 1; i++)
                         {
+                            
                             #region Caculate for Outsole
                             OutsoleMasterViewModel outsoleMasterView = outsoleMasterViewLineList[i];
+                            // Test
+                            if (outsoleMasterView.ProductNo == "109-7108")
+                            {
+                                var x = outsoleMasterView.ProductNo;
+                            }
                             int qtyOutsoleQuota = outsoleMasterView.OutsoleQuota;
                             int optOutsole = 0;
                             if (qtyOutsoleQuota > 0)

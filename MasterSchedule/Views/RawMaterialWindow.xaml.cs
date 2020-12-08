@@ -38,7 +38,7 @@ namespace MasterSchedule.Views
 
         List<RawMaterialViewModel> rawMaterialViewReloadList;
         List<RawMaterialViewModelNew> rawMaterialViewModelNewList;
-
+        List<RejectModel> rejectUpperAccessoriesList;
         public RawMaterialWindow(AccountModel account)
         {
             InitializeComponent();
@@ -76,12 +76,14 @@ namespace MasterSchedule.Views
 
             rawMaterialViewReloadList = new List<RawMaterialViewModel>();
             rawMaterialViewModelNewList = new List<RawMaterialViewModelNew>();
+            rejectUpperAccessoriesList = new List<RejectModel>();
         }
 
         private void bwLoad_DoWork(object sender, DoWorkEventArgs e)
         {
             productionMemoList = ProductionMemoController.Select();
             rawMaterialViewModelNewList = RawMaterialController.Select_1();
+            rejectUpperAccessoriesList = RejectController.GetRejectUpperAccessories();
 
             int index = 1;
             foreach (var x in rawMaterialViewModelNewList)
@@ -1104,17 +1106,19 @@ namespace MasterSchedule.Views
                             return;
                         }
                         string productNo = rawMaterialView.ProductNo;
-                        var window = new UpperComponentRawMaterialWindow(productNo);
+                        //var window = new UpperComponentRawMaterialWindow(productNo);
+                        //window.ShowDialog();
+                        //if (window.DialogResult == true && window.rawMaterial.IsETDUpdate == true)
+                        //{
+                        //    rawMaterialCellChangedList.Add(new RawMaterialCellChangedModel
+                        //    {
+                        //        ProductNo = productNo,
+                        //        MaterialType = 12,
+                        //    });
+                        //    rawMaterialView.UPPERCOMPONENT_ETD = String.Format("{0:M/d}", window.rawMaterial.ETD);
+                        //}
+                        var window = new InputAccessoriesWindow(productNo, rejectUpperAccessoriesList);
                         window.ShowDialog();
-                        if (window.DialogResult == true && window.rawMaterial.IsETDUpdate == true)
-                        {
-                            rawMaterialCellChangedList.Add(new RawMaterialCellChangedModel
-                            {
-                                ProductNo = productNo,
-                                MaterialType = 12,
-                            });
-                            rawMaterialView.UPPERCOMPONENT_ETD = String.Format("{0:M/d}", window.rawMaterial.ETD);
-                        }
                     }
 
                     if (cellCurrent != null && cellCurrent.Column != null && cellCurrent.Column == Column25_2)

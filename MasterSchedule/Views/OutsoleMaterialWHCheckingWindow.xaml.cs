@@ -786,7 +786,8 @@ namespace MasterSchedule.Views
                 {
                     var sizeRunByOutsoleSizeDuplicateList_Size = sizeRunByOutsoleSizeDuplicateList.Where(s => s.OutsoleSize == sizeRun.OutsoleSize).ToList();
                     var indexOfOsSizeDuplicate = sizeRunByOutsoleSizeDuplicateList_Size.IndexOf(sizeRun);
-                    if (indexOfOsSizeDuplicate > 0)
+                    var osSizeNotEmptyList = sizeRunList.Where(w => !String.IsNullOrEmpty(w.OutsoleSize)).ToList();
+                    if (indexOfOsSizeDuplicate > 0 && osSizeNotEmptyList.Count() > 0)
                         continue;
 
                     List<String> displayDataList = new List<string>();

@@ -4,7 +4,7 @@
         Title="Master-Schedule - Update History"
         MinHeight="500" Width="700"
         WindowStartupLocation="CenterScreen" 
-        FontFamily="Arial" FontSize="15" KeyUp="Window_KeyUp"
+        FontSize="15" KeyUp="Window_KeyUp" FontFamily="Cambria"
         WindowStyle="None" ResizeMode="NoResize" BorderBrush="LightGray" BorderThickness="1,1,1,1"
         Loaded="Window_Loaded" >
     <Window.Resources>
@@ -96,7 +96,7 @@
             </Grid>
             <Grid Grid.Row="1" Margin="30,0,0,0">
                 <ScrollViewer VerticalScrollBarVisibility="Hidden">
-                    <TextBox BorderBrush="Transparent" BorderThickness="0,0,0,0" Padding="0,0,0,5" Background="{DynamicResource ResourceKey=StandardBG}" TextWrapping="Wrap" FontSize="12" x:Name="txtUpdateInformation"/>
+                    <TextBox BorderBrush="Transparent" BorderThickness="0,0,0,0" Padding="0,0,0,5" Background="{DynamicResource ResourceKey=StandardBG}" TextWrapping="Wrap" FontSize="13" x:Name="txtUpdateInformation"/>
                 </ScrollViewer>
             </Grid>
         </Grid>

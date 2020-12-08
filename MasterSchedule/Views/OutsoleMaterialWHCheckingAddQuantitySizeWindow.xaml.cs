@@ -174,7 +174,6 @@ namespace MasterSchedule.Views
             }
 
             string sizeToCompare = "";
-
             var sizeRunByOutsoleSize = sizeRunList.FirstOrDefault(f => f.OutsoleSize == sizeNoInputted);
             var sizeRunByOrderSize  = sizeRunList.FirstOrDefault(f => f.SizeNo == sizeNoInputted);
 
@@ -405,19 +404,42 @@ namespace MasterSchedule.Views
                 txtSizeNo.IsEnabled = false;
 
                 currentOSMCheckListBySupp.Add(osmCheckCurrent);
-                bwInsert.RunWorkerAsync(osmCheckCurrent);
+                object[] par = new object[] { osmCheckCurrent, currentOSMCheckListBySupp };
+                bwInsert.RunWorkerAsync(par);
             }
         }
 
         private void BwInsert_DoWork(object sender, DoWorkEventArgs e)
         {
-            var osmCheckCurrent = e.Argument as OutsoleMaterialCheckingModel;
+            var par = e.Argument as object[];
+            var osmCheckCurrent = par[0] as OutsoleMaterialCheckingModel;
+            var currentOSMCheckListBySupp = par[1] as List<OutsoleMaterialCheckingModel>;
             try
             {
                 OutsoleMaterialCheckingController.Insert(osmCheckCurrent);
+                // Update Reject to WHMasterFile.
+                var osMaterialCheckByPO = OutsoleMaterialCheckingController.SelectByPOSumBySize(osmCheckCurrent.ProductNo).ToList();
+                foreach (var sizeRun in sizeRunList)
+                {
+                    var osMaterialCheckByPOBySupplier = osMaterialCheckByPO.Where(w => w.OutsoleSupplierId == osmCheckCurrent.OutsoleSupplierId).ToList();
+
+                    var sizeCompare = String.IsNullOrEmpty(sizeRun.OutsoleSize) == false ? sizeRun.OutsoleSize : sizeRun.SizeNo;
+                    var osMatCheckBySize = osMaterialCheckByPOBySupplier.FirstOrDefault(f => f.SizeNo == sizeCompare);
+
+                    int rejectUpdate = 0;
+                    if (osMatCheckBySize != null)
+                        rejectUpdate = osMatCheckBySize.Reject - osMatCheckBySize.ReturnReject > 0 ? osMatCheckBySize.Reject - osMatCheckBySize.ReturnReject : 0;
+                    var osMaterialUpdate = new OutsoleMaterialModel()
+                    {
+                        ProductNo = osmCheckCurrent.ProductNo,
+                        OutsoleSupplierId = osmCheckCurrent.OutsoleSupplierId,
+                        SizeNo = sizeRun.SizeNo,
+                        QuantityReject = rejectUpdate
+                    };
+                    OutsoleMaterialController.UpdateByOSCheck(osMaterialUpdate);
+                }
 
                 // Tranfer to mainwindow sum order by size
-
                 // Update current list
                 currentOSMCheckListBySupp.RemoveAll(r => r.SizeNo       == osmCheckCurrent.SizeNo &&
                                                          r.CheckingDate == osmCheckCurrent.CheckingDate &&

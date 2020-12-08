@@ -13,6 +13,11 @@ namespace MasterSchedule.Models
         public int SewingVsOthersCutTypeB { get; set; }
         public int SewingVsOthersCutTypeA { get; set; }
         public bool InputReject { get; set; }
+        public bool ReadOnlyReject { get; set; }
         public string WarehouseCode { get; set; }
+        public int NoOfColumnOrderExcelFile { get; set; }
+        public bool ShowCuttingDieSizeValue { get; set; }
+        public bool ShowOSSizeValue { get; set; }
+        public bool ShowLastSizeValue { get; set; }
     }
 }

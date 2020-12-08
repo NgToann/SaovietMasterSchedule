@@ -16,6 +16,7 @@ using System.Globalization;
 using System.Windows.Media;
 using System.Data.Metadata.Edm;
 using System.Configuration;
+using System.Text.RegularExpressions;
 
 namespace MasterSchedule.Views
 {
@@ -121,10 +122,10 @@ namespace MasterSchedule.Views
 
         private void bwLoadData_DoWork(object sender, DoWorkEventArgs e)
         {
-            outsoleSupplierList = OutsoleSuppliersController.Select();
-            outsoleMaterialList = OutsoleMaterialController.Select(productNo);
-            sizeRunList = SizeRunController.Select(productNo);
-            outsoleRawMaterialList = OutsoleRawMaterialController.Select(productNo);
+            outsoleSupplierList     = OutsoleSuppliersController.Select();
+            outsoleMaterialList     = OutsoleMaterialController.Select(productNo);
+            sizeRunList             = SizeRunController.Select(productNo);
+            outsoleRawMaterialList  = OutsoleRawMaterialController.Select(productNo);
             outsoleMaterialRackPositionList = OutsoleMaterialRackPositionController.Select(productNo);
 
             currentReleasePaintingList  = OutsoleMaterialReleasePaintingController.Select(productNo);
@@ -157,6 +158,10 @@ namespace MasterSchedule.Views
             dt.Columns.Add("Supplier", typeof(OutsoleSuppliersModel));
             dt.Columns.Add("ETD", typeof(String));
             dt.Columns.Add("ActualDate", typeof(String));
+
+            var regex = new Regex("[a-z]|[A-Z]");
+            if (sizeRunList.Count() > 0)
+                sizeRunList = sizeRunList.OrderBy(s => regex.IsMatch(s.SizeNo) ? Double.Parse(regex.Replace(s.SizeNo, "100")) : Double.Parse(s.SizeNo)).ToList();
 
             for (int i = 0; i <= sizeRunList.Count - 1; i++)
             {
@@ -220,17 +225,17 @@ namespace MasterSchedule.Views
                     dr["ActualDate"] = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", dtActualDate);
                 }
 
-                var deleveriedList = outsoleMaterialList.Where(w => w.OutsoleSupplierId == supplierIDLoad).ToList();
-                if (deleveriedList.Sum(s => s.Quantity - s.QuantityReject) == sizeRunList.Sum(s => s.Quantity))
-                    dr["ActualDate"] = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", deleveriedList.Max(s => s.ModifiedTime));
-                else
-                    dr["ActualDate"] = "";
+                //var deleveriedList = outsoleMaterialList.Where(w => w.OutsoleSupplierId == supplierIDLoad).ToList();
+                //if (deleveriedList.Sum(s => s.Quantity - s.QuantityReject) == sizeRunList.Sum(s => s.Quantity))
+                //    dr["ActualDate"] = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", deleveriedList.Max(s => s.ModifiedTime));
+                //else
+                //    dr["ActualDate"] = "";
 
                 DataRow drReject = dt.NewRow();
                 DataRow drRejectAssembly = dt.NewRow();
                 DataRow drRejectStockfit = dt.NewRow();
 
-                drReject["Supplier"] = outsoleSupplierModifiedList.FirstOrDefault(f => f.OutsoleSupplierId == supplierIDLoad && f.Name == _REJECT);
+                drReject["Supplier"]         = outsoleSupplierModifiedList.FirstOrDefault(f => f.OutsoleSupplierId == supplierIDLoad && f.Name == _REJECT);
                 drRejectAssembly["Supplier"] = outsoleSupplierModifiedList.FirstOrDefault(f => f.OutsoleSupplierId == supplierIDLoad && f.Name == _REJECT_ASSEMBLY);
                 drRejectStockfit["Supplier"] = outsoleSupplierModifiedList.FirstOrDefault(f => f.OutsoleSupplierId == supplierIDLoad && f.Name == _REJECT_STOCKFIT);
 
@@ -533,15 +538,15 @@ namespace MasterSchedule.Views
         private void btnCompleted_Click(object sender, RoutedEventArgs e)
         {
             DataRow dr = ((DataRowView)dgOutsoleMaterial.CurrentItem).Row;
-            if (dr == null)
+            var supplierOKClicked = dr["Supplier"] as OutsoleSuppliersModel;
+            if (supplierOKClicked == null || supplierOKClicked.Name == _REJECT || supplierOKClicked.Name == _REJECT_ASSEMBLY || supplierOKClicked.Name == _REJECT_STOCKFIT)
             {
                 return;
             }
-            var outsoleSupplier = dr["Supplier"] as OutsoleSuppliersModel;
-            if (outsoleSupplier == null || outsoleSupplier.Name == _REJECT || outsoleSupplier.Name == _REJECT_ASSEMBLY || outsoleSupplier.Name == _REJECT_STOCKFIT)
-            {
-                return;
-            }
+
+            //if (outsoleMaterialList.Where(w => w.OutsoleSupplierId == supplierOKClicked.OutsoleSupplierId).Sum(s => s.Quantity)
+            //    >= sizeRunList.Sum(s => s.Quantity))
+            //    return;
 
             // Get RejectCurrent
             int totalReject = 0;
@@ -549,7 +554,7 @@ namespace MasterSchedule.Views
             {
                 DataRow drCurrent = dt.Rows[r];
                 var outsoleSupplierRowBelow = drCurrent["Supplier"] as OutsoleSuppliersModel;
-                if (outsoleSupplierRowBelow == outsoleSupplier)
+                if (outsoleSupplierRowBelow == supplierOKClicked)
                 {
                     DataRow drRejectCurrent = dt.Rows[r + 1];
                     for (int i = 0; i < sizeRunList.Count; i++)
@@ -562,7 +567,7 @@ namespace MasterSchedule.Views
             }
 
             // Check Quantity Old            
-            int totalQtyOld = 0;
+            int totalQtyOld = 0, totalQtyCurrent = 0;
 
             for (int i = 0; i <= sizeRunList.Count - 1; i++)
             {
@@ -571,7 +576,7 @@ namespace MasterSchedule.Views
                 dr[String.Format("Column{0}Foreground", i)] = Brushes.Black;
 
                 int qtyOld = 0, qtyCurrent = 0;
-                qtyOld = outsoleMaterialList.Where(o => o.OutsoleSupplierId == outsoleSupplier.OutsoleSupplierId && o.SizeNo == sizeRun.SizeNo).Sum(o => o.Quantity);
+                qtyOld = outsoleMaterialList.Where(o => o.OutsoleSupplierId == supplierOKClicked.OutsoleSupplierId && o.SizeNo == sizeRun.SizeNo).Sum(o => o.Quantity);
                 totalQtyOld += qtyOld;
 
                 if (qtyOld > 0)
@@ -579,10 +584,11 @@ namespace MasterSchedule.Views
                 else
                     qtyCurrent = sizeRun.Quantity;
 
+                totalQtyCurrent += qtyCurrent;
                 var osmDeliveryDetail = new OutsoleMaterialDeliveryDetailModel()
                 {
                     ProductNo = productNo,
-                    OutsoleSupplierId = outsoleSupplier.OutsoleSupplierId,
+                    OutsoleSupplierId = supplierOKClicked.OutsoleSupplierId,
                     SizeNo = sizeRun.SizeNo,
                     QuantityCurrent = qtyCurrent,
                 };
@@ -590,10 +596,16 @@ namespace MasterSchedule.Views
             }
 
             dr["Balance"] = "";
-            if (totalQtyOld == sizeRunList.Sum(s => s.Quantity) && totalReject > 0)
-                dr["ActualDate"] = "";
+            //if (totalQtyOld == sizeRunList.Sum(s => s.Quantity) && totalReject > 0)
+            if (totalQtyOld == sizeRunList.Sum(s => s.Quantity))
+            {
+                return;
+                //dr["ActualDate"] = "";
+            }
+                
 
-            if (totalQtyOld != sizeRunList.Sum(s => s.Quantity) && totalReject <= 0)
+            //if (totalQtyOld != sizeRunList.Sum(s => s.Quantity) && totalReject <= 0)
+            if (totalQtyOld != sizeRunList.Sum(s => s.Quantity))
                 dr["ActualDate"] = String.Format(new CultureInfo("en-US"), "{0:M/dd}", DateTime.Now);
 
             dgOutsoleMaterial.ItemsSource = null;
@@ -604,14 +616,12 @@ namespace MasterSchedule.Views
         {
             if (e.Column.GetValue(TagProperty) == null)
                 return;
-
             string sizeNo = e.Column.GetValue(TagProperty).ToString();
             if (sizeRunList.Select(s => s.SizeNo).Contains(sizeNo) == false)
             {
                 return;
             }
             var outsoleSupplier = (OutsoleSuppliersModel)((DataRowView)e.Row.Item)["Supplier"];
-
             var osMaterialDeliveryDetail = new OutsoleMaterialDeliveryDetailModel()
             {
                 ProductNo = productNo,
@@ -724,7 +734,8 @@ namespace MasterSchedule.Views
                         rejectTotalCurrent += rejectCurrent;
                     }
 
-                    if (rejectTotalCurrent > 0 || (sizeRunList.Sum(s => s.Quantity) - qtyTotal) > 0 || rejectAssemblyTotal > 0 || rejectStockfitTotal > 0)
+                    //if (rejectTotalCurrent > 0 || (sizeRunList.Sum(s => s.Quantity) - qtyTotal) > 0 || rejectAssemblyTotal > 0 || rejectStockfitTotal > 0)
+                    if ((sizeRunList.Sum(s => s.Quantity) - qtyTotal) > 0 || rejectAssemblyTotal > 0 || rejectStockfitTotal > 0)
                         dr["ActualDate"] = "";
                     else
                         dr["ActualDate"] = String.Format(new CultureInfo("en-US"), "{0:M/dd}", DateTime.Now);
@@ -766,6 +777,9 @@ namespace MasterSchedule.Views
         {
             try
             {
+                if (dgOutsoleMaterial.CurrentItem == null)
+                    return;
+
                 var rowClicked = dgOutsoleMaterial.CurrentItem as DataRowView;
                 DataRow drCurrent = ((DataRowView)dgOutsoleMaterial.CurrentItem).Row;
 
@@ -792,7 +806,7 @@ namespace MasterSchedule.Views
                 Int32.TryParse(contentOnCellString.Split(';')[1].ToString().Trim(), out cartonNo);
 
                 var rackNeedUpdate = outsoleMaterialRackPositionList.Where(w => w.OutsoleSupplierId == supplierClicked.OutsoleSupplierId &&
-                                                                           w.RackNumber == rackNo && w.CartonNumber == cartonNo).ToList();
+                                                                           w.RackNumber.Trim().Equals(rackNo) && w.CartonNumber.Equals(cartonNo)).ToList();
 
                 if (rackNeedUpdate.Count() <= 0)
                     return;
@@ -904,7 +918,7 @@ namespace MasterSchedule.Views
             foreach (var supplierID in supplierIDList)
             {
                 int columnID = 1;
-                var rackList_Supplier = outsoleMaterialRackPositionList.Where(w => w.OutsoleSupplierId == supplierID).ToList();
+                var rackList_Supplier = outsoleMaterialRackPositionList.OrderBy(o => o.CreatedTime != null ? o.CreatedTime : new DateTime(2000, 01, 01)).Where(w => w.OutsoleSupplierId == supplierID).ToList();
                 var racks = rackList_Supplier.Select(s => s.RackNumber).Distinct().ToList();
                 foreach (var rack in racks)
                 {
@@ -1301,6 +1315,17 @@ namespace MasterSchedule.Views
         private void radNotInputReject_Checked(object sender, RoutedEventArgs e)
         {
             definePrivate.InputReject = false;
+        }
+
+        private void dgOutsoleMaterial_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+        {
+            var outsoleSupplier = (OutsoleSuppliersModel)((DataRowView)e.Row.Item)["Supplier"];
+            // Not Allow Input Reject
+            if (outsoleSupplier != null && outsoleSupplier.Name.Equals(_REJECT))
+            {
+                if (definePrivate.ReadOnlyReject)
+                    e.Cancel = true;
+            }
         }
 
         private class ReleaseTemp

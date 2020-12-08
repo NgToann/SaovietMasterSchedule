@@ -22,13 +22,17 @@ namespace MasterSchedule.Views
     {
         BackgroundWorker bwPreview;
         List<PrintSizeRunModel> printSizeRunList;
-        public PrintSizeRunWindow()
+        string productNoListPar;
+        PrivateDefineModel privateDef;
+        public PrintSizeRunWindow(string productNoListPar)
         {
+            this.productNoListPar = productNoListPar;
             bwPreview = new BackgroundWorker();
             bwPreview.DoWork += BwPreview_DoWork;
             bwPreview.RunWorkerCompleted += BwPreview_RunWorkerCompleted;
 
             printSizeRunList = new List<PrintSizeRunModel>();
+            privateDef = new PrivateDefineModel();
             InitializeComponent();
         }
 
@@ -36,6 +40,7 @@ namespace MasterSchedule.Views
         {
             printSizeRunList = new List<PrintSizeRunModel>();
             var lisfOfPOSearch = e.Argument as List<String>;
+            privateDef = PrivateDefineController.GetDefine();
             foreach (var po in lisfOfPOSearch.Distinct().ToList())
             {
                 printSizeRunList.AddRange(PrintSizeRunController.GetByPO(po.Trim().ToUpper().ToString()));
@@ -56,7 +61,6 @@ namespace MasterSchedule.Views
                 templatePO.VisualTree = tblPO;
                 tblPO.SetValue(TextBlock.TextProperty, "");
                 tblPO.SetBinding(TextBlock.TextProperty, new Binding(String.Format("ProductNo")));
-                //tblPO.SetValue(TextBlock.FontWeightProperty, FontWeights.SemiBold);
                 tblPO.SetValue(TextBlock.VerticalAlignmentProperty, VerticalAlignment.Center);
                 tblPO.SetValue(TextBlock.PaddingProperty, new Thickness(3, 0, 0, 0));
                 colPO.CellTemplate = templatePO;
@@ -135,18 +139,20 @@ namespace MasterSchedule.Views
 
                 // Binding Data
                 var productNoList = printSizeRunList.Select(s => s.ProductNo).Distinct().ToList(); 
-                if (productNoList.Count() > 0)
-                    productNoList = productNoList.OrderBy(o => o).ToList();
+                //if (productNoList.Count() > 0)
+                //    productNoList = productNoList.OrderBy(o => o).ToList();
                 foreach (var productNo in productNoList)
                 {
                     var printSizeRunFirst = printSizeRunList.FirstOrDefault(f => f.ProductNo == productNo);
                     var printSizeListByPO = printSizeRunList.Where(w => w.ProductNo == productNo).ToList();
 
                     DataRow dr = dt.NewRow();
+
                     dr["ProductNo"]         = productNo;
                     dr["EFD"]               = String.Format("{0:MM/dd/yyy}", printSizeRunFirst.EFD);
                     dr["SewingStartDate"]   = String.Format("{0:MM/dd/yyy}", printSizeRunFirst.SewingStartDate);
                     dr["ShoeName"]          = printSizeRunFirst.ShoeName;
+
                     foreach (var printSizeRun in printSizeListByPO)
                     {
                         var psrBySize = printSizeListByPO.FirstOrDefault(f => f.SizeNo == printSizeRun.SizeNo);
@@ -186,8 +192,14 @@ namespace MasterSchedule.Views
 
         private void btnPrint_Click(object sender, RoutedEventArgs e)
         {
-            PrintSizeRunReportWindow window = new PrintSizeRunReportWindow(printSizeRunList);
+            PrintSizeRunReportWindow window = new PrintSizeRunReportWindow(printSizeRunList, privateDef);
             window.Show();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!String.IsNullOrEmpty(productNoListPar))
+                txtProductNoList.Text = productNoListPar;
         }
     }
 }

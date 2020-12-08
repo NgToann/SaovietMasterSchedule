@@ -35,6 +35,7 @@ namespace MasterSchedule.Views
         List<SewingMasterModel> sewingMasterList;
         List<OutsoleRawMaterialModel> outsoleRawMaterial;
         List<ExportExcelModel> excelExportList;
+        private PrivateDefineModel def;
         public OutsoleWHDeliveryDetailWindow_1(string outsoleCode, List<OutsoleMaterialModel> outsoleMaterialList, List<OutsoleReleaseMaterialModel> outsoleReleaseList, List<SizeRunModel> sizeRunList, OutsoleSuppliersModel supplier, List<OrdersModel> orderList)
         {
             this.outsoleCode = outsoleCode;
@@ -56,6 +57,7 @@ namespace MasterSchedule.Views
             sewingMasterList = new List<SewingMasterModel>();
             outsoleRawMaterial = new List<OutsoleRawMaterialModel>();
             excelExportList = new List<ExportExcelModel>();
+            def = new PrivateDefineModel();
 
             InitializeComponent();
         }
@@ -76,6 +78,7 @@ namespace MasterSchedule.Views
             var productNoList = orderList.Select(s => s.ProductNo).Distinct().ToList();
             sewingMasterList = sewingMasterList.Where(w => productNoList.Contains(w.ProductNo)).ToList();
             outsoleRawMaterial = outsoleRawMaterial.Where(w => productNoList.Contains(w.ProductNo) && w.OutsoleSupplierId == supplier.OutsoleSupplierId).ToList();
+            def = PrivateDefineController.GetDefine();
 
             var regex = new Regex("[a-z]|[A-Z]");
             var sizeNoList = sizeRunList.Select(s => s.SizeNo).Distinct().OrderBy(s => regex.IsMatch(s) ? Double.Parse(regex.Replace(s, "100")) : Double.Parse(s)).ToList();
@@ -262,7 +265,12 @@ namespace MasterSchedule.Views
                     dt.Columns.Add(String.Format("ColumnForeground{0}", sizeID), typeof(SolidColorBrush));
                     dt.Columns.Add(String.Format("ColumnTooltip{0}", sizeID), typeof(String));
                     DataGridTemplateColumn colSize = new DataGridTemplateColumn();
-                    colSize.Header = String.Format("{0}\n{1}\n", sizeNoList[i], outsoleSize);
+
+                    if (def.ShowOSSizeValue)
+                        colSize.Header = String.Format("{0}\n{1}\n", sizeNoList[i], outsoleSize);
+                    else
+                        colSize.Header = String.Format("\n{0}\n", sizeNoList[i], "");
+
                     colSize.MinWidth = 35;
                     DataTemplate tplSize = new DataTemplate();
                     FrameworkElementFactory tblSize = new FrameworkElementFactory(typeof(TextBlock));

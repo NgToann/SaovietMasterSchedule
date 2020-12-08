@@ -10,6 +10,6 @@ namespace MasterSchedule.Models
         AddNew,
         Update,
         Delete,
-        None
+        None        
     }
 }

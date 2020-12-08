@@ -1,0 +1,49 @@
+﻿<Window x:Class="MasterSchedule.Views.AddMaterialPlanForProductNoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MasterSchedule.Views" WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize" FontSize="13" KeyUp="Window_KeyUp"
+        Title="Master Schedule - Add/Update Material Plan For ProductNo" MinWidth="550" Loaded="Window_Loaded">
+    <Grid Margin="2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="2"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="Accessory Name"/>
+        <TextBlock Grid.Column="2" Text="Supplier"/>
+        <TextBlock Grid.Column="4" Text="ETD"/>
+        <ComboBox Grid.Row="2" x:Name="cboAccessoryName" VerticalContentAlignment="Center" SelectionChanged="cboAccessoryName_SelectionChanged"/>
+        <ComboBox Grid.Row="2" Grid.Column="2" x:Name="cboSupplierName" DisplayMemberPath="Name" SelectedValue="SupplierId" VerticalContentAlignment="Center"/>
+        <DatePicker x:Name="dpETD" Grid.Row="2" Grid.Column="4" VerticalContentAlignment="Center"/>
+
+        <TextBlock Text="Remarks" Grid.Row="4" FontStyle="Italic" Foreground="Blue"/>
+        <TextBox x:Name="txtRemarks" Grid.Row="5" Grid.ColumnSpan="3" Height="40" Foreground="Red" TextWrapping="Wrap" BorderBrush="Black" Padding="2"/>
+
+        <Grid Grid.Row="6" Grid.Column="6">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Row="1" x:Name="btnDelete" Template="{DynamicResource ResourceKey=ButtonTemplate}" Content="Delete" Click="btnDelete_Click" IsEnabled="False"/>
+            <Button Grid.Row="1" x:Name="btnSave" Template="{DynamicResource ResourceKey=ButtonTemplate}" Grid.Column="2" Content="Save" Click="btnSave_Click"/>
+        </Grid>
+    </Grid>
+</Window>

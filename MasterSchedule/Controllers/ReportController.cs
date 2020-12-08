@@ -121,5 +121,25 @@ namespace MasterSchedule.Controllers
                 return db.ExecuteStoreQuery<ReportOutsoleInventoryModel>("EXEC reporter_OutsoleInventoryByOSLine").ToList();
             };
         }
+
+        //
+        public static List<ReportOSMaterialCheckWHInventoryModel> SelectOSMaterialWHInventory()
+        {
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<ReportOSMaterialCheckWHInventoryModel>("EXEC reporter_SelectOSMaterialWHInventory").ToList();
+            };
+        }
+
+        //
+        //
+        public static List<ReportOSMaterialCheckDetailModel> SelectOSMaterialCheckByOSCode(string outsoleCode)
+        {
+            var @OutsoleCode = new SqlParameter("@OutsoleCode", outsoleCode);
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<ReportOSMaterialCheckDetailModel>("EXEC reporter_SelectOutsoleMaterialCheckingByOutsoleCode @OutsoleCode", @OutsoleCode).ToList();
+            };
+        }
     }
 }

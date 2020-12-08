@@ -12,6 +12,7 @@
                 <MenuItem x:Name="miImport" Header="Import" IsEnabled="False">
                     <MenuItem x:Name="miImportOrders" Header="Orders List" Click="miImportOrders_Click"/>
                     <MenuItem x:Name="miInportSizeRun" Header="Size Run" Click="miInportSizeRun_Click"/>
+                    <MenuItem x:Name="miInportSizeRunAndOrders" Header="Size Run and Orders *" Click="miInportSizeRunAndOrders_Click"/>
                     <MenuItem x:Name="miImportOutsoleRawMaterial" Header="Outsole Raw Material" Click="miImportOutsoleRawMaterial_Click"/>
                     <MenuItem x:Name="miImportUpperComponent" Header="Upper Component" Click="miImportUpperComponent_Click"/>
                     <MenuItem x:Name="miImportInsockRawMaterial" Header="Insock Raw Material" Click="miImportInsockRawMaterial_Click"/>

@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" FontSize="13"
         Title="Master Schedule - Update Specify Order" Height="450" Width="800" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen">
-    <Grid>
+    <Grid Margin="2">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
@@ -25,32 +25,115 @@
                 </Grid.ColumnDefinitions>
             </Grid>
         </GroupBox>
-        <DataGrid Grid.Row="1" Margin="0,10,0,0" x:Name="dgOrders" AutoGenerateColumns="False" IsReadOnly="True" 
-                  AlternatingRowBackground="LightCyan" AlternationCount="2"
-                  HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray">
-            <DataGrid.Resources>
-                <Style TargetType="{x:Type DataGridCell}">
+        <DataGrid Grid.Row="1" Margin="0,2,0,0" x:Name="dgOrders" AutoGenerateColumns="False" AlternationCount="2" AlternatingRowBackground="LightCyan" CanUserSortColumns="True"
+                    CanUserAddRows="False" SelectionUnit="FullRow" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" LoadingRow="dgOrders_LoadingRow"
+                    RowHeaderWidth="NaN" FontFamily="Times New Roman" FontSize="14" FrozenColumnCount="1">
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
                     <Style.Triggers>
-                        <Trigger Property="DataGridCell.IsSelected" Value="True">
-                            <Setter Property="Background" Value="RoyalBlue" />
-                            <Setter Property="Foreground" Value="White" />
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="Background" Value="DeepSkyBlue"/>
+                            <Setter Property="BorderThickness" Value="0,0,0,0"/>
                         </Trigger>
                     </Style.Triggers>
                 </Style>
-            </DataGrid.Resources>
+            </DataGrid.CellStyle>
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="FontSize" Value="14"/>
+                    <Setter Property="Background" Value="LightGray"/>
+                    <Setter Property="BorderBrush" Value="Gray"/>
+                    <Setter Property="BorderThickness" Value="0.5,0.5,0.5,0"/>
+                    <Setter Property="Padding" Value="4"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
             <DataGrid.Columns>
-                <DataGridTextColumn Width="Auto" Header="Prod. No." Binding="{Binding ProductNo}"/>
-                <DataGridTextColumn Width="Auto" Header="UCustomerCode" Binding="{Binding UCustomerCode}"/>
-                <DataGridTextColumn Width="Auto" Header="GTNPONo" Binding="{Binding GTNPONo}"/>
-                <DataGridTextColumn Width="Auto" Header="EFD" Binding="{Binding ETD, StringFormat=MM/dd/yyyy}"/>
-                <DataGridTextColumn Width="Auto" Header="Article No." Binding="{Binding ArticleNo}"/>
-                <DataGridTextColumn Width="Auto" Header="Shoe Name" Binding="{Binding ShoeName}"/>
-                <DataGridTextColumn Width="Auto" Header="QTY" Binding="{Binding Quantity}"/>
-                <DataGridTextColumn Width="Auto" Header="Pattern No" Binding="{Binding PatternNo}"/>
-                <DataGridTextColumn Width="Auto" Header="Midsole" Binding="{Binding MidsoleCode}"/>
-                <DataGridTextColumn Width="Auto" Header="Outsole Code" Binding="{Binding OutsoleCode}"/>
-                <DataGridTextColumn Width="Auto" Header="Last" Binding="{Binding LastCode}"/>
-                <DataGridTextColumn Width="Auto" Header="Country" Binding="{Binding Country}"/>
+                <DataGridTemplateColumn Header="Prod. No." SortMemberPath="ProductNo">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding ProductNo}"  Margin="3,2,3,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="U.Customer&#10;     Code" SortMemberPath="UCustomerCode">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding UCustomerCode}"  Margin="3,2,3,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="GTN&#10;PONo" SortMemberPath="GTNPONo">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding GTNPONo}"  Margin="3,2,3,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="E.F.D" SortMemberPath="ETD">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding ETD, StringFormat=MM/dd/yyyy}"  Margin="3,2,3,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Article No" SortMemberPath="ArticleNo">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding ArticleNo}"  Margin="3,2,3,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Shoe Name" SortMemberPath="ShoeName">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding ShoeName}"  Margin="3,2,3,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Quantity" SortMemberPath="Quantity">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Quantity}"  Margin="3,2,3,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Pattern No" SortMemberPath="PatternNo">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding PatternNo}"  Margin="3,2,3,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Midsole Code" SortMemberPath="MidsoleCode">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding MidsoleCode}"  Margin="3,2,3,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Outsole Code" SortMemberPath="OutsoleCode">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding OutsoleCode}"  Margin="3,2,3,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Last Code" SortMemberPath="LastCode">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding LastCode}"  Margin="3,2,3,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Country" SortMemberPath="Country">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Country}"  Margin="3,2,3,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
         <Grid Grid.Row="3" Margin="0,5,0,0">
@@ -59,7 +142,7 @@
                 <ProgressBar x:Name="progressBar" Width="100" Height="15" Minimum="0" Value="0"/>
                 <TextBlock x:Name="lblStatus" Text="" FontWeight="Bold"/>
             </StatusBar>
-            <Button x:Name="btnImport" Grid.Row="2" MinWidth="150" HorizontalAlignment="Right" Content="Update" ToolTip="Click to Update to Orders Table." FontWeight="Bold" IsEnabled="False" Click="btnImport_Click"/>
+            <Button x:Name="btnImport" Grid.Row="2" Template="{DynamicResource ResourceKey=ButtonTemplate}" HorizontalAlignment="Right" Content="  Update  " ToolTip="Click to Update to Orders Table." IsEnabled="False" Click="btnImport_Click"/>
         </Grid>
         
         

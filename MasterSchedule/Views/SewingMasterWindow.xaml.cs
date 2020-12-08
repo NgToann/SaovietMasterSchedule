@@ -104,8 +104,8 @@ namespace MasterSchedule.Views
 
         private int _SEW_VS_OTHERS_CUT_A = 0;
         private int _SEW_VS_OTHERS_CUT_B = 0;
-        
 
+        List<String> productNoPrintList;
         public SewingMasterWindow(AccountModel account)
         {
             InitializeComponent();
@@ -192,6 +192,7 @@ namespace MasterSchedule.Views
             sewingMasterViewModelNewList    = new List<SewingMasterViewModelNew>();
             rawMaterialViewModelNewList     = new List<RawMaterialViewModelNew>();
             privateDefine = new PrivateDefineModel();
+            productNoPrintList = new List<string>();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -2219,6 +2220,7 @@ namespace MasterSchedule.Views
                     if (sewingMasterView != null)
                     {
                         sewingMasterView.ProductNoBackground = Brushes.Transparent;
+                        productNoPrintList.RemoveAll(r => r.Equals(sewingMasterView.ProductNo));
                     }
                 }
             }
@@ -2228,6 +2230,8 @@ namespace MasterSchedule.Views
                 if (sewingMasterView != null)
                 {
                     sewingMasterView.ProductNoBackground = Brushes.RoyalBlue;
+                    if (!productNoPrintList.Contains(sewingMasterView.ProductNo))
+                        productNoPrintList.Add(sewingMasterView.ProductNo);
                 }
             }
         }
@@ -2301,6 +2305,16 @@ namespace MasterSchedule.Views
                 this.Cursor = Cursors.Wait;
                 bwLoad.RunWorkerAsync();
             }
+        }
+
+        private void miPrintSizeRun_Click(object sender, RoutedEventArgs e)
+        {
+            if (productNoPrintList.Count <= 0 || MessageBox.Show(String.Format("Confirm Print {0} PO ?", productNoPrintList.Count()), this.Title, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+            {
+                return;
+            }
+            PrintSizeRunWindow window = new PrintSizeRunWindow(String.Join("; ", productNoPrintList));
+            window.Show();
         }
     }
 }

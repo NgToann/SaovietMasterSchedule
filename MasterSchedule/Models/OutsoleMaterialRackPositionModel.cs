@@ -15,5 +15,6 @@ namespace MasterSchedule.Models
         public string SizeNo { get; set; }
         //public string Quantity { get; set; }
         public int Pairs { get; set; }
+        public DateTime CreatedTime { get; set; }
     }
 }

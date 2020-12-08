@@ -4,7 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MasterSchedule.Views" FontSize="14"
+        xmlns:local="clr-namespace:MasterSchedule.Views" FontSize="14" FontFamily="Cambria"
         mc:Ignorable="d" WindowState="Maximized" WindowStartupLocation="CenterScreen"
         Title="Outsole Material WH Checking Report" Height="450" Width="800" Loaded="Window_Loaded">
     <Grid Margin="2">
@@ -41,7 +41,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <RadioButton x:Name="radPO" Content="Product No" VerticalContentAlignment="Center" VerticalAlignment="Bottom" GroupName="SearchWhat" IsChecked="True" Checked="radPO_Checked"/>
-                    <TextBox Grid.Column="2" x:Name="txtPoSearch" FontSize="15" VerticalContentAlignment="Center" Height="{Binding ElementName=dpFrom, Path=ActualHeight}" IsEnabled="{Binding ElementName=radPO, Path=IsChecked}" BorderBrush="Black"/>
+                    <TextBox Grid.Column="2" x:Name="txtPoSearch" FontSize="15" Padding="2,1,0,1" VerticalContentAlignment="Center" Height="{Binding ElementName=dpFrom, Path=ActualHeight}" IsEnabled="{Binding ElementName=radPO, Path=IsChecked}" BorderBrush="Black" PreviewKeyUp="txtPoSearch_PreviewKeyUp"/>
                     <RadioButton Grid.Row="2" x:Name="radDateTime" Content="Check Date" VerticalContentAlignment="Center" VerticalAlignment="Bottom" GroupName="SearchWhat" Checked="radDateTime_Checked"/>
                     <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal">
                         <TextBlock Text="From" VerticalAlignment="Bottom" Margin="0,0,2,0"/>
@@ -64,7 +64,7 @@
 
                     <TextBlock Text="Supplier" Grid.Row="6"/>
                     <ComboBox x:Name="cbSuppliers" DisplayMemberPath="Name" SelectedValue="OutsoleSupplierId" Grid.Row="6" Grid.Column="2" VerticalContentAlignment="Center" SelectionChanged="cbSuppliers_SelectionChanged"/>
-                    <Button Grid.Column="4" Grid.RowSpan="7" x:Name="btnSearch" MinWidth="80" Content="  _Search  " Template="{DynamicResource ResourceKey=ButtonTemplate}" Click="btnSearch_Click" IsDefault="True"/>
+                    <Button Grid.Column="4" Grid.RowSpan="7" x:Name="btnSearch" Content="  _Search  " Template="{DynamicResource ResourceKey=ButtonTemplate}" Click="btnSearch_Click" IsDefault="True"/>
                 </Grid>
             </Expander>
         </GroupBox>
@@ -92,6 +92,153 @@
                 <WindowsFormsHost Grid.Row="1">
                     <rpv:ReportViewer x:Name="reportViewerRejectDetail" ShowFindControls="False"/>
                 </WindowsFormsHost>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="WH Inventory" FontWeight="SemiBold" Foreground="CadetBlue" Padding="3"/>
+                        <Button x:Name="btnRefreshWHInventory" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" Cursor="Hand" Click="btnRefreshWHInventory_Click">
+                            <Button.Content>
+                                <Image Width="16" Height="16" Source="/Images/mini_refresh.png"/>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
+
+                </TabItem.Header>
+                <TabItem.Content>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid x:Name="dgInventoryByOutsole" AutoGenerateColumns="False" AlternationCount="2" FontFamily="Cambria"
+                          CanUserAddRows="False" SelectionUnit="FullRow" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" RowHeaderWidth="NaN"
+                          IsReadOnly="True" LoadingRow="dgInventoryByOutsole_LoadingRow">
+                            <DataGrid.ColumnHeaderStyle>
+                                <Style TargetType="DataGridColumnHeader">
+                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    <Setter Property="Background" Value="LightGray"/>
+                                    <Setter Property="BorderBrush" Value="Gray"/>
+                                    <Setter Property="BorderThickness" Value="0.5,0.5,0.5,0"/>
+                                    <Setter Property="Padding" Value="4,5,4,5"/>
+                                </Style>
+                            </DataGrid.ColumnHeaderStyle>
+                            <DataGrid.Resources>
+                                <Style TargetType="{x:Type DataGridCell}">
+                                    <Style.Triggers>
+                                        <Trigger Property="DataGridCell.IsSelected" Value="True">
+                                            <Setter Property="Foreground" Value="Blue" />
+                                            <Setter Property="Background" Value="LightSkyBlue" />
+                                            <Setter Property="BorderThickness" Value="0,0,0,0"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGrid.Resources>
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="O/S Code" SortMemberPath="OutsoleCode" ClipboardContentBinding="{Binding OutsoleCode}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding OutsoleCode}" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2,0,2,0"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Delivery" SortMemberPath="QuantityDelivery" ClipboardContentBinding="{Binding QuantityDelivery}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding QuantityDelivery, StringFormat=N0}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2,0,2,0"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Checked" SortMemberPath="QuantityChecked" ClipboardContentBinding="{Binding QuantityChecked}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding QuantityChecked, StringFormat=N0}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2,0,2,0"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Reject" SortMemberPath="QuantityReject, StringFormat=N0" ClipboardContentBinding="{Binding QuantityReject}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding QuantityReject}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2,0,2,0"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Return" SortMemberPath="QuantityReturn" ClipboardContentBinding="{Binding QuantityReturn}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding QuantityReturn, StringFormat=N0}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2,0,2,0"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Not Check" SortMemberPath="QuantityNotCheck" ClipboardContentBinding="{Binding QuantityNotCheck}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding QuantityNotCheck,StringFormat=N0}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2,0,2,0"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button x:Name="btnViewDetail" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" Cursor="Hand" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2,0,2,0" Click="btnViewDetail_Click" ToolTip="View Detail">
+                                                <Button.Content>
+                                                    <Image Width="14" Height="14" Source="/Images/large_chart.png"/>
+                                                </Button.Content>
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Grid Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="tblTitleReportDetail" FontSize="17" FontFamily="Cambria" FontWeight="SemiBold"/>
+                                <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+                                    <ComboBox x:Name="cboSupplierInventory" DisplayMemberPath="Name" SelectedValue="OutsoleSupplierId" VerticalContentAlignment="Center" FontFamily="Cambria" SelectionChanged="cboSupplierInventory_SelectionChanged"/>
+                                    <TextBox Margin="2,0,0,0" x:Name="txtPOFilter" MinWidth="120" BorderBrush="Black" VerticalContentAlignment="Center" Padding="2,1,0,1" FontFamily="Cambria" FontSize="16" PreviewKeyUp="txtPOFilter_PreviewKeyUp" ToolTip="Input ProductNo"/>
+                                    <Button x:Name="btnFilter" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" Cursor="Hand" Click="btnFilter_Click">
+                                        <Button.Content>
+                                            <Image Width="18" Height="18" Source="/Images/search.png"/>
+                                        </Button.Content>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                            <DataGrid Grid.Row="1" Margin="0,2,0,0" x:Name="dgDetail" AutoGenerateColumns="False" AlternationCount="2" FontFamily="Cambria" CanUserSortColumns="False"
+                              CanUserAddRows="False" SelectionUnit="FullRow" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" RowHeaderWidth="NaN"
+                              IsReadOnly="True" LoadingRow="dgDetail_LoadingRow" FontSize="13" FrozenColumnCount="2">
+                                <DataGrid.ColumnHeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                        <Setter Property="Background" Value="LightGray"/>
+                                        <Setter Property="BorderBrush" Value="Gray"/>
+                                        <Setter Property="BorderThickness" Value="0.5,0.5,0.5,0"/>
+                                        <Setter Property="Padding" Value="4,5,4,5"/>
+                                    </Style>
+                                </DataGrid.ColumnHeaderStyle>
+                                <DataGrid.Resources>
+                                    <Style TargetType="{x:Type DataGridCell}">
+                                        <Style.Triggers>
+                                            <Trigger Property="DataGridCell.IsSelected" Value="True">
+                                                <Setter Property="Foreground" Value="Blue" />
+                                                <Setter Property="Background" Value="LightSkyBlue" />
+                                                <Setter Property="BorderThickness" Value="0,0,0,0"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGrid.Resources>
+                            </DataGrid>
+                        </Grid>
+                    </Grid>
+                </TabItem.Content>
             </TabItem>
         </TabControl>
         

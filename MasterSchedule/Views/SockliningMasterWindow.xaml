@@ -61,8 +61,9 @@
                 </Style>
             </DataGrid.Resources>
             <DataGrid.ContextMenu>
-                <ContextMenu x:Name="ctmTranfer" Visibility="Collapsed">
-                    <MenuItem x:Name="miTranfer" Header="Tranfer to Socklining Master" Click="miTranfer_Click"/>
+                <ContextMenu x:Name="ctmTranfer">
+                    <MenuItem x:Name="miTranfer" Header="Tranfer to Socklining Master" Click="miTranfer_Click" Visibility="Collapsed"/>
+                    <MenuItem x:Name="miPrintSizeRun" Header="Print Request Form Socklining W.H" Click="miPrintSizeRun_Click"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.Columns>
