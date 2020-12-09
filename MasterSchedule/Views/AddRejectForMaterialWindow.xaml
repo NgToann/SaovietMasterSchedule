@@ -4,37 +4,72 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MasterSchedule.Views" Loaded="Window_Loaded"
-        mc:Ignorable="d" FontSize="13" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight"
-        Title="MasterScheduel - Add/Update Accessories Reject" Width="600">
-    <Grid>
+        mc:Ignorable="d" FontSize="13" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" SizeToContent="WidthAndHeight"
+        Title="MasterScheduel - Add/Update Accessories Reject"  MaxWidth="600" MinWidth="600"> 
+    <Grid Margin="2">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid x:Name="gridError">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-        </Grid>
+        <GroupBox Grid.Row="1" Margin="0,2,0,0" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
+            <GroupBox.Header>
+                <Border Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
+                    <TextBlock x:Name="tblGroupHeader" Text="List of Defects" Foreground="Red" Padding="10,0,10,0"/>
+                </Border>
+            </GroupBox.Header>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Grid x:Name="gridError">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                </Grid>
+                <TextBlock Margin="0,5,0,0" Padding="2" Background="LightGray" Grid.Row="1" x:Name="tblRejectClicked" FontSize="14" Foreground="Red" TextWrapping="Wrap"/>
+            </Grid>
+            
+        </GroupBox>
         <Grid Grid.Row="2" Margin="0,2,0,0" MaxHeight="200">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
+                <ColumnDefinition Width="10"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Vertical">
-                <TextBlock Text="SizeNo"/>
-                <TextBox x:Name="txtSizeNo" FontSize="40" Text="4.5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+                <TextBlock HorizontalAlignment="Center" Text="#SizeNo" FontSize="20"/>
+                <TextBox x:Name="txtSizeNo" FontSize="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1,1,1,1"/>
             </StackPanel>
-            <StackPanel Orientation="Vertical" Grid.Column="1">
-                <TextBlock Text="Quantity"/>
-                <TextBox x:Name="txtQuantity" FontSize="40" Text="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            <StackPanel Orientation="Vertical" Grid.Column="2">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock HorizontalAlignment="Center" Text="Quantity" FontSize="20"/>
+                    <Button Grid.Column="1" x:Name="btnClearQuantity" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" ToolTip="Remove Quantity" Cursor="Hand" Click="btnClearQuantity_Click">
+                        <Button.Content>
+                            <Image Width="16" Height="16" Source="/Images/cancel.png"/>
+                        </Button.Content>
+                    </Button>
+                </Grid>
+                <TextBox x:Name="txtQuantity" FontSize="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1,1,1,1"/>
             </StackPanel>
+        </Grid>
+        <Grid Grid.Row="3" Margin="0,2,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="btnDelete" Grid.Column="1" Content="    Delete    " Template="{DynamicResource ResourceKey=ButtonTemplate}" Cursor="Hand" Click="btnDelete_Click"/>
+            <Button x:Name="btnSave" Grid.Column="2" Margin="10,0,0,0" Content="    Save    " Template="{DynamicResource ResourceKey=ButtonTemplate}" Cursor="Hand" Click="btnSave_Click"/>
         </Grid>
     </Grid>
 </Window>

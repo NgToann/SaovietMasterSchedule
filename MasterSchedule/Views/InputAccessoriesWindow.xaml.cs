@@ -112,17 +112,29 @@ namespace MasterSchedule.Views
 
             for (int i = 0; i <= rejectUpperAccessoriesList.Count() - 1; i++)
             {
-                Button button = new Button();
+                Button btnReject = new Button();
                 var template = FindResource("ButtonDefectTemplate") as ControlTemplate;
-                button.Template = template;
-                button.Margin = new Thickness(4, 4, 0, 0);
-                button.MaxHeight = 68;
+                btnReject.Template = template;
+                btnReject.Margin = new Thickness(4, 4, 0, 0);
+                if (i / countColumn == 0)
+                {
+                    if (i != 0)
+                        btnReject.Margin = new Thickness(4, 0, 0, 0);
+                    else
+                        btnReject.Margin = new Thickness(0, 0, 0, 0);
+                }
+                if (i % countColumn == 0 && i / countColumn != 0)
+                    btnReject.Margin = new Thickness(0, 4, 0, 0);
+                btnReject.MaxHeight = 68;
+                btnReject.Tag = rejectUpperAccessoriesList[i];
+                btnReject.Name = string.Format("button{0}", rejectUpperAccessoriesList[i].RejectKey);
+                btnReject.Click += BtnReject_Click;
 
                 Border br = new Border();
                 br.Name = string.Format("border{0}", rejectUpperAccessoriesList[i].RejectKey);
 
-                Grid.SetColumn(button, i % countColumn);
-                Grid.SetRow(button, i / countColumn);
+                Grid.SetColumn(btnReject, i % countColumn);
+                Grid.SetRow(btnReject, i / countColumn);
 
                 Grid grid = new Grid();
                 ColumnDefinition cld1 = new ColumnDefinition
@@ -155,10 +167,39 @@ namespace MasterSchedule.Views
                 grid.Children.Add(txtErrorName);
 
                 br.Child = grid;
-                button.Content = br;
+                btnReject.Content = br;
 
-                gridError.Children.Add(button);
+                gridError.Children.Add(btnReject);
             }
+        }
+
+        private void BtnReject_Click(object sender, RoutedEventArgs e)
+        {
+            var buttonClicked = sender as Button;
+            var rejectClicked = buttonClicked.Tag as RejectModel;
+            HighLightError(rejectClicked.RejectKey);
+        }
+
+        private void HighLightError(string rejectKey)
+        {
+            try
+            {
+                var childrenCount = VisualTreeHelper.GetChildrenCount(gridError);
+                for (int i = 0; i < childrenCount; i++)
+                {
+                    var child = VisualTreeHelper.GetChild(gridError, i);
+                    if (child != null)
+                    {
+                        Button buttonClicked = child as Button;
+                        var template = FindResource("ButtonDefectTemplate") as ControlTemplate;
+                        var templateClicked = FindResource("ButtonDefectClickedTemplate") as ControlTemplate;
+                        buttonClicked.Template = template;
+                        if (buttonClicked.Name.Equals(String.Format("button{0}", rejectKey)))
+                            buttonClicked.Template = templateClicked;
+                    }
+                }
+            }
+            catch { }
         }
 
         private void dgDeliveryDetail_LoadingRow(object sender, DataGridRowEventArgs e)
@@ -254,6 +295,7 @@ namespace MasterSchedule.Views
 
         private void LoadDeliveryDetail(List<MaterialDeliveryModel> deliveryList)
         {
+            HighLightError("");
             dgDeliveryDetail.Columns.Clear();
             dtDelDetail = new DataTable();
 
@@ -286,23 +328,9 @@ namespace MasterSchedule.Views
             colDelDate.ClipboardContentBinding = new Binding(String.Format("DeliveryDate"));
             dgDeliveryDetail.Columns.Add(colDelDate);
 
-            //dtDelDetail.Columns.Add("DeliveryDate", typeof(DateTime));
-            //DataGridTemplateColumn colDelDate = new DataGridTemplateColumn();
-            //colDelDate.Header = String.Format("Delivery Date");
-            //DataTemplate templateDelDate = new DataTemplate();
-            //FrameworkElementFactory datePickerDelDate = new FrameworkElementFactory(typeof(DatePicker));
-            //templateDelDate.VisualTree = datePickerDelDate;
-            //datePickerDelDate.SetBinding(DatePicker.SelectedDateProperty, new Binding(String.Format("DeliveryDate")));
-            //datePickerDelDate.SetValue(DatePicker.VerticalContentAlignmentProperty, VerticalAlignment.Center);
-            //datePickerDelDate.SetValue(DatePicker.PaddingProperty, new Thickness(3, 0, 0, 0));
-            //datePickerDelDate.SetValue(DatePicker.FontWeightProperty, FontWeights.Regular);
-            //colDelDate.CellTemplate = templateDelDate;
-            //colDelDate.ClipboardContentBinding = new Binding(String.Format("DeliveryDate"));
-            //dgDeliveryDetail.Columns.Add(colDelDate);
-
             dtDelDetail.Columns.Add("Title", typeof(String));
             DataGridTemplateColumn colTitle = new DataGridTemplateColumn();
-            colTitle.Header = String.Format("");
+            colTitle.Header = String.Format("Order Size");
             DataTemplate templateTitle = new DataTemplate();
             FrameworkElementFactory tblTitle = new FrameworkElementFactory(typeof(TextBlock));
             templateTitle.VisualTree = tblTitle;
@@ -324,31 +352,7 @@ namespace MasterSchedule.Views
                 dtDelDetail.Columns.Add(String.Format("Column{0}Foreground", sizeBinding), typeof(SolidColorBrush));
                 DataGridTextColumn column = new DataGridTextColumn();
                 column.SetValue(TagProperty, sizeRun.SizeNo);
-
-                StackPanel stkSizeFull = new StackPanel();
-                stkSizeFull.Orientation = Orientation.Vertical;
-
-                StackPanel stkSize = new StackPanel();
-                stkSize.Orientation = Orientation.Horizontal;
-                var tblHeaderSize = new TextBlock();
-                tblHeaderSize.Text = string.Format("{0}", sizeRun.SizeNo);
-                var chkHeaderSize = new CheckBox();
-                chkHeaderSize.Margin = new Thickness(2, 0, 0, 0);
-                chkHeaderSize.Cursor = Cursors.Hand;
-                chkHeaderSize.VerticalAlignment = VerticalAlignment.Center;
-                stkSize.Children.Add(tblHeaderSize);
-                stkSize.Children.Add(chkHeaderSize);
-
-                var tblHeaderQty = new TextBlock();
-                tblHeaderQty.HorizontalAlignment = HorizontalAlignment.Center;
-                tblHeaderQty.Text = string.Format("{0}", sizeRun.Quantity);
-
-                stkSizeFull.Children.Add(stkSize);
-                stkSizeFull.Children.Add(tblHeaderQty);
-
-                column.Header = stkSizeFull;
-
-                //column.Header = string.Format("{0}\n{1}", sizeRun.SizeNo, sizeRun.Quantity);
+                column.Header = string.Format("{0}\n{1}", sizeRun.SizeNo, sizeRun.Quantity);
                 column.MinWidth = 45;
                 column.MaxWidth = 200;
                 column.Binding = new Binding(String.Format("Column{0}", sizeBinding));
@@ -430,9 +434,13 @@ namespace MasterSchedule.Views
 
         private void dgDeliveryDetail_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
         {
-            var rowClicked = (DataRowView)e.Row.Item;
+            HighLightError("");
+            var rowEditting = (DataRowView)e.Row.Item;
+            if (!rowEditting["Title"].ToString().Equals("Reject"))
+                return;
+            
             // Not Allow Input Reject
-            if (rowClicked["Title"].ToString().Equals("Reject"))
+            if (rowEditting["Title"].ToString().Equals("Reject"))
             {
                 e.Cancel = true;
             }
@@ -443,8 +451,9 @@ namespace MasterSchedule.Views
             {
                 return;
             }
+            var sizeRunClicked = sizeRunList.FirstOrDefault(f => f.SizeNo.Equals(sizeNo));
 
-            var window = new AddRejectForMaterialWindow(rejectUpperAccessoriesList);
+            var window = new AddRejectForMaterialWindow(rejectUpperAccessoriesList, sizeRunClicked);
             window.ShowDialog();
         }
 
