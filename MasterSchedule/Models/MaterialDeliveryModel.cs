@@ -14,7 +14,7 @@ namespace MasterSchedule.Models
         public int Quantity { get; set; }
         public int Reject { get; set; }
         public int RejectId { get; set; }
-        public int Excess { get; set; }
+        //public int Excess { get; set; }
         public string  Reviser { get; set; }
     }
 }

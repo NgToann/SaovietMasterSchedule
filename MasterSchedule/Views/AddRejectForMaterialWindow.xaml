@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MasterSchedule.Views" Loaded="Window_Loaded"
+        xmlns:local="clr-namespace:MasterSchedule.Views" Loaded="Window_Loaded" KeyUp="Window_KeyUp"
         mc:Ignorable="d" FontSize="13" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" SizeToContent="WidthAndHeight"
         Title="MasterScheduel - Add/Update Accessories Reject"  MaxWidth="600" MinWidth="600"> 
     <Grid Margin="2">
@@ -16,7 +16,7 @@
         <GroupBox Grid.Row="1" Margin="0,2,0,0" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
             <GroupBox.Header>
                 <Border Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
-                    <TextBlock x:Name="tblGroupHeader" Text="List of Defects" Foreground="Red" Padding="10,0,10,0"/>
+                    <TextBlock x:Name="tblGroupHeader" Text="List of Defects" Foreground="Red" FontSize="14" FontStyle="Italic" Padding="10,0,10,0"/>
                 </Border>
             </GroupBox.Header>
             <Grid>
@@ -32,9 +32,23 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                 </Grid>
-                <TextBlock Margin="0,5,0,0" Padding="2" Background="LightGray" Grid.Row="1" x:Name="tblRejectClicked" FontSize="14" Foreground="Red" TextWrapping="Wrap"/>
+                <DataGrid x:Name="dgReject" Grid.Row="1" Margin="0,2,0,0" AutoGenerateColumns="False" AlternationCount="2" AlternatingRowBackground="LightCyan" CanUserSortColumns="False"
+                      CanUserAddRows="False" SelectionUnit="Cell" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" RowHeaderWidth="0"
+                      FontFamily="Times New Roman" FontSize="15" CellEditEnding="dgReject_CellEditEnding">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            <Setter Property="FontWeight" Value="SemiBold"/>
+                            <Setter Property="FontSize" Value="15"/>
+                            <Setter Property="Background" Value="LightGray"/>
+                            <Setter Property="Foreground" Value="Red"/>
+                            <Setter Property="BorderBrush" Value="Gray"/>
+                            <Setter Property="BorderThickness" Value="0.5,0.5,0.5,0"/>
+                            <Setter Property="Padding" Value="5"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                </DataGrid>
             </Grid>
-            
         </GroupBox>
         <Grid Grid.Row="2" Margin="0,2,0,0" MaxHeight="200">
             <Grid.ColumnDefinitions>
@@ -42,34 +56,39 @@
                 <ColumnDefinition Width="10"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+            <StackPanel Orientation="Vertical">
                 <TextBlock HorizontalAlignment="Center" Text="#SizeNo" FontSize="20"/>
                 <TextBox x:Name="txtSizeNo" FontSize="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1,1,1,1"/>
             </StackPanel>
-            <StackPanel Orientation="Vertical" Grid.Column="2">
+            <!--<StackPanel Orientation="Vertical" Grid.Column="2">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock HorizontalAlignment="Center" Text="Quantity" FontSize="20"/>
+                    --><!--<TextBlock HorizontalAlignment="Center" Text="Total Reject" FontSize="20"/>
                     <Button Grid.Column="1" x:Name="btnClearQuantity" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" ToolTip="Remove Quantity" Cursor="Hand" Click="btnClearQuantity_Click">
                         <Button.Content>
                             <Image Width="16" Height="16" Source="/Images/cancel.png"/>
                         </Button.Content>
-                    </Button>
+                    </Button>--><!--
                 </Grid>
                 <TextBox x:Name="txtQuantity" FontSize="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1,1,1,1"/>
-            </StackPanel>
+            </StackPanel>-->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="btnDelete" Grid.Row="1" Grid.Column="1" Content="    Delete    " Template="{DynamicResource ResourceKey=ButtonTemplate}" Cursor="Hand" Click="btnDelete_Click"/>
+                <Button x:Name="btnSave" Grid.Row="1" Grid.Column="2" Margin="10,0,0,0" Content="      Save      " Template="{DynamicResource ResourceKey=ButtonTemplate}" Cursor="Hand" Click="btnSave_Click"/>
+            </Grid>
         </Grid>
-        <Grid Grid.Row="3" Margin="0,2,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <Button x:Name="btnDelete" Grid.Column="1" Content="    Delete    " Template="{DynamicResource ResourceKey=ButtonTemplate}" Cursor="Hand" Click="btnDelete_Click"/>
-            <Button x:Name="btnSave" Grid.Column="2" Margin="10,0,0,0" Content="    Save    " Template="{DynamicResource ResourceKey=ButtonTemplate}" Cursor="Hand" Click="btnSave_Click"/>
-        </Grid>
+        
     </Grid>
 </Window>

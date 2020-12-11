@@ -28,29 +28,108 @@ namespace MasterSchedule.Views
     {
         private List<RejectModel> rejectUpperAccessoriesList;
         List<RejectModel> rejectClickedList;
+
         private SizeRunModel sizeRunClicked;
-        public AddRejectForMaterialWindow(List<RejectModel> rejectUpperAccessoriesList, SizeRunModel sizeRunClicked)
+        private MaterialPlanModel materialPlanChecking;
+        private DataRowView rowEditting;
+        public List<MaterialDeliveryModel> deliveryHasRejectList;
+        private List<MaterialDeliveryModel> deliveryCurrentList;
+        BackgroundWorker bwUpload;
+        public EExcute eAction = EExcute.None;
+        DataTable dtReject;
+        int totalRejectCurrent;
+        public AddRejectForMaterialWindow(List<RejectModel> rejectUpperAccessoriesList, SizeRunModel sizeRunClicked, MaterialPlanModel materialPlanChecking, DataRowView rowEditting, List<MaterialDeliveryModel> deliveryCurrentList, int totalRejectCurrent)
         {
             this.rejectUpperAccessoriesList = rejectUpperAccessoriesList;
-            this.sizeRunClicked = sizeRunClicked;
-            rejectClickedList = new List<RejectModel>();
+            this.sizeRunClicked             = sizeRunClicked;
+            this.materialPlanChecking       = materialPlanChecking;
+            this.rowEditting                = rowEditting;
+            this.deliveryCurrentList        = deliveryCurrentList;
+            this.totalRejectCurrent         = totalRejectCurrent;
+
+            bwUpload = new BackgroundWorker();
+            bwUpload.DoWork += BwUpload_DoWork;
+            bwUpload.RunWorkerCompleted += BwUpload_RunWorkerCompleted;
+
+            rejectClickedList       = new List<RejectModel>();
+            deliveryHasRejectList   = new List<MaterialDeliveryModel>();
+            dtReject                = new DataTable();
             InitializeComponent();
         }
-
+        
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             if (sizeRunClicked != null)
             {
-                txtSizeNo.Text          = sizeRunClicked.SizeNo;
-                txtSizeNo.IsReadOnly    = true;
-                txtQuantity.IsReadOnly  = true;
+                txtSizeNo.Text = sizeRunClicked.SizeNo;
+                txtSizeNo.IsReadOnly = true;
+
+                if (deliveryCurrentList.Count() > 0)
+                {
+                    var rejectIdList = deliveryCurrentList.Select(s => s.RejectId).Distinct().ToList();
+                    foreach (var rId in rejectIdList)
+                    {
+                        var delById = deliveryCurrentList.Where(w => w.RejectId.Equals(rId)).FirstOrDefault();
+                        for (int i = 0; i < delById.Reject; i++)
+                        {
+                            rejectClickedList.Add(rejectUpperAccessoriesList.FirstOrDefault(f => f.RejectId.Equals(rId)));
+                        }
+                    }
+                }
+                DisplayRejectClicked(rejectClickedList);
             }
             else
             {
                 txtSizeNo.Focus();
             }
-            Thread.Sleep(500);
+            Thread.Sleep(100);
             LoadListOfDefects(rejectUpperAccessoriesList);
+        }
+
+        private void BwUpload_DoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                if (eAction.Equals(EExcute.AddNew))
+                {
+                    foreach (var rejectItem in deliveryHasRejectList)
+                    {
+                        MaterialDeliveryController.Insert(rejectItem, insertQty: false, insertReject: true, deleteReject: false);
+                    }
+                }
+                else if (eAction.Equals(EExcute.Delete))
+                {
+                    foreach (var rejectItem in deliveryHasRejectList)
+                    {
+                        MaterialDeliveryController.Insert(rejectItem, insertQty: false, insertReject: false, deleteReject: true);
+                    }
+                }
+                e.Result = true;
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke(new Action(() => {
+                    MessageBox.Show(ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                }));
+                e.Result = false;
+            }
+        }
+        
+        private void BwUpload_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (eAction.Equals(EExcute.AddNew) && (bool)e.Result == true)
+            {
+                MessageBox.Show("Saved !", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                btnSave.IsEnabled = true;
+            }
+            if (eAction.Equals(EExcute.Delete) && (bool)e.Result == true)
+            {
+                MessageBox.Show("Deleted !", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                btnDelete.IsEnabled = true;
+            }
+            this.Cursor = null;
+            Thread.Sleep(150);
+            this.Close();
         }
         
         private void LoadListOfDefects(List<RejectModel> rejectUpperAccessoriesList)
@@ -90,7 +169,7 @@ namespace MasterSchedule.Views
                     button.Margin = new Thickness(0, 4, 0, 0);
                 button.Tag = rejectUpperAccessoriesList[i];
                 button.Click += Button_Click;
-                button.MaxHeight = 68;
+                button.MaxHeight = 60;
                 Border br = new Border();
                 br.Name = string.Format("border{0}", rejectUpperAccessoriesList[i].RejectKey);
 
@@ -139,53 +218,144 @@ namespace MasterSchedule.Views
         {
             var buttonClicked = sender as Button;
             var rejectClicked = buttonClicked.Tag as RejectModel;
-            int qtyCurrent = 0;
-            var qtyCurrentString = txtQuantity.Text.Trim().ToString();
-            Int32.TryParse(qtyCurrentString, out qtyCurrent);
-            qtyCurrent += 1;
-            if (qtyCurrent > sizeRunClicked.Quantity)
+            if (rejectClickedList.Count() + totalRejectCurrent >= sizeRunClicked.Quantity)
             {
-                MessageBox.Show(String.Format("Total reject can't be greater than #size {0} quantity", sizeRunClicked.SizeNo), this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(String.Format("Total reject can't be greater than #size {0} quantity {1}", sizeRunClicked.SizeNo, sizeRunClicked.Quantity), this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            txtQuantity.Text = qtyCurrent.ToString();
             rejectClickedList.Add(rejectClicked);
             HighLightError(rejectClicked.RejectKey);
             DisplayRejectClicked(rejectClickedList);
         }
 
-        private void DisplayRejectClicked(List<RejectModel> rejectClickedList)
+        private void DisplayRejectClicked(List<RejectModel> rejectDisplayList)
         {
-            tblRejectClicked.Text = "";
-            List<string> displayList = new List<string>();
-            var rejectIdList = rejectClickedList.Select(s => s.RejectId).Distinct().ToList();
+            // Create Column
+            dgReject.Columns.Clear();
+            dtReject = new DataTable();
+
+            var rejectIdList = rejectDisplayList.Select(s => s.RejectId).Distinct().ToList();
             if (rejectIdList.Count() > 0)
                 rejectIdList = rejectIdList.OrderBy(o => o).ToList();
+
             foreach (var rId in rejectIdList)
             {
-                var rejectById = rejectClickedList.FirstOrDefault(f => f.RejectId.Equals(rId));
-                var noOfReject = rejectClickedList.Where(w => w.RejectId.Equals(rId)).Count();
-                displayList.Add(String.Format("{0} - {1}: {2} pair{3}", rejectById.RejectName, rejectById.RejectName_1, noOfReject, noOfReject > 1 ? "s" : ""));
+                var rejectById = rejectDisplayList.FirstOrDefault(f => f.RejectId.Equals(rId));
+                dtReject.Columns.Add(String.Format("Column{0}", rId), typeof(Int32));
+                
+                DataGridTextColumn column = new DataGridTextColumn();
+                column.SetValue(TagProperty, rId);
+                column.Header = string.Format("{0}\n{1}", rejectById.RejectName, rejectById.RejectName_1);
+                column.Binding = new Binding(String.Format("Column{0}", rId));
+
+                dgReject.Columns.Add(column);
+                var noOfReject = rejectDisplayList.Where(w => w.RejectId.Equals(rId)).Count();
             }
-            tblRejectClicked.Text = String.Join(";  ", displayList);
+
+            // Column Total
+            dtReject.Columns.Add("Total", typeof(String));
+            DataGridTemplateColumn colTotal = new DataGridTemplateColumn();
+            colTotal.Header = String.Format("Total");
+            DataTemplate templateTotal = new DataTemplate();
+            FrameworkElementFactory tblTotal = new FrameworkElementFactory(typeof(TextBlock));
+            templateTotal.VisualTree = tblTotal;
+            tblTotal.SetBinding(TextBlock.TextProperty, new Binding(String.Format("Total")));
+            tblTotal.SetValue(TextBlock.VerticalAlignmentProperty, VerticalAlignment.Center);
+            tblTotal.SetValue(TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+            tblTotal.SetValue(TextBlock.PaddingProperty, new Thickness(3, 0, 3, 0));
+            colTotal.CellTemplate = templateTotal;
+            colTotal.ClipboardContentBinding = new Binding(String.Format("Total"));
+            dgReject.Columns.Add(colTotal);
+
+            // Binding data
+            DataRow dr = dtReject.NewRow();
+            foreach (var rId in rejectIdList)
+            {
+                var noOfReject = rejectDisplayList.Where(w => w.RejectId.Equals(rId)).Count();
+                dr[String.Format("Column{0}", rId)] = noOfReject;
+            }
+            dr["Total"] = rejectDisplayList.Count().ToString();
+            dtReject.Rows.Add(dr);
+
+            dgReject.ItemsSource = dtReject.AsDataView();
+            dgReject.Items.Refresh();
+
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
+            if (rejectClickedList.Count() + totalRejectCurrent > sizeRunClicked.Quantity)
+            {
+                MessageBox.Show(String.Format("Total reject can't be greater than #size {0} quantity {1}", sizeRunClicked.SizeNo, sizeRunClicked.Quantity), this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
+            var rejectIdList = rejectClickedList.Select(s => s.RejectId).Distinct().ToList();
+            foreach (var rId in rejectIdList)
+            {
+                var rejectById = rejectClickedList.FirstOrDefault(f => f.RejectId.Equals(rId));
+                var noOfReject = rejectClickedList.Where(w => w.RejectId.Equals(rId)).Count();
+                var delReject = new MaterialDeliveryModel
+                {
+                    ProductNo = materialPlanChecking.ProductNo,
+                    SupplierId = materialPlanChecking.SupplierId,
+                    DeliveryDate = (DateTime)rowEditting["DeliveryDateDate"],
+                    SizeNo = sizeRunClicked.SizeNo,
+                    Reject = noOfReject,
+                    RejectId = rId,
+                    Reviser = "Testing"
+                };
+                deliveryHasRejectList.Add(delReject);
+            }
+
+            if (bwUpload.IsBusy == false)
+            {
+                btnSave.IsEnabled = false;
+                this.Cursor = Cursors.Wait;
+                eAction = EExcute.AddNew;
+                bwUpload.RunWorkerAsync();
+            }
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
+            if (MessageBox.Show(string.Format("Confirm Delete Reject Size: #{0} ?", sizeRunClicked.SizeNo), this.Title, MessageBoxButton.OKCancel, MessageBoxImage.Question) != MessageBoxResult.OK)
+            {
+                return;
+            }
+            var rejectIdList = rejectClickedList.Select(s => s.RejectId).Distinct().ToList();
+            foreach (var rId in rejectIdList)
+            {
+                var rejectById = rejectClickedList.FirstOrDefault(f => f.RejectId.Equals(rId));
+                var noOfReject = rejectClickedList.Where(w => w.RejectId.Equals(rId)).Count();
+                var delReject = new MaterialDeliveryModel
+                {
+                    ProductNo = materialPlanChecking.ProductNo,
+                    SupplierId = materialPlanChecking.SupplierId,
+                    DeliveryDate = (DateTime)rowEditting["DeliveryDateDate"],
+                    SizeNo = sizeRunClicked.SizeNo,
+                    Reject = noOfReject,
+                    RejectId = rId,
+                    Reviser = "Testing"
+                };
+                deliveryHasRejectList.Add(delReject);
+            }
 
+            if (bwUpload.IsBusy == false)
+            {
+                btnDelete.IsEnabled = false;
+                this.Cursor = Cursors.Wait;
+                eAction = EExcute.Delete;
+                bwUpload.RunWorkerAsync();
+            }
         }
 
         private void btnClearQuantity_Click(object sender, RoutedEventArgs e)
         {
-            txtQuantity.Text = "0";
             rejectClickedList.Clear();
             DisplayRejectClicked(rejectClickedList);
         }
+        
         private void HighLightError(string rejectKey)
         {
             try
@@ -207,5 +377,45 @@ namespace MasterSchedule.Views
             }
             catch { }
         }
+
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key.Equals(Key.Escape))
+                this.Close();
+        }
+
+        private void dgReject_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            var rowEditting = (DataRowView)e.Row.Item;
+            if (e.EditingElement == null || rowEditting == null)
+                return;
+            if (e.Column.GetValue(TagProperty) == null)
+                return;
+            var rIdCurrent = (Int32)e.Column.GetValue(TagProperty);
+            var rejectCurrent = rejectUpperAccessoriesList.FirstOrDefault(f => f.RejectId.Equals(rIdCurrent));
+
+            int qtyRej = 0;
+            TextBox txtCurrent = (TextBox)e.EditingElement;
+            Int32.TryParse(txtCurrent.Text.Trim(), out qtyRej);
+
+            rejectClickedList.RemoveAll(r => r.RejectId == rejectCurrent.RejectId);
+            for (int i = 0; i < qtyRej; i++)
+            {
+                rejectClickedList.Add(rejectCurrent);
+            }
+
+            // Update Total Cell
+            for (int r = 0; r < dtReject.Rows.Count; r++)
+            {
+                DataRow dr = dtReject.Rows[r];
+                dr["Total"] = rejectClickedList.Count().ToString();
+                //foreach (var reject in rejectClickedList)
+                //{
+                //    dr[String.Format("Column{0}", reject.RejectId)]
+                //}
+            }
+            //DisplayRejectClicked(rejectClickedList);
+        }
+      
     }
 }

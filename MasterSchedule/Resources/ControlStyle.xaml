@@ -44,4 +44,9 @@
         <Setter Property="BorderBrush" Value="Gray" />
         <Setter Property="BorderThickness" Value="0.5,0.5,0.5,0" />
     </Style>
+    <Style x:Key="BorderNoStyle" TargetType="{x:Type Border}">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="BorderBrush" Value="Gray" />
+        <Setter Property="BorderThickness" Value="0.5,0.5,0.5,0" />
+    </Style>
 </ResourceDictionary>

@@ -26,15 +26,22 @@ namespace MasterSchedule.Views
     public partial class InputAccessoriesWindow : Window
     {
         BackgroundWorker bwLoad;
+        BackgroundWorker bwUpload;
         private string productNo;
         private List<RejectModel> rejectUpperAccessoriesList;
         List<MaterialPlanModel> materialPlanList;
+        MaterialPlanModel materialPlanChecking;
         List<SupplierModel> supplierAccessoriesList;
         List<SizeRunModel> sizeRunList;
         Button btnEditMatsPlan;
         List<MaterialDeliveryModel> matsDeliveryList;
         SupplierModel supplierClicked;
         DataTable dtDelDetail;
+        List<String> buttonSizeKeyList;
+        string[] keysTemp = new string[] {  "1", "2", "3", "4", "5", "6", "7", "8", "9",
+                                            "00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
+                                            "11", "12", "13", "14", "15", "16", "17", "18", "19"};
+        private string _qtyOK = "Quantity OK";
         public InputAccessoriesWindow(string productNo, List<RejectModel> rejectUpperAccessoriesList)
         {
             this.productNo = productNo;
@@ -44,6 +51,10 @@ namespace MasterSchedule.Views
             bwLoad.DoWork += BwLoad_DoWork;
             bwLoad.RunWorkerCompleted += BwLoad_RunWorkerCompleted;
 
+            bwUpload = new BackgroundWorker();
+            bwUpload.DoWork += BwUpload_DoWork;
+            bwUpload.RunWorkerCompleted += BwUpload_RunWorkerCompleted;
+
             materialPlanList = new List<MaterialPlanModel>();
             supplierAccessoriesList = new List<SupplierModel>();
             sizeRunList = new List<SizeRunModel>();
@@ -51,9 +62,10 @@ namespace MasterSchedule.Views
             btnEditMatsPlan = new Button();
             matsDeliveryList = new List<MaterialDeliveryModel>();
             dtDelDetail = new DataTable();
+            buttonSizeKeyList = new List<string>();
 
             InitializeComponent();
-        }
+        }        
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -77,7 +89,7 @@ namespace MasterSchedule.Views
         {
             dpDeliveryDate.SelectedDate = DateTime.Now;
             LoadMaterialPlan(materialPlanList);
-            LoadListOfDefects(rejectUpperAccessoriesList);
+            LoadListOfSizeNo(sizeRunList);
             LoadDeliveryDetail(matsDeliveryList);
             tblDeliveryDetailOf.Text = String.Format("Delivery detail of: {0}", productNo);
             dgDeliveryDetail.IsReadOnly = true;
@@ -91,14 +103,14 @@ namespace MasterSchedule.Views
             dgAccessoriesInfor.Items.Refresh();
         }
 
-        private void LoadListOfDefects(List<RejectModel> rejectUpperAccessoriesList)
+        private void LoadListOfSizeNo(List<SizeRunModel> sizeRunList)
         {
             // binding to error to grid
             int countColumn = gridError.ColumnDefinitions.Count();
-            int countRow = countRow = rejectUpperAccessoriesList.Count / countColumn;
-            if (rejectUpperAccessoriesList.Count % countColumn != 0)
+            int countRow = countRow = sizeRunList.Count / countColumn;
+            if (sizeRunList.Count % countColumn != 0)
             {
-                countRow = rejectUpperAccessoriesList.Count / countColumn + 1;
+                countRow = sizeRunList.Count / countColumn + 1;
             }
             gridError.RowDefinitions.Clear();
             for (int i = 1; i <= countRow; i++)
@@ -110,31 +122,33 @@ namespace MasterSchedule.Views
                 gridError.RowDefinitions.Add(rd);
             }
 
-            for (int i = 0; i <= rejectUpperAccessoriesList.Count() - 1; i++)
+            //for (int i = 0; i <= sizeRunList.Count() - 1; i++)
+
+            for (int i = 0; i <= sizeRunList.Count() - 1; i++)
             {
-                Button btnReject = new Button();
-                var template = FindResource("ButtonDefectTemplate") as ControlTemplate;
-                btnReject.Template = template;
-                btnReject.Margin = new Thickness(4, 4, 0, 0);
+                var sizeBinding = sizeRunList[i].SizeNo.Contains(".") ? sizeRunList[i].SizeNo.Replace(".", "") : sizeRunList[i].SizeNo;
+                Button btnSizeNo = new Button();
+                var template = FindResource("ButtonSizeNoTemplate") as ControlTemplate;
+                btnSizeNo.Template = template;
+                btnSizeNo.Margin = new Thickness(4, 4, 0, 0);
                 if (i / countColumn == 0)
                 {
                     if (i != 0)
-                        btnReject.Margin = new Thickness(4, 0, 0, 0);
+                        btnSizeNo.Margin = new Thickness(4, 0, 0, 0);
                     else
-                        btnReject.Margin = new Thickness(0, 0, 0, 0);
+                        btnSizeNo.Margin = new Thickness(0, 0, 0, 0);
                 }
                 if (i % countColumn == 0 && i / countColumn != 0)
-                    btnReject.Margin = new Thickness(0, 4, 0, 0);
-                btnReject.MaxHeight = 68;
-                btnReject.Tag = rejectUpperAccessoriesList[i];
-                btnReject.Name = string.Format("button{0}", rejectUpperAccessoriesList[i].RejectKey);
-                btnReject.Click += BtnReject_Click;
+                    btnSizeNo.Margin = new Thickness(0, 4, 0, 0);
+                btnSizeNo.MaxHeight = 50;
+                btnSizeNo.Tag = sizeRunList[i];
+                btnSizeNo.Name = string.Format("button{0}", sizeBinding);
+                btnSizeNo.Click += BtnSizeNo_Click;
 
                 Border br = new Border();
-                br.Name = string.Format("border{0}", rejectUpperAccessoriesList[i].RejectKey);
 
-                Grid.SetColumn(btnReject, i % countColumn);
-                Grid.SetRow(btnReject, i / countColumn);
+                Grid.SetColumn(btnSizeNo, i % countColumn);
+                Grid.SetRow(btnSizeNo, i / countColumn);
 
                 Grid grid = new Grid();
                 ColumnDefinition cld1 = new ColumnDefinition
@@ -148,36 +162,52 @@ namespace MasterSchedule.Views
                 grid.ColumnDefinitions.Add(cld1);
                 grid.ColumnDefinitions.Add(cld2);
 
-                TextBlock txtKey = new TextBlock();
-                txtKey.Text = rejectUpperAccessoriesList[i].RejectKey;
-                txtKey.FontSize = 28;
-                txtKey.Foreground = Brushes.Blue;
-                txtKey.VerticalAlignment = VerticalAlignment.Center;
-                txtKey.Margin = new Thickness(4, 0, 4, 0);
-                Grid.SetColumn(txtKey, 0);
+                Border brKey = new Border();
+                brKey.Background = Brushes.LightGray;
+                brKey.Padding = new Thickness(3, 3, 3, 3);
+                brKey.CornerRadius = new CornerRadius(3, 0, 0, 3);
+                brKey.MinWidth = 50;
+                TextBlock tbltSizeNoKey= new TextBlock();
 
-                TextBlock txtErrorName = new TextBlock();
-                txtErrorName.Text = string.Format("{0}\n{1}", rejectUpperAccessoriesList[i].RejectName, rejectUpperAccessoriesList[i].RejectName_1);
-                txtErrorName.FontSize = 15;
-                txtErrorName.TextWrapping = TextWrapping.Wrap;
-                txtErrorName.VerticalAlignment = VerticalAlignment.Center;
-                Grid.SetColumn(txtErrorName, 1);
+                var keyDisplay = "";
+                if (keysTemp.Count() > sizeRunList.Count())
+                    keyDisplay = keysTemp[i].ToString();
 
-                grid.Children.Add(txtKey);
-                grid.Children.Add(txtErrorName);
+                tbltSizeNoKey.Text = keyDisplay;
+                tbltSizeNoKey.Tag = sizeRunList[i];
+                tbltSizeNoKey.FontSize = 25;
+                tbltSizeNoKey.Foreground = Brushes.Blue;
+                tbltSizeNoKey.VerticalAlignment = VerticalAlignment.Center;
+                tbltSizeNoKey.HorizontalAlignment = HorizontalAlignment.Center;
+                brKey.Child = tbltSizeNoKey;
+                Grid.SetColumn(brKey, 0);
+
+                TextBlock tblSizeNoName = new TextBlock();
+                tblSizeNoName.Text = string.Format("#{0}", sizeRunList[i].SizeNo);
+                tblSizeNoName.FontSize = 30;
+                tblSizeNoName.Margin = new Thickness(5, 0, 0, 0);
+                tblSizeNoName.VerticalAlignment = VerticalAlignment.Center;
+                Grid.SetColumn(tblSizeNoName, 1);
+
+                grid.Children.Add(brKey);
+                grid.Children.Add(tblSizeNoName);
 
                 br.Child = grid;
-                btnReject.Content = br;
+                btnSizeNo.Content = br;
 
-                gridError.Children.Add(btnReject);
+                gridError.Children.Add(btnSizeNo);
             }
         }
 
-        private void BtnReject_Click(object sender, RoutedEventArgs e)
+        private void BtnSizeNo_Click(object sender, RoutedEventArgs e)
         {
+            if (supplierClicked == null || materialPlanChecking == null)
+                return;
+
             var buttonClicked = sender as Button;
-            var rejectClicked = buttonClicked.Tag as RejectModel;
-            HighLightError(rejectClicked.RejectKey);
+            var sizeClicked = buttonClicked.Tag as SizeRunModel;
+            var sizeBinding = sizeClicked.SizeNo.Contains(".") ? sizeClicked.SizeNo.Replace(".", "") : sizeClicked.SizeNo;
+            HighLightError(sizeBinding);
         }
 
         private void HighLightError(string rejectKey)
@@ -191,8 +221,8 @@ namespace MasterSchedule.Views
                     if (child != null)
                     {
                         Button buttonClicked = child as Button;
-                        var template = FindResource("ButtonDefectTemplate") as ControlTemplate;
-                        var templateClicked = FindResource("ButtonDefectClickedTemplate") as ControlTemplate;
+                        var template = FindResource("ButtonSizeNoTemplate") as ControlTemplate;
+                        var templateClicked = FindResource("ButtonSizeNoClickedTemplate") as ControlTemplate;
                         buttonClicked.Template = template;
                         if (buttonClicked.Name.Equals(String.Format("button{0}", rejectKey)))
                             buttonClicked.Template = templateClicked;
@@ -267,7 +297,7 @@ namespace MasterSchedule.Views
             // Load Delivery Infor
             var deliveryDetailBySupplierClicked = matsDeliveryList.Where(w => w.SupplierId == rowClicked.SupplierId).ToList();
             var deliveryThisTimeList = new List<MaterialDeliveryModel>();
-            if (deliveryDetailBySupplierClicked.Where(w => w.DeliveryDate.Equals(dpDeliveryDate.SelectedDate.Value)).Count() == 0)
+            if (deliveryDetailBySupplierClicked.Where(w => w.DeliveryDate.Equals(dpDeliveryDate.SelectedDate.Value.Date)).Count() == 0)
             {
                 foreach (var sizeRun in sizeRunList)
                 {
@@ -285,12 +315,13 @@ namespace MasterSchedule.Views
                         });
                 }
             }
-            deliveryDetailBySupplierClicked.AddRange(deliveryThisTimeList);
 
+            deliveryDetailBySupplierClicked.AddRange(deliveryThisTimeList);
             LoadDeliveryDetail(deliveryDetailBySupplierClicked);
             supplierClicked = supplierAccessoriesList.FirstOrDefault(f => f.SupplierId.Equals(rowClicked.SupplierId));
-            tblDeliveryDetailOf.Text = String.Format("Delivery detail of: {0}", supplierClicked.Name);
+            materialPlanChecking = rowClicked;
             dgDeliveryDetail.IsReadOnly = false;
+            tblDeliveryDetailOf.Text = String.Format("Delivery detail of: {0}", supplierClicked.Name);
         }
 
         private void LoadDeliveryDetail(List<MaterialDeliveryModel> deliveryList)
@@ -316,6 +347,7 @@ namespace MasterSchedule.Views
 
             //Column Delivery Date
             dtDelDetail.Columns.Add("DeliveryDate", typeof(String));
+            dtDelDetail.Columns.Add("DeliveryDateDate", typeof(DateTime));
             DataGridTemplateColumn colDelDate = new DataGridTemplateColumn();
             colDelDate.Header = String.Format("Delivery\nDate");
             DataTemplate templateDelDate = new DataTemplate();
@@ -350,6 +382,7 @@ namespace MasterSchedule.Views
 
                 dtDelDetail.Columns.Add(String.Format("Column{0}", sizeBinding), typeof(String));
                 dtDelDetail.Columns.Add(String.Format("Column{0}Foreground", sizeBinding), typeof(SolidColorBrush));
+                dtDelDetail.Columns.Add(String.Format("Column{0}ToolTip", sizeBinding), typeof(String));
                 DataGridTextColumn column = new DataGridTextColumn();
                 column.SetValue(TagProperty, sizeRun.SizeNo);
                 column.Header = string.Format("{0}\n{1}", sizeRun.SizeNo, sizeRun.Quantity);
@@ -361,7 +394,13 @@ namespace MasterSchedule.Views
                 Setter setterColumnForecolor = new Setter();
                 setterColumnForecolor.Property = DataGridCell.ForegroundProperty;
                 setterColumnForecolor.Value = new Binding(String.Format("Column{0}Foreground", sizeBinding));
+
+                Setter setterToolTip = new Setter();
+                setterToolTip.Property = DataGridCell.ToolTipProperty;
+                setterToolTip.Value = new Binding(String.Format("Column{0}ToolTip", sizeBinding));
+
                 styleColumn.Setters.Add(setterColumnForecolor);
+                styleColumn.Setters.Add(setterToolTip);
                 column.CellStyle = styleColumn;
 
                 dgDeliveryDetail.Columns.Add(column);
@@ -405,9 +444,12 @@ namespace MasterSchedule.Views
                     dr["SupplierId"] = supplierId;
                     drReject["SupplierId"] = supplierId;
 
-                    dr["DeliveryDate"] = string.Format("{0:MM/dd/yyyy}", date);
+                    dr["DeliveryDate"]      = string.Format("{0:MM/dd/yyyy}", date);
 
-                    dr["Title"] = "Quantity";
+                    dr["DeliveryDateDate"]  = date;
+                    drReject["DeliveryDateDate"] = date;
+
+                    dr["Title"] = _qtyOK;
                     drReject["Title"] = "Reject";
 
                     var deliveryByDateList = deliveryBySuppList.Where(w => w.DeliveryDate.Equals(date)).ToList();
@@ -415,13 +457,38 @@ namespace MasterSchedule.Views
                     {
                         var deliveryBySize = deliveryByDateList.Where(w => w.SizeNo == sizeRun.SizeNo).ToList();
                         string sizeBinding = sizeRun.SizeNo.Contains(".") ? sizeRun.SizeNo.Replace(".", "@") : sizeRun.SizeNo;
+                        var qtyOK = deliveryBySize.Sum(s => s.Quantity);
+                        if (qtyOK > 0)
+                        {
+                            dr[String.Format("Column{0}", sizeBinding)] = qtyOK.ToString();
+                            if (qtyOK >= sizeRun.Quantity)
+                                dr[String.Format("Column{0}Foreground", sizeBinding)] = Brushes.Blue;
+                        }
 
-                        if (deliveryBySize.Sum(s => s.Quantity) > 0)
-                            dr[String.Format("Column{0}", sizeBinding)] = deliveryBySize.Sum(s => s.Quantity).ToString();
-
-                        drReject[String.Format("Column{0}", sizeBinding)] = "";
-                        drReject[String.Format("Column{0}Foreground", sizeBinding)] = Brushes.Red;
+                        var rejectIdList = deliveryBySize.Where(w => w.RejectId > 0).Select(s => s.RejectId).ToList();
+                        var rejectDisplayList = new List<String>();
+                        var rejectDisplayEnglishList = new List<String>();
+                        foreach (var rId in rejectIdList)
+                        {
+                            var rejectById = rejectUpperAccessoriesList.Where(w => w.RejectId.Equals(rId)).FirstOrDefault();
+                            var noOfReject = deliveryBySize.Where(w => w.RejectId.Equals(rId)).Sum(s => s.Reject);
+                            rejectDisplayList.Add(String.Format("{0}: {1}", rejectById.RejectName_1, noOfReject));
+                            rejectDisplayEnglishList.Add(String.Format("{0}: {1}", rejectById.RejectName, noOfReject));
+                        }
+                        if (rejectDisplayList.Count() > 0)
+                        {
+                            drReject[String.Format("Column{0}", sizeBinding)] = String.Join("\n", rejectDisplayList);
+                            drReject[String.Format("Column{0}Foreground", sizeBinding)] = Brushes.Red;
+                            drReject[String.Format("Column{0}ToolTip", sizeBinding)] = String.Join("\n", rejectDisplayEnglishList);
+                        }
                     }
+
+                    var totalDel = deliveryByDateList.Sum(s => s.Quantity);
+                    var totalReject = deliveryByDateList.Sum(s => s.Reject);
+                    if (totalDel > 0)
+                        dr["Total"] = totalDel.ToString();
+                    if (totalReject > 0)
+                        drReject["Total"] = totalReject.ToString();
 
                     dtDelDetail.Rows.Add(dr);
                     dtDelDetail.Rows.Add(drReject);
@@ -438,7 +505,7 @@ namespace MasterSchedule.Views
             var rowEditting = (DataRowView)e.Row.Item;
             if (!rowEditting["Title"].ToString().Equals("Reject"))
                 return;
-            
+
             // Not Allow Input Reject
             if (rowEditting["Title"].ToString().Equals("Reject"))
             {
@@ -447,14 +514,32 @@ namespace MasterSchedule.Views
             if (e.Column.GetValue(TagProperty) == null)
                 return;
             string sizeNo = e.Column.GetValue(TagProperty).ToString();
-            if (sizeRunList.Select(s => s.SizeNo).Contains(sizeNo) == false)
-            {
-                return;
-            }
             var sizeRunClicked = sizeRunList.FirstOrDefault(f => f.SizeNo.Equals(sizeNo));
+            var dateEditting = (DateTime)rowEditting["DeliveryDateDate"];
 
-            var window = new AddRejectForMaterialWindow(rejectUpperAccessoriesList, sizeRunClicked);
+            var matsDeliveryListBySuppTranfer = matsDeliveryList.Where(w => w.SupplierId.Equals(supplierClicked.SupplierId)).ToList();
+            var matsDeliveryListByDate = matsDeliveryListBySuppTranfer.Where(w => w.RejectId > 0
+                                                                                && w.SizeNo.Equals(sizeRunClicked.SizeNo)
+                                                                                && w.DeliveryDate.Equals(dateEditting)).ToList();
+            int totalRejectBySizeCurrent = matsDeliveryListBySuppTranfer.Where(w => w.RejectId > 0 && w.SizeNo.Equals(sizeRunClicked.SizeNo)).Count();
+            var window = new AddRejectForMaterialWindow(rejectUpperAccessoriesList, sizeRunClicked, materialPlanChecking, rowEditting, matsDeliveryListByDate, totalRejectBySizeCurrent);
             window.ShowDialog();
+            if (window.eAction == EExcute.AddNew && window.deliveryHasRejectList.Count() > 0)
+            {
+                matsDeliveryList.RemoveAll(r => r.DeliveryDate.Equals(dateEditting)
+                                                && r.RejectId > 0
+                                                && r.SizeNo.Equals(sizeRunClicked.SizeNo));
+
+                matsDeliveryList.AddRange(window.deliveryHasRejectList);
+                LoadDeliveryDetail(matsDeliveryList.Where(w => w.SupplierId.Equals(supplierClicked.SupplierId)).ToList());
+            }
+            else if (window.eAction == EExcute.Delete && window.deliveryHasRejectList.Count() > 0)
+            {
+                matsDeliveryList.RemoveAll(r => r.DeliveryDate.Equals(dateEditting)
+                                                && r.RejectId > 0
+                                                && r.SizeNo.Equals(sizeRunClicked.SizeNo));
+                LoadDeliveryDetail(matsDeliveryList.Where(w => w.SupplierId.Equals(supplierClicked.SupplierId)).ToList());
+            }
         }
 
         private void dgDeliveryDetail_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
@@ -473,34 +558,47 @@ namespace MasterSchedule.Views
             TextBox txtCurrent = (TextBox)e.EditingElement;
             Int32.TryParse(txtCurrent.Text.Trim().ToString(), out qtyInput);
 
+            // Get total qty the others day
+            int totalQtyOfTheOthersDay = 0;
+            for (int r = 0; r < dtDelDetail.Rows.Count; r++)
+            {
+                string sizeCurrent = sizeNo.Contains(".") ? sizeNo.Replace(".", "@") : sizeNo;
+                DataRow dr = dtDelDetail.Rows[r];
+                if (!dr["Title"].ToString().Equals(_qtyOK))
+                    continue;
+                if (!dr["DeliveryDate"].ToString().Equals(rowEditting["DeliveryDate"]))
+                {
+                    int qtyAtCell = 0;
+                    Int32.TryParse(dr[String.Format("Column{0}", sizeCurrent)].ToString(), out qtyAtCell);
+                    totalQtyOfTheOthersDay += qtyAtCell;
+                }
+            }
+
             for (int r = 0; r < dtDelDetail.Rows.Count; r++)
             {
                 DataRow dr = dtDelDetail.Rows[r];
-                if (!dr["Title"].ToString().Equals("Quantity"))
+                if (!dr["Title"].ToString().Equals(_qtyOK))
                     continue;
                 if (!dr["DeliveryDate"].ToString().Equals(rowEditting["DeliveryDate"]))
                     continue;
-                foreach (var sizeRun in sizeRunList)
-                {
-                    string sizeBinding = sizeRun.SizeNo.Contains(".") ? sizeRun.SizeNo.Replace(".", "@") : sizeRun.SizeNo;
-                    if (!sizeRun.SizeNo.Equals(sizeNo))
-                        continue;
 
-                    if (qtyInput <= 0)
-                    {
-                        dr[String.Format("Column{0}Foreground", sizeBinding)] = Brushes.Red;
-                        dr[String.Format("Column{0}", sizeBinding)] = "0";
-                    }
-                    else if (qtyInput >= qtyOrder)
-                    {
-                        dr[String.Format("Column{0}Foreground", sizeBinding)] = Brushes.Blue;
-                        dr[String.Format("Column{0}", sizeBinding)] = qtyOrder.ToString();
-                    }
-                    else
-                    {
-                        dr[String.Format("Column{0}", sizeBinding)] = qtyInput;
-                        dr[String.Format("Column{0}Foreground", sizeBinding)] = Brushes.Black;
-                    }
+                string sizeEdittingBinding = sizeNo.Contains(".") ? sizeNo.Replace(".", "@") : sizeNo;
+                if (qtyInput <= 0)
+                {
+                    dr[String.Format("Column{0}Foreground", sizeEdittingBinding)] = Brushes.Red;
+                    dr[String.Format("Column{0}", sizeEdittingBinding)] = "0";
+                }
+                else if (qtyInput + totalQtyOfTheOthersDay >= qtyOrder)
+                {
+                    dr[String.Format("Column{0}", sizeEdittingBinding)] = (qtyOrder - totalQtyOfTheOthersDay).ToString();
+                    dr[String.Format("Column{0}Foreground", sizeEdittingBinding)] = Brushes.Black;
+                    if (qtyOrder - totalQtyOfTheOthersDay == qtyOrder)
+                        dr[String.Format("Column{0}Foreground", sizeEdittingBinding)] = Brushes.Blue;
+                }
+                else
+                {
+                    dr[String.Format("Column{0}", sizeEdittingBinding)] = qtyInput;
+                    dr[String.Format("Column{0}Foreground", sizeEdittingBinding)] = Brushes.Black;
                 }
 
                 // Update Total Cell
@@ -524,21 +622,21 @@ namespace MasterSchedule.Views
                 // Load Delivery Infor
                 var deliveryDetailBySupplierClicked = matsDeliveryList.Where(w => w.SupplierId == supplierClicked.SupplierId).ToList();
                 var deliveryThisTimeList = new List<MaterialDeliveryModel>();
-                if (deliveryDetailBySupplierClicked.Where(w => w.DeliveryDate.Equals(dpDeliveryDate.SelectedDate.Value)).Count() == 0)
+                if (deliveryDetailBySupplierClicked.Where(w => w.DeliveryDate.Equals(dpDeliveryDate.SelectedDate.Value.Date)).Count() == 0)
                 {
                     foreach (var sizeRun in sizeRunList)
                     {
                         deliveryThisTimeList.Add(
                             new MaterialDeliveryModel
                             {
-                                ProductNo = productNo,
-                                SupplierId = supplierClicked.SupplierId,
+                                ProductNo    = productNo,
+                                SupplierId   = supplierClicked.SupplierId,
                                 DeliveryDate = dpDeliveryDate.SelectedDate.Value,
-                                SizeNo = sizeRun.SizeNo,
-                                Quantity = 0,
-                                Reject = 0,
-                                RejectId = 0,
-                                Reviser = "new"
+                                SizeNo       = sizeRun.SizeNo,
+                                Quantity     = 0,
+                                Reject       = 0,
+                                RejectId     = 0,
+                                Reviser      = "new"
                             });
                     }
                 }
@@ -550,12 +648,97 @@ namespace MasterSchedule.Views
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
+            // Get data from datatable.
+            if (supplierClicked == null || materialPlanChecking == null)
+                return;
 
+            List<MaterialDeliveryModel> deliveryOKList = new List<MaterialDeliveryModel>();
+            for (int r = 0; r < dtDelDetail.Rows.Count; r++)
+            {
+                DataRow dr = dtDelDetail.Rows[r];
+                if (!dr["Title"].ToString().Equals(_qtyOK))
+                    continue;
+
+                var deliveryDate = (DateTime)dr["DeliveryDateDate"];
+
+                // Get Qty
+                foreach (var sizeRun in sizeRunList)
+                {
+                    string sizeBinding = sizeRun.SizeNo.Contains(".") ? sizeRun.SizeNo.Replace(".", "@") : sizeRun.SizeNo;
+                    int qtyBySize = 0;
+                    Int32.TryParse(dr[String.Format("Column{0}", sizeBinding)].ToString(), out qtyBySize);
+                    deliveryOKList.Add(
+                        new MaterialDeliveryModel
+                        {
+                            ProductNo       = productNo,
+                            SupplierId      = supplierClicked.SupplierId,
+                            DeliveryDate    = deliveryDate,
+                            SizeNo          = sizeRun.SizeNo,
+                            Quantity        = qtyBySize,
+                            Reviser         = "Add Mode"
+                        });
+                }
+            }
+
+            if (bwUpload.IsBusy==false)
+            {
+                btnSave.IsEnabled = false;
+                this.Cursor = Cursors.Wait;
+                bwUpload.RunWorkerAsync(deliveryOKList);
+            }
         }
 
+        private void BwUpload_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var deliveryOKList = e.Argument as List<MaterialDeliveryModel>;
+            try
+            { 
+                foreach(var itemInsert in deliveryOKList)
+                {
+                    MaterialDeliveryController.Insert(itemInsert, insertQty: true, insertReject: false, deleteReject: false);
+                    matsDeliveryList.RemoveAll(r => r.SupplierId.Equals(itemInsert.SupplierId)
+                                                && r.DeliveryDate.Equals(itemInsert.DeliveryDate)
+                                                && r.SizeNo.Equals(itemInsert.SizeNo)
+                                                && r.Quantity > 0);
+                    matsDeliveryList.Add(itemInsert);
+                }
+                e.Result = true;
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke(new Action(() => {
+                    MessageBox.Show(ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                }));
+                e.Result = false;
+            }
+        }
+        private void BwUpload_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if ((bool)e.Result==true)
+            {
+                MessageBox.Show("Saved !", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                LoadDeliveryDetail(matsDeliveryList.Where(w => w.SupplierId.Equals(supplierClicked.SupplierId)).ToList());
+            }
+            this.Cursor = null;
+            btnSave.IsEnabled = true;
+        }
+
+        string sizePressKey = "";
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
-            // Binding Error Keys.
+            if ((int)e.Key >= 74 && (int)e.Key <= 83)
+                sizePressKey += e.Key.ToString().Replace("NumPad", "");
+            else if ((int)e.Key >= 34 && (int)e.Key <= 43)
+                sizePressKey += e.Key.ToString().Replace("D", "");
+            
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show(string.Format("Confirm Delete ?"), this.Title , MessageBoxButton.OKCancel, MessageBoxImage.Question) != MessageBoxResult.OK)
+            {
+                return;
+            }
         }
     }
 }

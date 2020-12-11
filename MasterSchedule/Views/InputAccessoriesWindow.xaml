@@ -53,7 +53,7 @@
                         <Style TargetType="DataGridColumnHeader">
                             <Setter Property="HorizontalContentAlignment" Value="Center"/>
                             <Setter Property="FontSize" Value="15"/>
-                            <Setter Property="Background" Value="LightSteelBlue"/>
+                            <Setter Property="Background" Value="LightGray"/>
                             <Setter Property="Foreground" Value="Black"/>
                             <Setter Property="BorderBrush" Value="Gray"/>
                             <Setter Property="BorderThickness" Value="0.5,0.5,0.5,0"/>
@@ -132,14 +132,13 @@
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Orientation="Horizontal">
-                        <Border Background="{DynamicResource ResourceKey=GroupHeaderBg}" Style="{DynamicResource ResourceKey=BorderStyle}">
+                        <Border Background="{DynamicResource ResourceKey=GroupHeaderBg}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock x:Name="tblDeliveryDetailOf" Foreground="Blue" FontWeight="Regular" FontSize="14" Padding="10,0,10,0" VerticalAlignment="Center"/>
                                 <DatePicker x:Name="dpDeliveryDate" VerticalContentAlignment="Center" SelectedDateChanged="dpDeliveryDate_SelectedDateChanged" Cursor="Hand"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>
-                    <Button x:Name="btnSave" Grid.Column="2" Content="    Save    " Template="{DynamicResource ResourceKey=ButtonTemplate}" Cursor="Hand" Click="btnSave_Click"/>
                 </Grid>
             </GroupBox.Header>
             <Grid>
@@ -174,10 +173,10 @@
                 </DataGrid>
             </Grid>
         </GroupBox>
-        <GroupBox Grid.Row="2" Margin="0,2,0,0" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
+        <GroupBox Grid.Row="2" Margin="0,2,0,0" Visibility="Collapsed" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
             <GroupBox.Header>
                 <Border Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
-                    <TextBlock Text="List of Defects" Foreground="Red" Padding="10,0,10,0"/>
+                    <TextBlock Text="List of SizeNo" Foreground="Red" Padding="10,0,10,0"/>
                 </Border>
             </GroupBox.Header>
             <Grid x:Name="gridError">
@@ -188,8 +187,21 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
             </Grid>
         </GroupBox>
+        <Grid Grid.Row="3" Margin="0,2,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="btnDelete" Grid.Column="1" Content="    Delete    " Template="{DynamicResource ResourceKey=ButtonTemplate}" Cursor="Hand" Click="btnDelete_Click"/>
+            <Button x:Name="btnSave" Grid.Column="2" Content="      Save      " Margin="10,0,0,0" Template="{DynamicResource ResourceKey=ButtonTemplate}" Cursor="Hand" Click="btnSave_Click"/>
+        </Grid>
     </Grid>
 </Window>

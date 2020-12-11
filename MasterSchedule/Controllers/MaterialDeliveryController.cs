@@ -18,7 +18,7 @@ namespace MasterSchedule.Controllers
             }
         }
         
-        public static bool Insert(MaterialDeliveryModel model, bool insertQty, bool insertReject)
+        public static bool Insert(MaterialDeliveryModel model, bool insertQty, bool insertReject, bool deleteReject)
         {
             var @ProductNo  = new SqlParameter("@ProductNo", model.ProductNo);
             var @SupplierId = new SqlParameter("@SupplierId", model.SupplierId);
@@ -30,11 +30,13 @@ namespace MasterSchedule.Controllers
             var @Reviser = new SqlParameter("@Reviser", model.Reviser);
             var @InsertQuantity = new SqlParameter("@InsertQuantity", insertQty);
             var @InsertReject = new SqlParameter("@InsertReject", insertReject);
+            
+            var @DeleteReject = new SqlParameter("@DeleteReject", deleteReject);
 
             using (var db = new SaovietMasterScheduleEntities())
             {
-                if (db.ExecuteStoreCommand("EXEC spm_InsertMaterialDelivery @ProductNo, @SupplierId, @DeliveryDate, @SizeNo, @Quantity, @Reject, @RejectId, @Reviser, @InsertQuantity, @InsertReject",
-                                                                            @ProductNo, @SupplierId, @DeliveryDate, @SizeNo, @Quantity, @Reject, @RejectId, @Reviser, @InsertQuantity, @InsertReject) > 0)
+                if (db.ExecuteStoreCommand("EXEC spm_InsertMaterialDelivery @ProductNo, @SupplierId, @DeliveryDate, @SizeNo, @Quantity, @Reject, @RejectId, @Reviser, @InsertQuantity, @InsertReject, @DeleteReject",
+                                                                            @ProductNo, @SupplierId, @DeliveryDate, @SizeNo, @Quantity, @Reject, @RejectId, @Reviser, @InsertQuantity, @InsertReject, @DeleteReject) > 0)
                 {
                     return true;
                 }

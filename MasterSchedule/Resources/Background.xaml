@@ -11,7 +11,7 @@
     <LinearGradientBrush x:Key="GroupHeaderBg">
         <GradientBrush.GradientStops>
             <GradientStopCollection>
-                <GradientStop Color="LimeGreen" Offset="0.1"/>
+                <GradientStop Color="LightGray" Offset="0.1"/>
                 <GradientStop Color="WhiteSmoke" Offset="0.7"/>
             </GradientStopCollection>
         </GradientBrush.GradientStops>
