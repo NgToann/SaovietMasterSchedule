@@ -110,7 +110,8 @@
                         <TextBlock Margin="0,3,0,3" Text="OUTSOLE" TextAlignment="Center" FontWeight="Bold"/>
                     </Border>
                     <Border Grid.Column="34" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="0,1,1,0">
-                        <TextBlock Margin="0,3,0,3" Text="UPPER COMPONENT" TextAlignment="Center" FontWeight="Bold"/>
+                        <!--<TextBlock Margin="0,3,0,3" Text="UPPER COMPONENT" TextAlignment="Center" FontWeight="Bold"/>-->
+                        <TextBlock Margin="0,3,0,3" Text="UPPER ACCESSORIES" TextAlignment="Center" FontWeight="Bold"/>
                     </Border>
                     <Border Grid.Column="37" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="0,1,1,0">
                         <TextBlock Margin="0,3,0,3" Text="MOLDED INSOCK" TextAlignment="Center" FontWeight="Bold"/>
@@ -215,9 +216,12 @@
                     </DataGridTextColumn>
                     <DataGridTextColumn x:Name="Column25" Header="REMARKS" Width="Auto" Binding="{Binding OUTSOLE_Remarks, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
 
-                    <DataGridTextColumn x:Name="Column25_1" Header="EFD" Width="Auto" Binding="{Binding UPPERCOMPONENT_ETD, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+                    <!--<DataGridTextColumn x:Name="Column25_1" Header="EFD" Width="Auto" Binding="{Binding UPPERCOMPONENT_ETD, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
                     <DataGridTextColumn x:Name="Column25_2" Header="Actual&#10;Date" Width="Auto" Binding="{Binding UPPERCOMPONENT_ActualDate, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
-                    <DataGridTextColumn x:Name="Column25_3" Header="REMARKS" Width="Auto" Binding="{Binding UPPERCOMPONENT_Remarks, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+                    <DataGridTextColumn x:Name="Column25_3" Header="REMARKS" Width="Auto" Binding="{Binding UPPERCOMPONENT_Remarks, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>-->
+                    <DataGridTextColumn x:Name="Column25_1" Header="EFD" Width="Auto" Binding="{Binding UpperAccessories_ETD, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+                    <DataGridTextColumn x:Name="Column25_2" Header="Actual&#10;Date" Width="Auto" Binding="{Binding UpperAccessories_ActualDate, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+                    <DataGridTextColumn x:Name="Column25_3" Header="REMARKS" Width="Auto" Binding="{Binding UpperAccessories_Remarks, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
 
                     <DataGridTextColumn x:Name="Column25_4" Header="EFD" Width="Auto" Binding="{Binding INSOCK_ETD, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
                     <DataGridTextColumn x:Name="Column25_5" Header="Actual&#10;Date" Width="Auto" Binding="{Binding INSOCK_ActualDate, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>

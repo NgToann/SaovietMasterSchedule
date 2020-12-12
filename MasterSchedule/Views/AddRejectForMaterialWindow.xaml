@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MasterSchedule.Views" Loaded="Window_Loaded" KeyUp="Window_KeyUp"
         mc:Ignorable="d" FontSize="13" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" SizeToContent="WidthAndHeight"
-        Title="MasterScheduel - Add/Update Accessories Reject"  MaxWidth="600" MinWidth="600"> 
+        Title="Master Schedule - Add/Update Accessories Reject"  MaxWidth="600" MinWidth="600"> 
     <Grid Margin="2">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -34,7 +34,7 @@
                 </Grid>
                 <DataGrid x:Name="dgReject" Grid.Row="1" Margin="0,2,0,0" AutoGenerateColumns="False" AlternationCount="2" AlternatingRowBackground="LightCyan" CanUserSortColumns="False"
                       CanUserAddRows="False" SelectionUnit="Cell" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" RowHeaderWidth="0"
-                      FontFamily="Times New Roman" FontSize="15" CellEditEnding="dgReject_CellEditEnding">
+                      FontFamily="Times New Roman" FontSize="17" CellEditEnding="dgReject_CellEditEnding">
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
                             <Setter Property="HorizontalContentAlignment" Value="Center"/>

@@ -1117,7 +1117,7 @@ namespace MasterSchedule.Views
                         //    });
                         //    rawMaterialView.UPPERCOMPONENT_ETD = String.Format("{0:M/d}", window.rawMaterial.ETD);
                         //}
-                        var window = new InputAccessoriesWindow(productNo, rejectUpperAccessoriesList);
+                        var window = new InputAccessoriesWindow(productNo, rejectUpperAccessoriesList, account);
                         window.ShowDialog();
                     }
 

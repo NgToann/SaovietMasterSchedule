@@ -38,14 +38,17 @@ namespace MasterSchedule.Views
         SupplierModel supplierClicked;
         DataTable dtDelDetail;
         List<String> buttonSizeKeyList;
+        private EExcute eAction = EExcute.None;
+        private AccountModel account;
         string[] keysTemp = new string[] {  "1", "2", "3", "4", "5", "6", "7", "8", "9",
                                             "00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
                                             "11", "12", "13", "14", "15", "16", "17", "18", "19"};
         private string _qtyOK = "Quantity OK";
-        public InputAccessoriesWindow(string productNo, List<RejectModel> rejectUpperAccessoriesList)
+        public InputAccessoriesWindow(string productNo, List<RejectModel> rejectUpperAccessoriesList, AccountModel account)
         {
             this.productNo = productNo;
             this.rejectUpperAccessoriesList = rejectUpperAccessoriesList;
+            this.account = account;
 
             bwLoad = new BackgroundWorker();
             bwLoad.DoWork += BwLoad_DoWork;
@@ -63,12 +66,12 @@ namespace MasterSchedule.Views
             matsDeliveryList = new List<MaterialDeliveryModel>();
             dtDelDetail = new DataTable();
             buttonSizeKeyList = new List<string>();
-
             InitializeComponent();
         }        
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            this.Title = this.Title + " - " + account.FullName;
             if (bwLoad.IsBusy == false)
             {
                 this.Cursor = Cursors.Wait;
@@ -93,6 +96,7 @@ namespace MasterSchedule.Views
             LoadDeliveryDetail(matsDeliveryList);
             tblDeliveryDetailOf.Text = String.Format("Delivery detail of: {0}", productNo);
             dgDeliveryDetail.IsReadOnly = true;
+
             this.Cursor = null;
         }
 
@@ -245,6 +249,8 @@ namespace MasterSchedule.Views
 
         private void btnAddNewAccessory_Click(object sender, RoutedEventArgs e)
         {
+            if (!account.MaterialPlan)
+                return;
             var window = new AddMaterialPlanForProductNoWindow(productNo, supplierAccessoriesList, null, materialPlanList);
             window.ShowDialog();
             if (window.materialUpdate != null)
@@ -257,6 +263,8 @@ namespace MasterSchedule.Views
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            if (!account.MaterialPlan)
+                return;
             btnEditMatsPlan = sender as Button;
             var rowClicked = dgAccessoriesInfor.CurrentItem as MaterialPlanModel;
             if (rowClicked == null)
@@ -294,10 +302,28 @@ namespace MasterSchedule.Views
             if (!cellClicked.Column.Equals(colSupplier))
                 return;
 
+            supplierClicked = supplierAccessoriesList.FirstOrDefault(f => f.SupplierId.Equals(rowClicked.SupplierId));
+            materialPlanChecking = rowClicked;
+
+            if (string.IsNullOrEmpty(workerId) && account.MaterialDelivery)
+            {
+                popInputWorkerId.IsOpen = true;
+                txtWorkerId.Focus();
+                txtWorkerId.SelectAll();
+            }
+            else
+            {
+                LoadSupplierClicked();
+            }
+        }
+
+        private void LoadSupplierClicked()
+        {
             // Load Delivery Infor
-            var deliveryDetailBySupplierClicked = matsDeliveryList.Where(w => w.SupplierId == rowClicked.SupplierId).ToList();
+            var deliveryDetailBySupplierClicked = matsDeliveryList.Where(w => w.SupplierId == materialPlanChecking.SupplierId).ToList();
             var deliveryThisTimeList = new List<MaterialDeliveryModel>();
-            if (deliveryDetailBySupplierClicked.Where(w => w.DeliveryDate.Equals(dpDeliveryDate.SelectedDate.Value.Date)).Count() == 0)
+            if (deliveryDetailBySupplierClicked.Where(w => w.DeliveryDate.Equals(dpDeliveryDate.SelectedDate.Value.Date)).Count() == 0
+                && account.MaterialDelivery)
             {
                 foreach (var sizeRun in sizeRunList)
                 {
@@ -305,21 +331,18 @@ namespace MasterSchedule.Views
                         new MaterialDeliveryModel
                         {
                             ProductNo = productNo,
-                            SupplierId = rowClicked.SupplierId,
+                            SupplierId = materialPlanChecking.SupplierId,
                             DeliveryDate = dpDeliveryDate.SelectedDate.Value,
                             SizeNo = sizeRun.SizeNo,
                             Quantity = 0,
                             Reject = 0,
                             RejectId = 0,
-                            Reviser = "new"
+                            Reviser = workerId
                         });
                 }
             }
-
             deliveryDetailBySupplierClicked.AddRange(deliveryThisTimeList);
             LoadDeliveryDetail(deliveryDetailBySupplierClicked);
-            supplierClicked = supplierAccessoriesList.FirstOrDefault(f => f.SupplierId.Equals(rowClicked.SupplierId));
-            materialPlanChecking = rowClicked;
             dgDeliveryDetail.IsReadOnly = false;
             tblDeliveryDetailOf.Text = String.Format("Delivery detail of: {0}", supplierClicked.Name);
         }
@@ -501,6 +524,12 @@ namespace MasterSchedule.Views
 
         private void dgDeliveryDetail_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
         {
+            if (!account.MaterialDelivery)
+            {
+                e.Cancel = true;
+                return;
+            }
+
             HighLightError("");
             var rowEditting = (DataRowView)e.Row.Item;
             if (!rowEditting["Title"].ToString().Equals("Reject"))
@@ -522,7 +551,7 @@ namespace MasterSchedule.Views
                                                                                 && w.SizeNo.Equals(sizeRunClicked.SizeNo)
                                                                                 && w.DeliveryDate.Equals(dateEditting)).ToList();
             int totalRejectBySizeCurrent = matsDeliveryListBySuppTranfer.Where(w => w.RejectId > 0 && w.SizeNo.Equals(sizeRunClicked.SizeNo)).Count();
-            var window = new AddRejectForMaterialWindow(rejectUpperAccessoriesList, sizeRunClicked, materialPlanChecking, rowEditting, matsDeliveryListByDate, totalRejectBySizeCurrent);
+            var window = new AddRejectForMaterialWindow(rejectUpperAccessoriesList, sizeRunClicked, materialPlanChecking, rowEditting, matsDeliveryListByDate, totalRejectBySizeCurrent, workerId);
             window.ShowDialog();
             if (window.eAction == EExcute.AddNew && window.deliveryHasRejectList.Count() > 0)
             {
@@ -619,37 +648,23 @@ namespace MasterSchedule.Views
         {
             if (supplierClicked != null)
             {
-                // Load Delivery Infor
-                var deliveryDetailBySupplierClicked = matsDeliveryList.Where(w => w.SupplierId == supplierClicked.SupplierId).ToList();
-                var deliveryThisTimeList = new List<MaterialDeliveryModel>();
-                if (deliveryDetailBySupplierClicked.Where(w => w.DeliveryDate.Equals(dpDeliveryDate.SelectedDate.Value.Date)).Count() == 0)
+                if (string.IsNullOrEmpty(workerId))
                 {
-                    foreach (var sizeRun in sizeRunList)
-                    {
-                        deliveryThisTimeList.Add(
-                            new MaterialDeliveryModel
-                            {
-                                ProductNo    = productNo,
-                                SupplierId   = supplierClicked.SupplierId,
-                                DeliveryDate = dpDeliveryDate.SelectedDate.Value,
-                                SizeNo       = sizeRun.SizeNo,
-                                Quantity     = 0,
-                                Reject       = 0,
-                                RejectId     = 0,
-                                Reviser      = "new"
-                            });
-                    }
+                    popInputWorkerId.IsOpen = true;
+                    dpDeliveryDate.Focus();
+                    txtWorkerId.Focus();
+                    txtWorkerId.SelectAll();
                 }
-                deliveryDetailBySupplierClicked.AddRange(deliveryThisTimeList);
-                LoadDeliveryDetail(deliveryDetailBySupplierClicked);
+                else
+                {
+                    LoadSupplierClicked();
+                }
             }
-            
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            // Get data from datatable.
-            if (supplierClicked == null || materialPlanChecking == null)
+            if (supplierClicked == null || materialPlanChecking == null || account.MaterialDelivery == false)
                 return;
 
             List<MaterialDeliveryModel> deliveryOKList = new List<MaterialDeliveryModel>();
@@ -675,13 +690,14 @@ namespace MasterSchedule.Views
                             DeliveryDate    = deliveryDate,
                             SizeNo          = sizeRun.SizeNo,
                             Quantity        = qtyBySize,
-                            Reviser         = "Add Mode"
+                            Reviser         = workerId
                         });
                 }
             }
 
             if (bwUpload.IsBusy==false)
             {
+                eAction = EExcute.AddNew;
                 btnSave.IsEnabled = false;
                 this.Cursor = Cursors.Wait;
                 bwUpload.RunWorkerAsync(deliveryOKList);
@@ -692,15 +708,23 @@ namespace MasterSchedule.Views
         {
             var deliveryOKList = e.Argument as List<MaterialDeliveryModel>;
             try
-            { 
-                foreach(var itemInsert in deliveryOKList)
+            {
+                if (eAction == EExcute.AddNew)
                 {
-                    MaterialDeliveryController.Insert(itemInsert, insertQty: true, insertReject: false, deleteReject: false);
-                    matsDeliveryList.RemoveAll(r => r.SupplierId.Equals(itemInsert.SupplierId)
-                                                && r.DeliveryDate.Equals(itemInsert.DeliveryDate)
-                                                && r.SizeNo.Equals(itemInsert.SizeNo)
-                                                && r.Quantity > 0);
-                    matsDeliveryList.Add(itemInsert);
+                    foreach (var itemInsert in deliveryOKList)
+                    {
+                        MaterialDeliveryController.Insert(itemInsert, insertQty: true, insertReject: false, deleteReject: false);
+                        matsDeliveryList.RemoveAll(r => r.SupplierId.Equals(itemInsert.SupplierId)
+                                                    && r.DeliveryDate.Equals(itemInsert.DeliveryDate)
+                                                    && r.SizeNo.Equals(itemInsert.SizeNo)
+                                                    && r.Quantity > 0);
+                        matsDeliveryList.Add(itemInsert);
+                    }
+                }
+                else if (eAction == EExcute.Delete)
+                {
+                    MaterialDeliveryController.DeleteByPOBySupplier(productNo, supplierClicked.SupplierId);
+                    matsDeliveryList.RemoveAll(r => r.SupplierId.Equals(supplierClicked.SupplierId));
                 }
                 e.Result = true;
             }
@@ -714,13 +738,22 @@ namespace MasterSchedule.Views
         }
         private void BwUpload_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if ((bool)e.Result==true)
+            if ((bool)e.Result == true)
             {
-                MessageBox.Show("Saved !", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                if (eAction == EExcute.AddNew)
+                {
+                    MessageBox.Show("Saved !", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                    btnSave.IsEnabled = true;
+                }
+                else if (eAction == EExcute.Delete)
+                {
+                    MessageBox.Show("Deleted !", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                    btnDelete.IsEnabled = true;
+                }
+
                 LoadDeliveryDetail(matsDeliveryList.Where(w => w.SupplierId.Equals(supplierClicked.SupplierId)).ToList());
             }
             this.Cursor = null;
-            btnSave.IsEnabled = true;
         }
 
         string sizePressKey = "";
@@ -730,15 +763,60 @@ namespace MasterSchedule.Views
                 sizePressKey += e.Key.ToString().Replace("NumPad", "");
             else if ((int)e.Key >= 34 && (int)e.Key <= 43)
                 sizePressKey += e.Key.ToString().Replace("D", "");
-            
+
+            if (e.Key.Equals(Key.Escape))
+                popInputWorkerId.IsOpen = false;
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show(string.Format("Confirm Delete ?"), this.Title , MessageBoxButton.OKCancel, MessageBoxImage.Question) != MessageBoxResult.OK)
+            if (supplierClicked == null || materialPlanChecking == null || account.MaterialDelivery == false)
+                return;
+            if (MessageBox.Show(string.Format("Confirm delete accessories of: {0}?", supplierClicked.Name), this.Title , MessageBoxButton.OKCancel, MessageBoxImage.Question) != MessageBoxResult.OK)
             {
                 return;
             }
+            eAction = EExcute.Delete;
+            if (bwUpload.IsBusy == false)
+            {
+                this.Cursor = Cursors.Wait;
+                btnDelete.IsEnabled = false;
+                bwUpload.RunWorkerAsync();
+            }
+        }
+
+        private void btnClearReviser_Click(object sender, RoutedEventArgs e)
+        {
+            stkReviser.Visibility = Visibility.Collapsed;
+            workerId = "";
+            txtReviser.Text = "";
+            tblDeliveryDetailOf.Text = "";
+            LoadDeliveryDetail(new List<MaterialDeliveryModel>());
+        }
+
+        string workerId = "";
+        private void btnWorkderId_Click(object sender, RoutedEventArgs e)
+        {
+            btnWorkderId.IsDefault = false;
+            workerId = txtWorkerId.Text.Trim().ToUpper().ToString();
+            if (String.IsNullOrEmpty(workerId))
+            {
+                MessageBox.Show("Input WorkerId !", this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                txtWorkerId.Focus();
+                txtWorkerId.SelectAll();
+                return;
+            }
+
+            LoadSupplierClicked();
+
+            txtReviser.Text = String.Format("Reviser: {0}", workerId);
+            stkReviser.Visibility = Visibility.Visible;
+            popInputWorkerId.IsOpen = false;
+        }
+
+        private void txtWorkerId_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            btnWorkderId.IsDefault = true;
         }
     }
 }

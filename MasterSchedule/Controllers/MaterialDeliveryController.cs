@@ -18,6 +18,22 @@ namespace MasterSchedule.Controllers
             }
         }
         
+        public  static bool DeleteByPOBySupplier (string productNo, int supplierId)
+        {
+            var @ProductNo = new SqlParameter("@ProductNo", productNo);
+            var @SupplierId = new SqlParameter("@SupplierId", supplierId);
+            
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                if (db.ExecuteStoreCommand("EXEC spm_DeleteMaterialDeliveryByPOBySupplier @ProductNo, @SupplierId",
+                                                                                          @ProductNo, @SupplierId) > 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         public static bool Insert(MaterialDeliveryModel model, bool insertQty, bool insertReject, bool deleteReject)
         {
             var @ProductNo  = new SqlParameter("@ProductNo", model.ProductNo);

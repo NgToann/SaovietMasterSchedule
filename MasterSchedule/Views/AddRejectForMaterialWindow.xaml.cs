@@ -32,13 +32,14 @@ namespace MasterSchedule.Views
         private SizeRunModel sizeRunClicked;
         private MaterialPlanModel materialPlanChecking;
         private DataRowView rowEditting;
-        public List<MaterialDeliveryModel> deliveryHasRejectList;
         private List<MaterialDeliveryModel> deliveryCurrentList;
+        private string workerId;
         BackgroundWorker bwUpload;
+        public List<MaterialDeliveryModel> deliveryHasRejectList;
         public EExcute eAction = EExcute.None;
         DataTable dtReject;
         int totalRejectCurrent;
-        public AddRejectForMaterialWindow(List<RejectModel> rejectUpperAccessoriesList, SizeRunModel sizeRunClicked, MaterialPlanModel materialPlanChecking, DataRowView rowEditting, List<MaterialDeliveryModel> deliveryCurrentList, int totalRejectCurrent)
+        public AddRejectForMaterialWindow(List<RejectModel> rejectUpperAccessoriesList, SizeRunModel sizeRunClicked, MaterialPlanModel materialPlanChecking, DataRowView rowEditting, List<MaterialDeliveryModel> deliveryCurrentList, int totalRejectCurrent, string workerId)
         {
             this.rejectUpperAccessoriesList = rejectUpperAccessoriesList;
             this.sizeRunClicked             = sizeRunClicked;
@@ -46,6 +47,7 @@ namespace MasterSchedule.Views
             this.rowEditting                = rowEditting;
             this.deliveryCurrentList        = deliveryCurrentList;
             this.totalRejectCurrent         = totalRejectCurrent;
+            this.workerId                   = workerId;
 
             bwUpload = new BackgroundWorker();
             bwUpload.DoWork += BwUpload_DoWork;
@@ -92,9 +94,23 @@ namespace MasterSchedule.Views
             {
                 if (eAction.Equals(EExcute.AddNew))
                 {
-                    foreach (var rejectItem in deliveryHasRejectList)
+                    // Add New
+                    if (deliveryCurrentList.Count() == 0)
                     {
-                        MaterialDeliveryController.Insert(rejectItem, insertQty: false, insertReject: true, deleteReject: false);
+                        foreach (var rejectItem in deliveryHasRejectList)
+                        {
+                            MaterialDeliveryController.Insert(rejectItem, insertQty: false, insertReject: true, deleteReject: false);
+                        }
+                    }
+                    else // Update
+                    {
+                        foreach (var rejectItem in deliveryCurrentList)
+                        {
+                            if (deliveryHasRejectList.Where(w => w.RejectId.Equals(rejectItem.RejectId)).Count() == 0)
+                                MaterialDeliveryController.Insert(rejectItem, insertQty: false, insertReject: false, deleteReject: true);
+                            else
+                                MaterialDeliveryController.Insert(rejectItem, insertQty: false, insertReject: true, deleteReject: false);
+                        }
                     }
                 }
                 else if (eAction.Equals(EExcute.Delete))
@@ -109,8 +125,9 @@ namespace MasterSchedule.Views
             catch (Exception ex)
             {
                 Dispatcher.Invoke(new Action(() => {
-                    MessageBox.Show(ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(ex.InnerException.InnerException.Message.ToString(), this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 }));
+                eAction = EExcute.None;
                 e.Result = false;
             }
         }
@@ -218,7 +235,8 @@ namespace MasterSchedule.Views
         {
             var buttonClicked = sender as Button;
             var rejectClicked = buttonClicked.Tag as RejectModel;
-            if (rejectClickedList.Count() + totalRejectCurrent >= sizeRunClicked.Quantity)
+            int currentQty = totalRejectCurrent > 0 ? totalRejectCurrent - 1 : 0;
+            if (rejectClickedList.Count() + currentQty >= sizeRunClicked.Quantity)
             {
                 MessageBox.Show(String.Format("Total reject can't be greater than #size {0} quantity {1}", sizeRunClicked.SizeNo, sizeRunClicked.Quantity), this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -284,7 +302,8 @@ namespace MasterSchedule.Views
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            if (rejectClickedList.Count() + totalRejectCurrent > sizeRunClicked.Quantity)
+            int currentQty = totalRejectCurrent > 0 ? totalRejectCurrent - 1 : 0;
+            if (rejectClickedList.Count() + currentQty > sizeRunClicked.Quantity)
             {
                 MessageBox.Show(String.Format("Total reject can't be greater than #size {0} quantity {1}", sizeRunClicked.SizeNo, sizeRunClicked.Quantity), this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -303,7 +322,7 @@ namespace MasterSchedule.Views
                     SizeNo = sizeRunClicked.SizeNo,
                     Reject = noOfReject,
                     RejectId = rId,
-                    Reviser = "Testing"
+                    Reviser = workerId
                 };
                 deliveryHasRejectList.Add(delReject);
             }
@@ -336,7 +355,7 @@ namespace MasterSchedule.Views
                     SizeNo = sizeRunClicked.SizeNo,
                     Reject = noOfReject,
                     RejectId = rId,
-                    Reviser = "Testing"
+                    Reviser = workerId
                 };
                 deliveryHasRejectList.Add(delReject);
             }

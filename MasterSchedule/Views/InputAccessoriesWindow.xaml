@@ -14,22 +14,30 @@
         </Grid.RowDefinitions>
         <GroupBox Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
             <GroupBox.Header>
-                <StackPanel Orientation="Horizontal">
-                    <Border Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
-                        <TextBlock Text="Accessories Information" Foreground="Black" Padding="10,0,10,0" VerticalAlignment="Center"/>
-                    </Border>
-                    <Button Margin="5,0,0,0" x:Name="btnAddNewAccessory" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" ToolTip="Add New" Cursor="Hand" Click="btnAddNewAccessory_Click">
-                        <Button.Content>
-                            <Image Width="16" Height="16" Source="/Images/mini_add.png"/>
-                        </Button.Content>
-                    </Button>
-                </StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <Border Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
+                            <TextBlock Text="Accessories Information" Foreground="Black" Padding="10,0,10,0" VerticalAlignment="Center"/>
+                        </Border>
+                        <Button Margin="5,0,0,0" x:Name="btnAddNewAccessory" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" ToolTip="Add New" Cursor="Hand" Click="btnAddNewAccessory_Click">
+                            <Button.Content>
+                                <Image Width="16" Height="16" Source="/Images/mini_add.png"/>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
             </GroupBox.Header>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="10"/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <DataGrid MaxHeight="100" x:Name="dgAccessoriesInfor" AutoGenerateColumns="False" AlternationCount="2" AlternatingRowBackground="LightCyan" CanUserSortColumns="False"
                       CanUserAddRows="False" SelectionUnit="Cell" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" LoadingRow="dgAccessoriesInfor_LoadingRow" RowHeaderWidth="NaN"
@@ -121,6 +129,20 @@
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
+
+                <TextBlock x:Name="txtPopUpPosition" Grid.Column="1" VerticalAlignment="Top" Width="0" Height="0" Margin="10,0,0,0"/>
+                <Popup x:Name="popInputWorkerId" VerticalAlignment="Top" PlacementTarget="{Binding ElementName=txtPopUpPosition}" PopupAnimation="Fade" AllowsTransparency="True">
+                    <Border Background="LightSeaGreen" BorderBrush="Gray" BorderThickness="1,1,1,1" Padding="5,10,5,5" CornerRadius="4" >
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Image Width="20" Height="20" Source="/Images/man.png"/>
+                                <TextBlock Text="Input Worker ID" Foreground="Blue" VerticalAlignment="Bottom" Margin="2,0,0,0"/>
+                            </StackPanel>
+                            <TextBox x:Name="txtWorkerId" MinWidth="125" FontSize="26" Margin="0,2,0,0" Padding="4,2,2,2" Foreground="Red" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" PreviewKeyUp="txtWorkerId_PreviewKeyUp" BorderBrush="Red" BorderThickness="2,2,2,2"/>
+                            <Button x:Name="btnWorkderId" Width="0" Click="btnWorkderId_Click"/>
+                        </StackPanel>
+                    </Border>
+                </Popup>
             </Grid>
         </GroupBox>
         <GroupBox Grid.Row="1" Margin="0,2,0,0" Template="{DynamicResource ResourceKey=GroupBoxTemplateNoPadding}">
@@ -139,9 +161,17 @@
                             </StackPanel>
                         </Border>
                     </StackPanel>
+                    <StackPanel x:Name="stkReviser" Grid.Column="2" Orientation="Horizontal" Visibility="Collapsed">
+                        <TextBlock x:Name="txtReviser" FontSize="15" Foreground="Blue" FontStyle="Italic" FontWeight="SemiBold" Cursor="Hand" VerticalAlignment="Center"/>
+                        <Button Margin="5,0,0,0" x:Name="btnClearReviser" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" ToolTip="Clear Reviser" Cursor="Hand" Click="btnClearReviser_Click">
+                            <Button.Content>
+                                <Image Width="14" Height="14" Source="/Images/clear.png"/>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
                 </Grid>
             </GroupBox.Header>
-            <Grid>
+            <Grid x:Name="gridDelivery">
                 <DataGrid x:Name="dgDeliveryDetail" AutoGenerateColumns="False" AlternationCount="2" AlternatingRowBackground="LightCyan" CanUserSortColumns="False"
                       CanUserAddRows="False" SelectionUnit="Cell" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" LoadingRow="dgDeliveryDetail_LoadingRow" RowHeaderWidth="NaN"
                       FontFamily="Times New Roman" FontSize="14" BeginningEdit="dgDeliveryDetail_BeginningEdit" CellEditEnding="dgDeliveryDetail_CellEditEnding">

@@ -403,7 +403,10 @@ namespace MasterSchedule.Views
             if (buttonClicked == null)
                 return;
             supplierClicked = buttonClicked.Tag as OutsoleSuppliersModel;
-            LoadSupplierClicked();
+
+            popInputWorkerId.IsOpen = true;
+            txtWorkerId.Focus();
+            txtWorkerId.SelectAll();
         }
 
         private void LoadSupplierClicked()

@@ -33,5 +33,9 @@ namespace MasterSchedule.Models
         public bool OutsoleWH { get; set; }
 
         public bool Insock { get; set; }
+
+        public bool UpperAccessories { get; set; }
+        public bool MaterialPlan { get; set; }
+        public bool MaterialDelivery { get; set; }
     }
 }
