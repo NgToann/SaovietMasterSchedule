@@ -19,16 +19,19 @@ namespace MasterSchedule.Controllers
             }
         }
 
-        public static bool Insert (MaterialPlanModel model)
+        public static bool Insert (MaterialPlanModel model, bool isUpdateActualDate)
         {
             var @ProductNo  = new SqlParameter("@ProductNo", model.ProductNo);
             var @SupplierId = new SqlParameter("@SupplierId", model.SupplierId);
             var @ETD        = new SqlParameter("@ETD", model.ETD);
             var @Remarks    = new SqlParameter("@Remarks", model.Remarks);
+            var @ActualDate = new SqlParameter("@ActualDate", model.ActualDate);
+            var @IsUpdateActualDate = new SqlParameter("@IsUpdateActualDate", isUpdateActualDate);
 
             using (var db = new SaovietMasterScheduleEntities())
             {
-                if (db.ExecuteStoreCommand("EXEC spm_InsertMaterialPlan @ProductNo, @SupplierId, @ETD, @Remarks", @ProductNo, @SupplierId, @ETD, @Remarks) > 0)
+                if (db.ExecuteStoreCommand("EXEC spm_InsertMaterialPlan @ProductNo, @SupplierId, @ETD, @Remarks, @ActualDate, @IsUpdateActualDate", 
+                                                                        @ProductNo, @SupplierId, @ETD, @Remarks, @ActualDate, @IsUpdateActualDate) > 0)
                 {
                     return true;
                 }

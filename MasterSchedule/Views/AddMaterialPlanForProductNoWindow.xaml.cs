@@ -137,7 +137,7 @@ namespace MasterSchedule.Views
             {
                 if (runMode == EExcute.AddNew)
                 {
-                    MaterialPlanController.Insert(materialRevise);
+                    MaterialPlanController.Insert(materialRevise, isUpdateActualDate: false);
                 }
                 else if (runMode == EExcute.Update)
                 {

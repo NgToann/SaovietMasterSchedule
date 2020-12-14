@@ -15,6 +15,7 @@ namespace MasterSchedule.Models
         public string ProvideUpper { get; set; }
         public DateTime ETD { get; set; }
         public DateTime ActualDate { get; set; }
+        public string ActualDateString { get; set; }
         public string Remarks { get; set; }
     }
 }

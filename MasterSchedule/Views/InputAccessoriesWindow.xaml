@@ -102,10 +102,10 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Actual Date" SortMemberPath="ActualDate" ClipboardContentBinding="{Binding ActualDate}">
+                        <DataGridTemplateColumn Header="Actual Date" SortMemberPath="ActualDateString" ClipboardContentBinding="{Binding ActualDateString}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding ActualDate, StringFormat=MM/dd/yyyy}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="2"/>
+                                    <TextBlock Text="{Binding ActualDateString}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="2"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

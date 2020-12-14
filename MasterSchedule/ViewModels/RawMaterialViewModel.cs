@@ -171,6 +171,39 @@ namespace MasterSchedule.ViewModels
             }
         }
 
+        private string _UpperAccessories_ETD;
+        public string UpperAccessories_ETD 
+        {
+            get { return _UpperAccessories_ETD; }
+            set
+            {
+                _UpperAccessories_ETD = value;
+                OnPropertyChanged("UpperAccessories_ETD");
+            }
+        }
+
+        private string _UpperAccessories_ActualDate;
+        public string UpperAccessories_ActualDate
+        {
+            get { return _UpperAccessories_ActualDate; }
+            set
+            {
+                _UpperAccessories_ActualDate = value;
+                OnPropertyChanged("UpperAccessories_ActualDate");
+            }
+        }
+
+        private string _UpperAccessories_Remarks;
+        public string UpperAccessories_Remarks
+        {
+            get { return _UpperAccessories_Remarks; }
+            set
+            {
+                _UpperAccessories_Remarks = value;
+                OnPropertyChanged("UpperAccessories_Remarks");
+            }
+        }
+
         public string SECURITYLABEL_ETD { get; set; }
         public string SECURITYLABEL_ActualDate { get; set; }
         public string SECURITYLABEL_Remarks { get; set; }

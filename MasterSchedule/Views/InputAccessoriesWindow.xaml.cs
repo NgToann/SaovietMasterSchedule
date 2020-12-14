@@ -29,7 +29,7 @@ namespace MasterSchedule.Views
         BackgroundWorker bwUpload;
         private string productNo;
         private List<RejectModel> rejectUpperAccessoriesList;
-        List<MaterialPlanModel> materialPlanList;
+        public List<MaterialPlanModel> materialPlanList;
         MaterialPlanModel materialPlanChecking;
         List<SupplierModel> supplierAccessoriesList;
         List<SizeRunModel> sizeRunList;
@@ -44,6 +44,7 @@ namespace MasterSchedule.Views
                                             "00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
                                             "11", "12", "13", "14", "15", "16", "17", "18", "19"};
         private string _qtyOK = "Quantity OK";
+        private DateTime dtDefault = new DateTime(2000, 01, 01);
         public InputAccessoriesWindow(string productNo, List<RejectModel> rejectUpperAccessoriesList, AccountModel account)
         {
             this.productNo = productNo;
@@ -82,9 +83,9 @@ namespace MasterSchedule.Views
         private void BwLoad_DoWork(object sender, DoWorkEventArgs e)
         {
             materialPlanList = MaterialPlanController.GetMaterialPlanByPO(productNo);
+            materialPlanList.ForEach(t => t.ActualDateString = t.ActualDate != dtDefault ? String.Format("{0:MM/dd}", t.ActualDate) : "");
             supplierAccessoriesList = SupplierController.GetSuppliersAccessories();
             sizeRunList = SizeRunController.Select(productNo);
-
             matsDeliveryList = MaterialDeliveryController.GetMaterialDeliveryByPO(productNo);
         }
 
@@ -281,12 +282,19 @@ namespace MasterSchedule.Views
                     {
                         materialPlanList.RemoveAt(indexOf);
                         materialPlanList.Insert(indexOf, window.materialUpdate);
+                        foreach (var matsDelivery in matsDeliveryList)
+                        {
+                            if (matsDelivery.SupplierId.Equals(rowClicked.SupplierId))
+                                matsDelivery.SupplierId = window.materialUpdate.SupplierId;
+                        }
                     }
                     else if (window.runModeRespone == EExcute.Delete)
                     {
                         materialPlanList.RemoveAt(indexOf);
+                        matsDeliveryList.RemoveAll(r => r.SupplierId.Equals(rowClicked.SupplierId));
                     }
                     LoadMaterialPlan(materialPlanList);
+                    LoadDeliveryDetail(matsDeliveryList);
                 }
                 catch { }
             }
@@ -727,6 +735,31 @@ namespace MasterSchedule.Views
                     matsDeliveryList.RemoveAll(r => r.SupplierId.Equals(supplierClicked.SupplierId));
                 }
                 e.Result = true;
+
+                // Update ActualDate
+                var deliveryListBySupp = matsDeliveryList.
+                                        GroupBy(g => g.SupplierId).
+                                        Select(s => new
+                                        {
+                                            SupplierId = s.Key,
+                                            TotalDelivery = matsDeliveryList.Where(w => w.SupplierId.Equals(s.Key)).Sum(sum => sum.Quantity),
+                                            MaxDeliveryDate = matsDeliveryList.Where(w => w.SupplierId.Equals(s.Key)).Max(m => m.DeliveryDate)
+                                        }).ToList();
+                foreach (var materialPlan in materialPlanList)
+                {
+                    var deliveryBySupp = deliveryListBySupp.FirstOrDefault(f => f.SupplierId.Equals(materialPlan.SupplierId));
+                    if (deliveryBySupp != null && deliveryBySupp.TotalDelivery.Equals(sizeRunList.Sum(s => s.Quantity)))
+                    {
+                        materialPlan.ActualDate = deliveryBySupp.MaxDeliveryDate.Date;
+                    }
+                    else
+                    {
+                        materialPlan.ActualDate = new DateTime(2000, 01, 01);
+                    }
+
+                    MaterialPlanController.Insert(materialPlan, isUpdateActualDate: true);
+                    materialPlanList.ForEach(t => t.ActualDateString = t.ActualDate != dtDefault ? String.Format("{0:MM/dd}", t.ActualDate) : "");
+                }
             }
             catch (Exception ex)
             {
@@ -752,6 +785,7 @@ namespace MasterSchedule.Views
                 }
 
                 LoadDeliveryDetail(matsDeliveryList.Where(w => w.SupplierId.Equals(supplierClicked.SupplierId)).ToList());
+                LoadMaterialPlan(materialPlanList);
             }
             this.Cursor = null;
         }
