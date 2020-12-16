@@ -159,8 +159,11 @@ namespace MasterSchedule
             {
                 miOutsoleWH.IsEnabled = true;
             }
+            if (account.UpperAccessories == true && account.MaterialPlan == true)
+            {
+                miImportUpperAccessoriesPlan.IsEnabled = true;
+            }
         }
-
         
         // Notifications
         private void bwLoadDelivery_DoWork(object sender, DoWorkEventArgs e)
@@ -908,6 +911,18 @@ namespace MasterSchedule
         private void miInportSizeRunAndOrders_Click(object sender, RoutedEventArgs e)
         {
             ImportSizeRunNewWindow window = new ImportSizeRunNewWindow(account);
+            window.Show();
+        }
+
+        private void miImportUpperAccessoriesPlan_Click(object sender, RoutedEventArgs e)
+        {
+            ImportUpperAccessoriesPlanWindow window = new ImportUpperAccessoriesPlanWindow();
+            window.Show();
+        }
+
+        private void miUpperAccessories_Click(object sender, RoutedEventArgs e)
+        {
+            UpperAccessoriesReportWindow window = new UpperAccessoriesReportWindow();
             window.Show();
         }
 

@@ -664,7 +664,7 @@ namespace MasterSchedule.Views
                 dgDetail.Columns.Add(colQuantity);
             }
 
-            dt.Columns.Add("Total", typeof(Int32));
+            dt.Columns.Add("Total", typeof(String));
             DataGridTemplateColumn colTotal = new DataGridTemplateColumn();
             colTotal.Header = String.Format("Total");
             DataTemplate templateTotal = new DataTemplate();
@@ -682,6 +682,7 @@ namespace MasterSchedule.Views
             var productNoList = OSMaterialList.Select(s => s.ProductNo).Distinct().ToList();
             if (productNoList.Count() > 0)
                 productNoList = productNoList.OrderBy(o => o).ToList();
+            int totaltotal = 0;
             foreach (var productNo in productNoList)
             {
                 var osMatCheckByPO = osMatCheckDetailList.Where(w => w.ProductNo.Equals(productNo)).ToList();
@@ -769,9 +770,20 @@ namespace MasterSchedule.Views
                         }
                     }
                     if (totalNotCheck > 0)
-                        dr["Total"] = totalNotCheck;
+                    {
+                        dr["Total"] = String.Format("{0:N0}",totalNotCheck);
+                        totaltotal += totalNotCheck;
+                    }
                     dt.Rows.Add(dr);
                 }
+            }
+            if (dt.Rows.Count > 1)
+            {
+                DataRow drTotal = dt.NewRow();
+                drTotal["ProductNo"] = "TOTAL";
+                drTotal["Total"] = String.Format("{0:N0}", totaltotal);
+
+                dt.Rows.Add(drTotal);
             }
             dgDetail.ItemsSource = dt.AsDataView();
             dgDetail.Items.Refresh();

@@ -141,5 +141,14 @@ namespace MasterSchedule.Controllers
                 return db.ExecuteStoreQuery<ReportOSMaterialCheckDetailModel>("EXEC reporter_SelectOutsoleMaterialCheckingByOutsoleCode @OutsoleCode", @OutsoleCode).ToList();
             };
         }
+
+        //
+        public static List<ReportUpperAccessoriesSummaryModel> SelectUpperAccessoriesDeliverySummary()
+        {
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<ReportUpperAccessoriesSummaryModel>("EXEC reporter_UpperAccessoriesDeliverySummary").ToList();
+            };
+        }
     }
 }

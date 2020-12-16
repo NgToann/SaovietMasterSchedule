@@ -23,7 +23,7 @@ namespace MasterSchedule.Views
         BackgroundWorker bwLoad;
         BackgroundWorker bwWindowLoad;
         BackgroundWorker bwInsertCouterTime;
-        List<OutsoleMaterialModel>  outsoleMaterialList;
+        List<OutsoleMaterialModel> outsoleMaterialList;
         List<OutsoleSuppliersModel> outsoleSupplierList;
         List<OutsoleMaterialCheckingModel> outsoleMatCheckingList;
         List<SizeRunModel> sizeRunList;
@@ -114,19 +114,19 @@ namespace MasterSchedule.Views
             if (oswhWorkingTimeListBySupp.Count() == 0)
                 return;
 
-            var lastCounter                 = oswhWorkingTimeListBySupp.OrderBy(o => o.StartingTime).LastOrDefault();
-            var totalPairChecked            = currentOutsoleMaterialCheckingList.Where(w => w.ProductNo == poSearch && w.OutsoleSupplierId == supplierClicked.OutsoleSupplierId && w.WorkerId == workerId).ToList().Sum(s => s.Quantity + s.ReturnReject + s.Reject);
-            var totalPairCheckedFromZero    = osmCheckFromZeroList.Where(w => w.ProductNo == poSearch && w.OutsoleSupplierId == supplierClicked.OutsoleSupplierId && w.WorkerId == workerId).ToList().Sum(s => s.Quantity + s.ReturnReject + s.Reject);
-            
-            var totalHoursCounted   = oswhWorkingTimeListBySupp.Sum(s => s.TotalHours) - lastCounter.TotalHours;
+            var lastCounter = oswhWorkingTimeListBySupp.OrderBy(o => o.StartingTime).LastOrDefault();
+            var totalPairChecked = currentOutsoleMaterialCheckingList.Where(w => w.ProductNo == poSearch && w.OutsoleSupplierId == supplierClicked.OutsoleSupplierId && w.WorkerId == workerId).ToList().Sum(s => s.Quantity + s.ReturnReject + s.Reject);
+            var totalPairCheckedFromZero = osmCheckFromZeroList.Where(w => w.ProductNo == poSearch && w.OutsoleSupplierId == supplierClicked.OutsoleSupplierId && w.WorkerId == workerId).ToList().Sum(s => s.Quantity + s.ReturnReject + s.Reject);
 
-            lastCounter.Pairs       = totalPairChecked - totalPairCheckedFromZero;
-            var totalHoursNow       = (DateTime.Now - lastCounter.StartingTime).TotalSeconds;
-            lastCounter.TotalHours  = totalHoursNow;
+            var totalHoursCounted = oswhWorkingTimeListBySupp.Sum(s => s.TotalHours) - lastCounter.TotalHours;
 
-            tblStartingTime.Text    = String.Format("Start:     {0:HH:mm:ss}", lastCounter.StartingTime);
-            tblTotalHours.Text      = String.Format("Time:     {0} (s)", Math.Round(totalHoursCounted + totalHoursNow, 0, MidpointRounding.AwayFromZero));
-            tblTotalPais.Text       = String.Format("Pairs:     {0}", lastCounter.Pairs);
+            lastCounter.Pairs = totalPairChecked - totalPairCheckedFromZero;
+            var totalHoursNow = (DateTime.Now - lastCounter.StartingTime).TotalSeconds;
+            lastCounter.TotalHours = totalHoursNow;
+
+            tblStartingTime.Text = String.Format("Start:     {0:HH:mm:ss}", lastCounter.StartingTime);
+            tblTotalHours.Text = String.Format("Time:     {0} (s)", Math.Round(totalHoursCounted + totalHoursNow, 0, MidpointRounding.AwayFromZero));
+            tblTotalPais.Text = String.Format("Pairs:     {0}", lastCounter.Pairs);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -138,27 +138,28 @@ namespace MasterSchedule.Views
                 this.Title = this.Title + " - " + _TypeOfMachine;
             }
         }
-        
+
         private void BwWindowLoad_DoWork(object sender, DoWorkEventArgs e)
         {
-            errorList.Add(new ErrorModel {
-                ErrorID         = 0,
-                ErrorKey        = "Add",
-                ErrorName       = "   Press Add",
+            errorList.Add(new ErrorModel
+            {
+                ErrorID = 0,
+                ErrorKey = "Add",
+                ErrorName = "   Press Add",
                 ErrorVietNamese = "   Bấm Phím +"
             });
             errorList.Add(new ErrorModel
             {
-                ErrorID         = -1,
-                ErrorKey        = "Multiply",
-                ErrorName       = "Return: Press *",
+                ErrorID = -1,
+                ErrorKey = "Multiply",
+                ErrorName = "Return: Press *",
                 ErrorVietNamese = "Hàng bù: *"
             });
             errorList.AddRange(ErrorController.GetError());
             definePrivate = PrivateDefineController.GetDefine();
 
         }
-        
+
         private void BwWindowLoad_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             // binding to error to grid
@@ -233,7 +234,7 @@ namespace MasterSchedule.Views
             txtProductNo.Focus();
             dpCheckingDate.SelectedDate = DateTime.Now;
         }
-       
+
         private void txtProductNo_PreviewKeyUp(object sender, KeyEventArgs e)
         {
             allowPressKey = false;
@@ -259,7 +260,7 @@ namespace MasterSchedule.Views
             txtWorkerId.Focus();
             txtWorkerId.SelectAll();
         }
-        
+
         private void txtWorkerId_PreviewKeyUp(object sender, KeyEventArgs e)
         {
             allowPressKey = false;
@@ -311,21 +312,21 @@ namespace MasterSchedule.Views
         private void BwLoad_DoWork(object sender, DoWorkEventArgs e)
         {
             var poSearch = e.Argument as String;
-            outsoleMaterialList                 = OutsoleMaterialController.Select(poSearch);
-            outsoleSupplierList                 = OutsoleSuppliersController.Select();
-            outsoleMatCheckingList              = OutsoleMaterialCheckingController.SelectByPO(poSearch);
-            osmCheckFromZeroList                = outsoleMatCheckingList.ToList();
-            sizeRunList                         = SizeRunController.Select(poSearch);
+            outsoleMaterialList = OutsoleMaterialController.Select(poSearch);
+            outsoleSupplierList = OutsoleSuppliersController.Select();
+            outsoleMatCheckingList = OutsoleMaterialCheckingController.SelectByPO(poSearch);
+            osmCheckFromZeroList = outsoleMatCheckingList.ToList();
+            sizeRunList = SizeRunController.Select(poSearch);
 
-            
+
             var osSizeList = sizeRunList.Select(s => s.OutsoleSize).ToList();
-            foreach(var sr in sizeRunList)
+            foreach (var sr in sizeRunList)
             {
                 if (osSizeList.Where(w => w.Equals(sr.OutsoleSize)).Count() > 1)
                     sizeRunByOutsoleSizeDuplicateList.Add(sr);
             }
-            currentOutsoleMaterialCheckingList  = OutsoleMaterialCheckingController.SelectByPO(poSearch);
-            orderInformation                    = OrdersController.SelectTop1(poSearch);
+            currentOutsoleMaterialCheckingList = OutsoleMaterialCheckingController.SelectByPO(poSearch);
+            orderInformation = OrdersController.SelectTop1(poSearch);
         }
 
         private void BwLoad_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -365,12 +366,12 @@ namespace MasterSchedule.Views
                 indexSupp++;
             }
 
-            tblWorkerId.Text    = string.Format("Worker ID: {0}", workerId);
-            txtArticleNo.Text   = string.Format("ArticleNo\n{0}", orderInformation.ArticleNo);
-            txtOSCode.Text      = string.Format("O/S Code\n{0}", orderInformation.OutsoleCode);
-            txtShoeName.Text    = string.Format("Shoe Name\n{0}", orderInformation.ShoeName);
+            tblWorkerId.Text = string.Format("Worker ID: {0}", workerId);
+            txtArticleNo.Text = string.Format("ArticleNo\n{0}", orderInformation.ArticleNo);
+            txtOSCode.Text = string.Format("O/S Code\n{0}", orderInformation.OutsoleCode);
+            txtShoeName.Text = string.Format("Shoe Name\n{0}", orderInformation.ShoeName);
 
-            allowPressKey       = true;            
+            allowPressKey = true;
         }
 
         private void ClearPOInformation()
@@ -403,10 +404,7 @@ namespace MasterSchedule.Views
             if (buttonClicked == null)
                 return;
             supplierClicked = buttonClicked.Tag as OutsoleSuppliersModel;
-
-            popInputWorkerId.IsOpen = true;
-            txtWorkerId.Focus();
-            txtWorkerId.SelectAll();
+            LoadSupplierClicked();
         }
 
         private void LoadSupplierClicked()
@@ -557,7 +555,7 @@ namespace MasterSchedule.Views
                     return;
                 LoadSupplierClicked();
             }
-                      
+
             // Return
             if (allowPressKey == false || supplierClicked == null)
                 return;
@@ -642,19 +640,19 @@ namespace MasterSchedule.Views
                                                                                     outsoleMaterialListBySupplier,
                                                                                     workerId,
                                                                                     sizeRunList);
-                    
+
                     window.ShowDialog();
                     var Xmodel = window.outsoleMaterialCheckingUpdatedBySizeList.FirstOrDefault();
                     if (Xmodel != null)
                     {
-                        currentOutsoleMaterialCheckingList.RemoveAll(r => r.SizeNo              == Xmodel.SizeNo &&
-                                                                          r.ErrorId             == Xmodel.ErrorId &&
-                                                                          r.CheckingDate        == Xmodel.CheckingDate &&
-                                                                          r.OutsoleSupplierId   == Xmodel.OutsoleSupplierId);
+                        currentOutsoleMaterialCheckingList.RemoveAll(r => r.SizeNo == Xmodel.SizeNo &&
+                                                                          r.ErrorId == Xmodel.ErrorId &&
+                                                                          r.CheckingDate == Xmodel.CheckingDate &&
+                                                                          r.OutsoleSupplierId == Xmodel.OutsoleSupplierId);
 
                         currentOutsoleMaterialCheckingList.AddRange(window.outsoleMaterialCheckingUpdatedBySizeList);
                     }
-                    
+
                     // remove where qty = 0
                     currentOutsoleMaterialCheckingList.RemoveAll(r => r.Quantity == 0 && r.ErrorId == 0);
                     var reloadList = currentOutsoleMaterialCheckingList.Where(w => w.OutsoleSupplierId == supplierClicked.OutsoleSupplierId).ToList();
@@ -663,7 +661,7 @@ namespace MasterSchedule.Views
 
                 errorKey = "";
             }
-            
+
             // RETURN REJECT
             if (pressMode == PressMode.Return && errorPressed != null)
             {
@@ -683,10 +681,10 @@ namespace MasterSchedule.Views
                     var Xmodel = window.outsoleMaterialCheckingUpdatedBySizeList.FirstOrDefault();
                     if (Xmodel != null)
                     {
-                        currentOutsoleMaterialCheckingList.RemoveAll(r => r.SizeNo              == Xmodel.SizeNo &&
-                                                                          r.ErrorId             == Xmodel.ErrorId &&
-                                                                          r.CheckingDate        == Xmodel.CheckingDate &&
-                                                                          r.OutsoleSupplierId   == Xmodel.OutsoleSupplierId);
+                        currentOutsoleMaterialCheckingList.RemoveAll(r => r.SizeNo == Xmodel.SizeNo &&
+                                                                          r.ErrorId == Xmodel.ErrorId &&
+                                                                          r.CheckingDate == Xmodel.CheckingDate &&
+                                                                          r.OutsoleSupplierId == Xmodel.OutsoleSupplierId);
 
                         currentOutsoleMaterialCheckingList.AddRange(window.outsoleMaterialCheckingUpdatedBySizeList);
                     }
@@ -702,7 +700,7 @@ namespace MasterSchedule.Views
             if (pressMode == PressMode.None)
                 errorKey = "";
         }
-        
+
         DataTable dtDeliveryDetail = new DataTable();
         private void LoadDataDetail(List<OutsoleMaterialCheckingModel> currentCheckingList)
         {
@@ -784,7 +782,7 @@ namespace MasterSchedule.Views
                 dr["Date"] = String.Format("{0:dd/MM/yyyy}", dateCheck);
 
                 var currentCheckListByDate = currentCheckingList.Where(w => w.CheckingDate == dateCheck).ToList();
-                
+
                 foreach (var sizeRun in sizeRunList)
                 {
                     var sizeRunByOutsoleSizeDuplicateList_Size = sizeRunByOutsoleSizeDuplicateList.Where(s => s.OutsoleSize == sizeRun.OutsoleSize).ToList();
@@ -818,9 +816,9 @@ namespace MasterSchedule.Views
                             workingCartList = workingCartList.OrderBy(o => o).ToList();
 
                         foreach (var workingCart in workingCartList)
-                        {                            
-                            var currentCheckingListByWorkingCart = currentCheckingList.Where(w =>   w.CheckingDate == dateCheck && 
-                                                                                                    w.SizeNo == sizeToCompare && 
+                        {
+                            var currentCheckingListByWorkingCart = currentCheckingList.Where(w => w.CheckingDate == dateCheck &&
+                                                                                                    w.SizeNo == sizeToCompare &&
                                                                                                     w.WorkingCard == workingCart).ToList();
 
                             qtyDisplayList.Add(String.Format("({0}): {1}", workingCart, currentCheckingListByWorkingCart.Sum(s => s.Quantity)));
@@ -834,18 +832,18 @@ namespace MasterSchedule.Views
                     }
 
                     if (qtyCheckByDateBySize >= sizeRun.Quantity)
-                        dr[String.Format("Foreground{0}", size)]    = Brushes.Blue;
+                        dr[String.Format("Foreground{0}", size)] = Brushes.Blue;
 
                     // Reject is ErrorId != 0 and != -1 : ErrorId > 0
                     var rejectList = currentCheckListBySize.Where(w => w.ErrorId > 0).ToList();
                     if (rejectList.Count() > 0)
                     {
                         displayDataList.Add(String.Format("R:{0}", rejectList.Sum(s => s.Reject)));
-                        dr[String.Format("Background{0}", size)]    = Brushes.Yellow;
+                        dr[String.Format("Background{0}", size)] = Brushes.Yellow;
                         //dr[String.Format("{0}", size)]              = String.Format("{0}R: {1}", String.IsNullOrEmpty(qtyDisplay) == false ? String.Format("{0}\n", qtyDisplay) : "", rejectCheckListByDateBySize.Sum(s => s.Reject));
                         //dr[String.Format("{0}", size)]              = String.Format("{0}R: {1}", qtyCheckByDateBySize > 0 ? String.Format("{0}\n", qtyCheckByDateBySize) : "", rejectCheckListByDateBySize.Sum(s => s.Reject));
-                        dr[String.Format("{0}", size)]              = String.Join("\n", displayDataList);
-                        dr[String.Format("Foreground{0}", size)]    = Brushes.Red;
+                        dr[String.Format("{0}", size)] = String.Join("\n", displayDataList);
+                        dr[String.Format("Foreground{0}", size)] = Brushes.Red;
 
                         var defectsList = rejectList.Select(w => w.ErrorId).ToList();
                         List<string> toolTips = new List<string>();
@@ -856,7 +854,7 @@ namespace MasterSchedule.Views
                             toolTips.Add(String.Format("{0} : {1}", errorName.ErrorName, rejectByError));
                         }
 
-                        dr[String.Format("ToolTip{0}", size)]       = String.Join("\n", toolTips);
+                        dr[String.Format("ToolTip{0}", size)] = String.Join("\n", toolTips);
                     }
 
                     // Return Reject
@@ -864,9 +862,9 @@ namespace MasterSchedule.Views
                     if (returnRejectList.Count() > 0)
                     {
                         displayDataList.Add(String.Format("* {0}", returnRejectList.Sum(s => s.ReturnReject)));
-                        dr[String.Format("{0}", size)]              = String.Join("\n", displayDataList);
-                        dr[String.Format("Foreground{0}", size)]    = Brushes.Red;
-                        dr[String.Format("Background{0}", size)]    = Brushes.Yellow;
+                        dr[String.Format("{0}", size)] = String.Join("\n", displayDataList);
+                        dr[String.Format("Foreground{0}", size)] = Brushes.Red;
+                        dr[String.Format("Background{0}", size)] = Brushes.Yellow;
                     }
                 }
 
@@ -966,15 +964,15 @@ namespace MasterSchedule.Views
             }
             catch { }
         }
-        
+
         private void dgDeliveryStatus_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             e.Row.Header = e.Row.GetIndex() + 1;
         }
-        
+
         private void dgSupplierDeliveryDetail_LoadingRow(object sender, DataGridRowEventArgs e)
         {
-
+            e.Row.Header = e.Row.GetIndex() + 1;
         }
 
         private void dpCheckingDate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -984,7 +982,7 @@ namespace MasterSchedule.Views
             txtConfirmBy.Password = "";
             chkbCheckingDate.IsChecked = false;
         }
-       
+
         private void chkbCheckingDate_Checked(object sender, RoutedEventArgs e)
         {
             txtCheckDateTitle.Text = "Confirm Code";

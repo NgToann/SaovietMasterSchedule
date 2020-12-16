@@ -29896,8 +29896,11 @@ F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSc
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\UpperWHInventoryWindow.baml
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\App.g.cs
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\MainWindow.g.cs
+F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AddMaterialPlanForProductNoWindow.g.cs
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AddOutsoleMaterialRackPositionWindow.g.cs
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AddOutsoleMaterialRejectToRackWindow.g.cs
+F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AddRejectForMaterialWindow.g.cs
+F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AddUpperAccessoriesSupplierWindow.g.cs
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AssemblyMasterFilterWindow.g.cs
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AssemblyMasterReportWindow.g.cs
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AssemblyMasterWindow.g.cs
@@ -29914,6 +29917,7 @@ F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSc
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\ImportMachineRequestWindow.g.cs
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\ImportMachineWindow.g.cs
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\ImportSizeRunNewWindow.g.cs
+F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\ImportUpperAccessoriesPlanWindow.g.cs
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\ImportUpperComponentEFDWindow.g.cs
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\ImportUpperMaterialScheduleWindow.g.cs
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\InputAccessoriesWindow.g.cs
@@ -30003,8 +30007,6 @@ F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSc
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\GeneratedInternalTypeHelper.g.cs
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\MasterSchedule_MarkupCompile.cache
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\MasterSchedule_MarkupCompile.lref
-F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\MasterSchedule.exe
-F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\MasterSchedule.pdb
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\bin\Debug\MasterSchedule.exe.config
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\bin\Debug\MasterSchedule.exe
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\bin\Debug\MasterSchedule.pdb
@@ -30014,6 +30016,9 @@ F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSc
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\bin\Debug\WPFToolkit.dll
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\bin\Debug\Microsoft.ReportViewer.Common.dll
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\bin\Debug\Microsoft.ReportViewer.WinForms.xml
+F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AddMaterialPlanForProductNoWindow.baml
+F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AddRejectForMaterialWindow.baml
+F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AddUpperAccessoriesSupplierWindow.baml
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AssemblyMasterFilterWindow.baml
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AssemblyMasterWindow.baml
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\ConfirmColumnPrintWindow.baml
@@ -30022,6 +30027,8 @@ F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSc
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\ImportInsockRawMaterialWindow.baml
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\ImportMachineWindow.baml
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\ImportSizeRunNewWindow.baml
+F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\ImportUpperAccessoriesPlanWindow.baml
+F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\InputAccessoriesWindow.baml
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\InsockDeliveryDetailWindow.baml
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\InsockInputMaterialWindow.baml
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\OSMaterialWHCheckViewDetailWindow.baml
@@ -30040,7 +30047,6 @@ F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSc
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\SewingMasterWindow.baml
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\SockliningMasterFilterWindow.baml
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\SockliningMasterWindow.baml
-F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\InputAccessoriesWindow.baml
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\MasterSchedule.g.resources
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\MasterSchedule.Properties.Resources.resources
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\MasterSchedule.csproj.GenerateResource.cache
@@ -30048,7 +30054,7 @@ F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSc
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\RdlCompile.compiled
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\MasterSchedule.csproj.CoreCompileInputs.cache
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\MasterSchedule.csproj.CopyComplete
-F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AddMaterialPlanForProductNoWindow.g.cs
-F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AddMaterialPlanForProductNoWindow.baml
-F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AddRejectForMaterialWindow.g.cs
-F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\AddRejectForMaterialWindow.baml
+F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\MasterSchedule.exe
+F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\MasterSchedule.pdb
+F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\UpperAccessoriesReportWindow.g.cs
+F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\UpperAccessoriesReportWindow.baml

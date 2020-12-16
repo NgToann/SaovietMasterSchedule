@@ -21,6 +21,7 @@
                     <MenuItem x:Name="miImportMachine" Header="Machine" Click="miImportMachine_Click" Visibility="Collapsed"/>
                     <MenuItem x:Name="miImportMachineRequest" Header="Machine Request" Click="miImportMachineRequest_Click" Visibility="Collapsed"/>
                     <MenuItem x:Name="miUpperMaterialSchedule" IsEnabled="False" Header="Upper Material Schedule" Click="miUpperMaterialSchedule_Click"/>
+                    <MenuItem x:Name="miImportUpperAccessoriesPlan" IsEnabled="False" Header="Accessories Material Plan" Click="miImportUpperAccessoriesPlan_Click"/>
                 </MenuItem>
                 <MenuItem x:Name="miExit" Header="Logout" Click="miExit_Click"/>
             </MenuItem>
@@ -87,6 +88,7 @@
                     <MenuItem x:Name="miUpperComponentInventory" Header="Upper Component WH Inventory" Click="miUpperComponentInventory_Click"/>
                     <MenuItem x:Name="miUpperComponentDelivery" Header="Upper Component WH Delivery" Click="miUpperComponentDelivery_Click"/>
                     <MenuItem x:Name="miUpperWHInventory"  Header="Upper WH Inventory" Click="miUpperWHInventory_Click"/>
+                    <MenuItem x:Name="miUpperAccessories" Header="Upper Accessories" Click="miUpperAccessories_Click"/>
                 </MenuItem>
                 <MenuItem Header="Insock">
                     <!--<MenuItem x:Name="miInsockInventory" Header="Insock Inventory" Click="miInsockInventory_Click"/>-->

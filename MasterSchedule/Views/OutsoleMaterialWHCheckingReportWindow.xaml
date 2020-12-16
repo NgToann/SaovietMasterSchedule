@@ -4,9 +4,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MasterSchedule.Views" FontSize="14" FontFamily="Cambria"
+        xmlns:local="clr-namespace:MasterSchedule.Views" FontSize="13"
         mc:Ignorable="d" WindowState="Maximized" WindowStartupLocation="CenterScreen"
-        Title="Outsole Material WH Checking Report" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="Outsole Material WH Check Report" Height="450" Width="800" Loaded="Window_Loaded">
     <Grid Margin="2">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -112,7 +112,7 @@
                             <ColumnDefinition Width="5"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <DataGrid x:Name="dgInventoryByOutsole" AutoGenerateColumns="False" AlternationCount="2" FontFamily="Cambria"
+                        <DataGrid x:Name="dgInventoryByOutsole" AutoGenerateColumns="False" AlternationCount="2" FontFamily="Arial" FontSize="13"
                           CanUserAddRows="False" SelectionUnit="FullRow" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" RowHeaderWidth="NaN"
                           IsReadOnly="True" LoadingRow="dgInventoryByOutsole_LoadingRow">
                             <DataGrid.ColumnHeaderStyle>
@@ -203,8 +203,8 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock x:Name="tblTitleReportDetail" FontSize="17" FontFamily="Cambria" FontWeight="SemiBold"/>
                                 <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
-                                    <ComboBox x:Name="cboSupplierInventory" DisplayMemberPath="Name" SelectedValue="OutsoleSupplierId" VerticalContentAlignment="Center" FontFamily="Cambria" SelectionChanged="cboSupplierInventory_SelectionChanged"/>
-                                    <TextBox Margin="2,0,0,0" x:Name="txtPOFilter" MinWidth="120" BorderBrush="Black" VerticalContentAlignment="Center" Padding="2,1,0,1" FontFamily="Cambria" FontSize="16" PreviewKeyUp="txtPOFilter_PreviewKeyUp" ToolTip="Input ProductNo"/>
+                                    <ComboBox x:Name="cboSupplierInventory" DisplayMemberPath="Name" SelectedValue="OutsoleSupplierId" VerticalContentAlignment="Center" SelectionChanged="cboSupplierInventory_SelectionChanged"/>
+                                    <TextBox Margin="2,0,0,0" x:Name="txtPOFilter" MinWidth="120" BorderBrush="Black" VerticalContentAlignment="Center" Padding="2,1,0,1" FontSize="16" PreviewKeyUp="txtPOFilter_PreviewKeyUp" ToolTip="Input ProductNo"/>
                                     <Button x:Name="btnFilter" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" Cursor="Hand" Click="btnFilter_Click">
                                         <Button.Content>
                                             <Image Width="18" Height="18" Source="/Images/search.png"/>
@@ -212,9 +212,9 @@
                                     </Button>
                                 </StackPanel>
                             </Grid>
-                            <DataGrid Grid.Row="1" Margin="0,2,0,0" x:Name="dgDetail" AutoGenerateColumns="False" AlternationCount="2" FontFamily="Cambria" CanUserSortColumns="False"
+                            <DataGrid Grid.Row="1" Margin="0,2,0,0" x:Name="dgDetail" AutoGenerateColumns="False" AlternationCount="2" CanUserSortColumns="False"
                               CanUserAddRows="False" SelectionUnit="FullRow" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" RowHeaderWidth="NaN"
-                              IsReadOnly="True" LoadingRow="dgDetail_LoadingRow" FontSize="13" FrozenColumnCount="2">
+                              IsReadOnly="True" LoadingRow="dgDetail_LoadingRow" FontFamily="Arial" FontSize="12" FrozenColumnCount="2">
                                 <DataGrid.ColumnHeaderStyle>
                                     <Style TargetType="DataGridColumnHeader">
                                         <Setter Property="HorizontalContentAlignment" Value="Center"/>

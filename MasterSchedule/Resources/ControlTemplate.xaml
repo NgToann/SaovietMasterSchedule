@@ -233,8 +233,26 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border BorderBrush="Gray" CornerRadius="0,0,0,0">
+                <ContentPresenter ContentSource="Header" RecognizesAccessKey="True" />
+            </Border>
+            <Border Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="Gray" BorderThickness="0.5" CornerRadius="0,0,0,0" Padding="7">
+                <ContentPresenter/>
+            </Border>
+        </Grid>
+    </ControlTemplate>
+    <ControlTemplate x:Key="GroupBoxTemplate_HeaderAuto" TargetType="{x:Type GroupBox}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Border BorderBrush="Gray" CornerRadius="0,0,0,0">
                 <ContentPresenter ContentSource="Header" RecognizesAccessKey="True" />

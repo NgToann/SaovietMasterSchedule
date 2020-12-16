@@ -1,0 +1,70 @@
+﻿<Window x:Class="MasterSchedule.Views.AddUpperAccessoriesSupplierWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MasterSchedule.Views"
+        mc:Ignorable="d" FontSize="13" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen"
+        Title="Master Schedule - Add Upper Accessories Supplier" Height="450" Width="800">
+    <Grid Margin="2">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <GroupBox Template="{DynamicResource ResourceKey=GroupBoxTemplate_HeaderAuto}">
+            <GroupBox.Header>
+                <Border x:Name="brAddNew" Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
+                    <TextBlock Text="Add a new Supplier"/>
+                </Border>
+            </GroupBox.Header>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Supplier Name"/>
+                <TextBox Grid.Row="1" x:Name="txtSupplierName" Padding="2,0,0,0" VerticalContentAlignment="Center" Height="{Binding ElementName=btnAdd, Path=ActualHeight}"/>
+
+                <TextBlock Grid.Row="2" Margin="0,10,0,0" Text="Accessories Name"/>
+                <TextBox Grid.Row="3" x:Name="txtAccessoriesName" Padding="2,0,0,0" VerticalContentAlignment="Center" Height="{Binding ElementName=btnAdd, Path=ActualHeight}"/>
+
+                <Grid Grid.Row="4" Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="btnAdd" Template="{DynamicResource ResourceKey=ButtonTemplate}" Content="  Add  " Grid.Column="1" Cursor="Hand" Click="btnAdd_Click"/>
+                </Grid>
+            </Grid>
+        </GroupBox>
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="List of Upper Accessories Suppliers" HorizontalAlignment="Center" VerticalAlignment="Center" FontStyle="Italic" Height="{Binding ElementName=brAddNew, Path=ActualHeight}"/>
+            <DataGrid Grid.Row="1" x:Name="dgSuppliers" AutoGenerateColumns="False" IsReadOnly="True" 
+                  AlternatingRowBackground="LightCyan" AlternationCount="2" LoadingRow="dgSuppliers_LoadingRow" RowHeaderWidth="NaN"
+                   HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray">
+                <DataGrid.Resources>
+                    <Style TargetType="{x:Type DataGridCell}">
+                        <Style.Triggers>
+                            <Trigger Property="DataGridCell.IsSelected" Value="True">
+                                <Setter Property="Background" Value="RoyalBlue" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Width="Auto" Header="Accessories Name" Binding="{Binding ProvideAccessories}"/>
+                    <DataGridTextColumn Width="Auto" Header="Supplier" Binding="{Binding Name}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</Window>

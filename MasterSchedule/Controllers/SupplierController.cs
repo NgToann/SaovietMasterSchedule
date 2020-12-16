@@ -24,5 +24,20 @@ namespace MasterSchedule.Controllers
                 return db.ExecuteStoreQuery<SupplierModel>("spm_SelectSuppliersAccessories").ToList();
             }
         }
+        public static bool UploadUpperAccessoriesSupplier(SupplierModel model)
+        {
+            var @SupplierId         = new SqlParameter("@SupplierId", model.SupplierId);
+            var @ProvideAccessories = new SqlParameter("@ProvideAccessories", model.ProvideAccessories);
+            var @Name               = new SqlParameter("@Name", model.Name);
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                if (db.ExecuteStoreCommand("EXEC spm_UploadUpperAccessoriesSupplier @SupplierId, @ProvideAccessories, @Name",
+                                                                                    @SupplierId, @ProvideAccessories, @Name) > 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
     }
 }

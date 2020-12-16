@@ -1,6 +1,8 @@
 ﻿
 
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\AddMaterialPlanForProductNoWindow.xaml;;
+FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\AddRejectForMaterialWindow.xaml;;
+FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\AddUpperAccessoriesSupplierWindow.xaml;;
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\AssemblyMasterFilterWindow.xaml;;
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\AssemblyMasterWindow.xaml;;
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\ConfirmColumnPrintWindow.xaml;;
@@ -9,6 +11,7 @@ FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterS
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\ImportInsockRawMaterialWindow.xaml;;
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\ImportMachineWindow.xaml;;
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\ImportSizeRunNewWindow.xaml;;
+FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\ImportUpperAccessoriesPlanWindow.xaml;;
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\InputAccessoriesWindow.xaml;;
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\InsockDeliveryDetailWindow.xaml;;
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\InsockInputMaterialWindow.xaml;;
@@ -20,6 +23,7 @@ FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterS
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\PrintSizeRunReportWindow.xaml;;
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\PrintSizeRunWindow.xaml;;
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\SummarySewingReportWindow.xaml;;
+FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\UpperAccessoriesReportWindow.xaml;;
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\MachineRequirementScheduleChartWindow.xaml;;
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\OutsoleMasterFilterWindow.xaml;;
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\OutsoleMasterWindow.xaml;;
@@ -28,5 +32,4 @@ FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterS
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\SewingMasterWindow.xaml;;
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\SockliningMasterFilterWindow.xaml;;
 FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\SockliningMasterWindow.xaml;;
-FF:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\Views\AddRejectForMaterialWindow.xaml;;
 

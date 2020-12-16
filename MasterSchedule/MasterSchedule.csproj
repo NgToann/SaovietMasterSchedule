@@ -242,6 +242,7 @@
     <Compile Include="Models\ReportOutsoleMaterialDeliveryFromToModel.cs" />
     <Compile Include="Models\ReportOutsoleMaterialDeliverySummary.cs" />
     <Compile Include="Models\ReportSewingSummaryModel.cs" />
+    <Compile Include="Models\ReportUpperAccessoriesSummaryModel.cs" />
     <Compile Include="Models\SockliningInputModel.cs" />
     <Compile Include="Models\SupplierModel.cs" />
     <Compile Include="Models\UpperComponentMaterialModel.cs" />
@@ -267,6 +268,9 @@
     </Compile>
     <Compile Include="Views\AddRejectForMaterialWindow.xaml.cs">
       <DependentUpon>AddRejectForMaterialWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AddUpperAccessoriesSupplierWindow.xaml.cs">
+      <DependentUpon>AddUpperAccessoriesSupplierWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\AssemblyMasterFilterWindow.xaml.cs">
       <DependentUpon>AssemblyMasterFilterWindow.xaml</DependentUpon>
@@ -325,6 +329,9 @@
     </Compile>
     <Compile Include="Views\ImportSizeRunNewWindow.xaml.cs">
       <DependentUpon>ImportSizeRunNewWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ImportUpperAccessoriesPlanWindow.xaml.cs">
+      <DependentUpon>ImportUpperAccessoriesPlanWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ImportUpperComponentEFDWindow.xaml.cs">
       <DependentUpon>ImportUpperComponentEFDWindow.xaml</DependentUpon>
@@ -427,6 +434,9 @@
     </Compile>
     <Compile Include="Views\UpdateSpecifyOrderWindow.xaml.cs">
       <DependentUpon>UpdateSpecifyOrderWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UpperAccessoriesReportWindow.xaml.cs">
+      <DependentUpon>UpperAccessoriesReportWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UpperComponentWHDeliveryDetailWindow.xaml.cs">
       <DependentUpon>UpperComponentWHDeliveryDetailWindow.xaml</DependentUpon>
@@ -854,6 +864,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\AddUpperAccessoriesSupplierWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\AssemblyMasterFilterWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -915,6 +929,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ImportSizeRunNewWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ImportUpperAccessoriesPlanWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1051,6 +1069,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UpdateSpecifyOrderWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UpperAccessoriesReportWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -2031,6 +2053,9 @@
   <ItemGroup>
     <Resource Include="Images\clear.png" />
     <Resource Include="Images\man.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\user_config.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

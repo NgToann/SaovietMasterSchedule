@@ -13,7 +13,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <GroupBox Grid.Column="2" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
+        <GroupBox Grid.Column="2" Template="{DynamicResource ResourceKey=GroupBoxTemplate_HeaderAuto}">
             <GroupBox.Header>
                 <Border Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
                     <TextBlock x:Name="tblGroupPOInfo" Text="   PO Information   "/>
@@ -118,7 +118,7 @@
                         </DataGrid>
                     </Grid>
                 </ScrollViewer>
-            </Grid>            
+            </Grid>
         </GroupBox>
         <GroupBox Grid.Row="2" Margin="0,0,0,2" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
             <GroupBox.Header>

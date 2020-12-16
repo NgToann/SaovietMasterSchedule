@@ -164,7 +164,7 @@ namespace MasterSchedule.Views
         {
             if ((bool)e.Result != false)
             {
-                if (runMode == EExcute.Update)
+                if (runMode == EExcute.Update || runMode == EExcute.AddNew)
                 {
                     MessageBox.Show("Saved !", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -172,7 +172,6 @@ namespace MasterSchedule.Views
                 {
                     MessageBox.Show("Deleted !", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-
             }
             runMode = EExcute.None;
             Thread.Sleep(500);
