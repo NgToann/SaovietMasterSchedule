@@ -30058,3 +30058,5 @@ F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSc
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\MasterSchedule.pdb
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\UpperAccessoriesReportWindow.g.cs
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\UpperAccessoriesReportWindow.baml
+F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\UpperAccessoriesReportDetailWindow.g.cs
+F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\obj\x86\Debug\Views\UpperAccessoriesReportDetailWindow.baml

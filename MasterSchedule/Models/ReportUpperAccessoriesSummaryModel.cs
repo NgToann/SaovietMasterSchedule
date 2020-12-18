@@ -14,5 +14,9 @@ namespace MasterSchedule.Models
         public int QuantityCheckOK { get; set; }
         public int QuantityReject { get; set; }
 
+        public int Reject { get; set; }
+        public int RejectId { get; set; }
+        public string RejectName { get; set; }
+        public string RejectName_1 { get; set; }
     }
 }

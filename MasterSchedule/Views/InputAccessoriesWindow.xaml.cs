@@ -1,22 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.ComponentModel;
-using MasterSchedule.Models;
-using MasterSchedule.Helpers;
-using MasterSchedule.Controllers;
-using System.Data;
-using System.Globalization;
-//using MasterSchedule.Helpers;
 using System.Windows.Media;
-using System.Data.Metadata.Edm;
-using System.Configuration;
-using System.Text.RegularExpressions;
+
+using MasterSchedule.Controllers;
+using MasterSchedule.Models;
 
 namespace MasterSchedule.Views
 {
@@ -42,7 +37,7 @@ namespace MasterSchedule.Views
         private AccountModel account;
         string[] keysTemp = new string[] {  "1", "2", "3", "4", "5", "6", "7", "8", "9",
                                             "00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
-                                            "11", "12", "13", "14", "15", "16", "17", "18", "19"};
+                                            "11", "12", "13", "14", "15", "16", "17", "18", "19" };
         private string _qtyOK = "Quantity OK";
         private DateTime dtDefault = new DateTime(2000, 01, 01);
         public InputAccessoriesWindow(string productNo, List<RejectModel> rejectUpperAccessoriesList, AccountModel account)
@@ -453,7 +448,6 @@ namespace MasterSchedule.Views
             dgDeliveryDetail.Columns.Add(colTotal);
 
             var supplierList = deliveryList.Select(s => s.SupplierId).Distinct().ToList();
-            
             foreach (var supplierId in supplierList)
             {
                 var deliveryBySuppList = deliveryList.Where(w => w.SupplierId == supplierId).ToList();
@@ -625,6 +619,7 @@ namespace MasterSchedule.Views
                     dr[String.Format("Column{0}Foreground", sizeEdittingBinding)] = Brushes.Red;
                     dr[String.Format("Column{0}", sizeEdittingBinding)] = "0";
                 }
+
                 else if (qtyInput + totalQtyOfTheOthersDay >= qtyOrder)
                 {
                     dr[String.Format("Column{0}", sizeEdittingBinding)] = (qtyOrder - totalQtyOfTheOthersDay).ToString();
@@ -632,6 +627,7 @@ namespace MasterSchedule.Views
                     if (qtyOrder - totalQtyOfTheOthersDay == qtyOrder)
                         dr[String.Format("Column{0}Foreground", sizeEdittingBinding)] = Brushes.Blue;
                 }
+
                 else
                 {
                     dr[String.Format("Column{0}", sizeEdittingBinding)] = qtyInput;
@@ -743,11 +739,13 @@ namespace MasterSchedule.Views
                                         {
                                             SupplierId = s.Key,
                                             TotalDelivery = matsDeliveryList.Where(w => w.SupplierId.Equals(s.Key)).Sum(sum => sum.Quantity),
+                                            TotalReject = matsDeliveryList.Where(w => w.SupplierId.Equals(s.Key)).Sum(r=>r.Reject),
                                             MaxDeliveryDate = matsDeliveryList.Where(w => w.SupplierId.Equals(s.Key)).Max(m => m.DeliveryDate)
                                         }).ToList();
                 foreach (var materialPlan in materialPlanList)
                 {
                     var deliveryBySupp = deliveryListBySupp.FirstOrDefault(f => f.SupplierId.Equals(materialPlan.SupplierId));
+                    materialPlan.Balance = sizeRunList.Sum(s => s.Quantity) - deliveryBySupp.TotalDelivery + deliveryBySupp.TotalReject;
                     if (deliveryBySupp != null && deliveryBySupp.TotalDelivery.Equals(sizeRunList.Sum(s => s.Quantity)))
                     {
                         materialPlan.ActualDate = deliveryBySupp.MaxDeliveryDate.Date;
@@ -810,9 +808,9 @@ namespace MasterSchedule.Views
             {
                 return;
             }
-            eAction = EExcute.Delete;
             if (bwUpload.IsBusy == false)
             {
+                eAction = EExcute.Delete;
                 this.Cursor = Cursors.Wait;
                 btnDelete.IsEnabled = false;
                 bwUpload.RunWorkerAsync();

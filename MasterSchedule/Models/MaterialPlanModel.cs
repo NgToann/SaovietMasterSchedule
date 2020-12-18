@@ -17,5 +17,6 @@ namespace MasterSchedule.Models
         public DateTime ActualDate { get; set; }
         public string ActualDateString { get; set; }
         public string Remarks { get; set; }
+        public int Balance { get; set; }
     }
 }

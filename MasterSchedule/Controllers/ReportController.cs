@@ -85,8 +85,6 @@ namespace MasterSchedule.Controllers
             };
         }
 
-        // New
-
         public static List<ReportOSMWHCheckingModel> SelectOSWHMCheckingFromTo(DateTime dateFrom, DateTime dateTo)
         {
             var @DateFrom = new SqlParameter("@DateFrom", dateFrom);
@@ -96,6 +94,7 @@ namespace MasterSchedule.Controllers
                 return db.ExecuteStoreQuery<ReportOSMWHCheckingModel>("EXEC reporter_SelectOSMWHCheckingListFromTo @DateFrom, @DateTo", @DateFrom, @DateTo).ToList();
             };
         }
+
         public static List<ReportOSMWHCheckingModel> SelectOSMWHCheckingByPO(String poSearch)
         {
             var @ProductNo = new SqlParameter("@ProductNo", poSearch);
@@ -105,8 +104,6 @@ namespace MasterSchedule.Controllers
             };
         }
 
-
-
         public static List<ReportOutsoleInventoryModel> InventoryByOutsoleCode()
         {
             using (var db = new SaovietMasterScheduleEntities())
@@ -114,6 +111,7 @@ namespace MasterSchedule.Controllers
                 return db.ExecuteStoreQuery<ReportOutsoleInventoryModel>("EXEC reporter_OutsoleInventoryByOSCode").ToList();
             };
         }
+
         public static List<ReportOutsoleInventoryModel> InventoryByOutsoleLine()
         {
             using (var db = new SaovietMasterScheduleEntities())
@@ -122,7 +120,6 @@ namespace MasterSchedule.Controllers
             };
         }
 
-        //
         public static List<ReportOSMaterialCheckWHInventoryModel> SelectOSMaterialWHInventory()
         {
             using (var db = new SaovietMasterScheduleEntities())
@@ -131,8 +128,6 @@ namespace MasterSchedule.Controllers
             };
         }
 
-        //
-        //
         public static List<ReportOSMaterialCheckDetailModel> SelectOSMaterialCheckByOSCode(string outsoleCode)
         {
             var @OutsoleCode = new SqlParameter("@OutsoleCode", outsoleCode);
@@ -142,13 +137,21 @@ namespace MasterSchedule.Controllers
             };
         }
 
-        //
         public static List<ReportUpperAccessoriesSummaryModel> SelectUpperAccessoriesDeliverySummary()
         {
             using (var db = new SaovietMasterScheduleEntities())
             {
-                return db.ExecuteStoreQuery<ReportUpperAccessoriesSummaryModel>("EXEC reporter_UpperAccessoriesDeliverySummary").ToList();
+                return db.ExecuteStoreQuery<ReportUpperAccessoriesSummaryModel>("EXEC reporter_AccessoriesDeliverySummary").ToList();
             };
+        }
+
+        public static List<ReportUpperAccessoriesDetailBySupplierModel> GetUpperAccessoriesMaterialDeliveryBySupplier(int supplierId)
+        {
+            var @SupplierId = new SqlParameter("@SupplierId", supplierId);
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<ReportUpperAccessoriesDetailBySupplierModel>("reporter_AccessoriesDeliveryBySupplier @SupplierId", @SupplierId).ToList();
+            }
         }
     }
 }

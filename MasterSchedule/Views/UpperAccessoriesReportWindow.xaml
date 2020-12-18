@@ -11,35 +11,94 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-            <ComboBox x:Name="cboSupplier" DisplayMemberPath="Name" SelectedValue="SupplierId" VerticalContentAlignment="Center" SelectionChanged="cboSupplier_SelectionChanged"/>
-            <TextBox Margin="2,0,0,0" x:Name="txtAccessoriesName" MinWidth="120" BorderBrush="Black" VerticalContentAlignment="Center" Padding="2,1,0,1" FontSize="14" PreviewKeyUp="txtAccessoriesName_PreviewKeyUp" ToolTip="Input Accessories Name"/>
-            <Button x:Name="btnFilter" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" Cursor="Hand" Click="btnFilter_Click">
-                <Button.Content>
-                    <Image Width="16" Height="16" Source="/Images/search.png"/>
-                </Button.Content>
-            </Button>
-        </StackPanel>
-        <DataGrid Grid.Row="1" x:Name="dgSummaryReport" AutoGenerateColumns="False" IsReadOnly="True" 
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="btnRefresh" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" ToolTip="Refresh" Cursor="Hand" Click="btnRefresh_Click">
+                    <Button.Content>
+                        <Image Width="16" Height="16" Source="/Images/mini_refresh.png"/>
+                    </Button.Content>
+                </Button>
+                <TextBlock Margin="2,0,0,0" Text="UPPER ACCESSORIES SUMMARY REPORT" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Bottom"/>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <ComboBox x:Name="cboSupplier" DisplayMemberPath="Name" SelectedValue="SupplierId" VerticalContentAlignment="Center" SelectionChanged="cboSupplier_SelectionChanged"/>
+                <TextBox Margin="2,0,0,0" x:Name="txtAccessoriesName" MinWidth="120" BorderBrush="Black" VerticalContentAlignment="Center" Padding="2,1,0,1" FontSize="14" PreviewKeyUp="txtAccessoriesName_PreviewKeyUp" ToolTip="Input Accessories Name"/>
+                <Button x:Name="btnFilter" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" Cursor="Hand" Click="btnFilter_Click">
+                    <Button.Content>
+                        <Image Width="16" Height="16" Source="/Images/search.png"/>
+                    </Button.Content>
+                </Button>
+            </StackPanel>
+        </Grid>
+        <DataGrid Grid.Row="1" Margin="0,1,0,0" x:Name="dgSummaryReport" AutoGenerateColumns="False" IsReadOnly="True" MouseLeftButtonDown="dgSummaryReport_MouseLeftButtonDown"
                   AlternatingRowBackground="LightCyan" AlternationCount="2" LoadingRow="dgSummaryReport_LoadingRow" RowHeaderWidth="NaN"
-                   HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray">
-            <DataGrid.Resources>
-                <Style TargetType="{x:Type DataGridCell}">
+                   HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ClipboardCopyMode="IncludeHeader">
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="FontSize" Value="14"/>
+                    <Setter Property="Background" Value="GhostWhite"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                    <Setter Property="BorderBrush" Value="Gray"/>
+                    <Setter Property="BorderThickness" Value="0.5,0.5,0.5,0.5"/>
+                    <Setter Property="Padding" Value="5,4,5,4"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="Padding" Value="2"/>
                     <Style.Triggers>
-                        <Trigger Property="DataGridCell.IsSelected" Value="True">
-                            <Setter Property="Background" Value="RoyalBlue" />
-                            <Setter Property="Foreground" Value="White" />
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="Background" Value="RoyalBlue"/>
+                            <Setter Property="BorderThickness" Value="0,0,0,0"/>
                         </Trigger>
                     </Style.Triggers>
                 </Style>
-            </DataGrid.Resources>
-            <DataGrid.Columns>
-                <DataGridTextColumn Width="Auto" Header="Accessories Name" Binding="{Binding AccessoriesName}"/>
-                <DataGridTextColumn Width="Auto" Header="Supplier" Binding="{Binding Name}"/>
-                <DataGridTextColumn Width="Auto" Header="Qty Order" Binding="{Binding QuantityOrder, StringFormat=N0}"/>
-                <DataGridTextColumn Width="Auto" Header="Qty Check OK" Binding="{Binding QuantityCheckOK, StringFormat=N0}"/>
-                <DataGridTextColumn Width="Auto" Header="Qty Reject" Binding="{Binding QuantityReject, StringFormat=N0}"/>
-            </DataGrid.Columns>
+            </DataGrid.CellStyle>
+            <!--<DataGrid.Columns>
+                <DataGridTemplateColumn Header="Accessories Name" SortMemberPath="AccessoriesName" ClipboardContentBinding="{Binding AccessoriesName}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding AccessoriesName}" VerticalAlignment="Center" Padding="4,2,4,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Supplier" SortMemberPath="Name" ClipboardContentBinding="{Binding Name}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Padding="4,2,4,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Qty Order" SortMemberPath="QuantityOrder" ClipboardContentBinding="{Binding QuantityOrder}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding QuantityOrder, StringFormat=N0}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="4,2,4,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Qty Check OK" SortMemberPath="QuantityCheckOK" ClipboardContentBinding="{Binding QuantityCheckOK}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding QuantityCheckOK, StringFormat=N0}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="4,2,4,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Qty Reject" SortMemberPath="QuantityReject" ClipboardContentBinding="{Binding QuantityReject}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding QuantityReject, StringFormat=N0}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="4,2,4,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>-->
         </DataGrid>
     </Grid>
 </Window>

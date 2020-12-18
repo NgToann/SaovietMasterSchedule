@@ -242,6 +242,7 @@
     <Compile Include="Models\ReportOutsoleMaterialDeliveryFromToModel.cs" />
     <Compile Include="Models\ReportOutsoleMaterialDeliverySummary.cs" />
     <Compile Include="Models\ReportSewingSummaryModel.cs" />
+    <Compile Include="Models\ReportUpperAccessoriesDetailBySupplierModel.cs" />
     <Compile Include="Models\ReportUpperAccessoriesSummaryModel.cs" />
     <Compile Include="Models\SockliningInputModel.cs" />
     <Compile Include="Models\SupplierModel.cs" />
@@ -434,6 +435,9 @@
     </Compile>
     <Compile Include="Views\UpdateSpecifyOrderWindow.xaml.cs">
       <DependentUpon>UpdateSpecifyOrderWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UpperAccessoriesReportDetailWindow.xaml.cs">
+      <DependentUpon>UpperAccessoriesReportDetailWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UpperAccessoriesReportWindow.xaml.cs">
       <DependentUpon>UpperAccessoriesReportWindow.xaml</DependentUpon>
@@ -1069,6 +1073,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UpdateSpecifyOrderWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UpperAccessoriesReportDetailWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

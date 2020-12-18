@@ -268,10 +268,8 @@ namespace MasterSchedule.Views
         {
             AddUpperAccessoriesSupplierWindow window = new AddUpperAccessoriesSupplierWindow(supplierList);
             window.ShowDialog();
-            if (window.DialogResult == true)
-            {
+            if (window.supplierListRespone != null)
                 supplierList = window.supplierListRespone.ToList();
-            }
         }
 
         private void dgMain_LoadingRow(object sender, DataGridRowEventArgs e)

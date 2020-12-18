@@ -18,7 +18,7 @@ namespace MasterSchedule.Controllers
             }
         }
         
-        public  static bool DeleteByPOBySupplier (string productNo, int supplierId)
+        public static bool DeleteByPOBySupplier (string productNo, int supplierId)
         {
             var @ProductNo = new SqlParameter("@ProductNo", productNo);
             var @SupplierId = new SqlParameter("@SupplierId", supplierId);

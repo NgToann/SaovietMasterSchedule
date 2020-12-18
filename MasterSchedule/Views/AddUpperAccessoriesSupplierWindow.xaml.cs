@@ -49,7 +49,7 @@ namespace MasterSchedule.Views
                 dgSuppliers.ItemsSource = supplierList.Where(w => String.IsNullOrEmpty(w.ProvideAccessories) == false).ToList();
                 dgSuppliers.Items.Refresh();
                 supplierListRespone = supplierList.ToList();
-                this.DialogResult = true;
+                //this.DialogResult = true;
             }
             this.Cursor = null;
             btnAdd.IsEnabled = true;
