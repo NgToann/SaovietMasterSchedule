@@ -1186,9 +1186,9 @@ namespace MasterSchedule.Views
                 return;
             DateTime releaseDate = TimeHelper.Convert(releaseDateString);
 
-            int qtyOrder = sizeRunList.FirstOrDefault(f => f.SizeNo == sizeNo).Quantity;
+            int qtyOrder     = sizeRunList.FirstOrDefault(f => f.SizeNo == sizeNo).Quantity;
             int qtyOldOthers = currentReleasePaintingList.Where(w => w.OutsoleSupplierId == supplierId && w.SizeNo == sizeNo && w.ReleaseDate != releaseDate).Sum(s => s.Quantity);
-            int qtyOld = currentReleasePaintingList.Where(w => w.OutsoleSupplierId == supplierId && w.SizeNo == sizeNo && w.ReleaseDate == releaseDate).Sum(s => s.Quantity);
+            int qtyOld       = currentReleasePaintingList.Where(w => w.OutsoleSupplierId == supplierId && w.SizeNo == sizeNo && w.ReleaseDate == releaseDate).Sum(s => s.Quantity);
 
             TextBox txtCurrent = (TextBox)e.EditingElement;
             int qtyInputting = 0;

@@ -359,13 +359,16 @@ namespace MasterSchedule.Views
                             List<String> detailViewList = new List<string>();
                             foreach (var sizeNo in sizeNoListContainsError)
                             {
-                                var totalRejectBySize       = reportOSMWHCheckingListByPO.Where(w => w.SizeNo == sizeNo).Sum(s => s.Reject);
+                                var totalRejectBySize = reportOSMWHCheckingListByPO.Where(w => w.SizeNo == sizeNo).Sum(s => s.Reject);
                                 var totalReturnRejectBySize = reportOSMWHCheckingListByPO.Where(w => w.SizeNo == sizeNo).Sum(s => s.ReturnReject);
                                 if (totalRejectBySize - totalReturnRejectBySize > 0)
                                     detailViewList.Add(String.Format("#{0} = {1}", sizeNo, totalRejectBySize - totalReturnRejectBySize));
                             }
                             if (detailViewList.Count() > 0)
                                 dr["Detail"] = String.Join("; ", detailViewList);
+
+                            //if (!String.IsNullOrEmpty(xReport.RejectCurrentDetail))
+                            //    dr["Detail"] = xReport.RejectCurrentDetail;
 
                             string fromTo = "";
                             if (searchFrom != searchTo)

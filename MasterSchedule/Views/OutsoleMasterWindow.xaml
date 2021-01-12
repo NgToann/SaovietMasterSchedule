@@ -120,7 +120,9 @@
                     </DataGridTextColumn.CellStyle>
                 </DataGridTextColumn>
                 <DataGridTextColumn x:Name="colOutsoleQuota" Binding="{Binding OutsoleQuota}" Header="OS&#10;Quota" IsReadOnly="True" CanUserSort="False"/>
-                <DataGridTextColumn x:Name="colOutsoleActualStartDate" Binding="{Binding OutsoleActualStartDate}" Header="Outsole&#10;Planned&#10;Start&#10;Date" IsReadOnly="True" CanUserSort="False"/>
+                <DataGridTextColumn x:Name="colOutsoleActualStartDate" Binding="{Binding OutsoleActualStartDate}" Header="Outsole&#10;Planned&#10;Start&#10;Date" IsReadOnly="True" CanUserSort="False">
+                    
+                </DataGridTextColumn>
                 <DataGridTextColumn x:Name="colOutsoleActualFinishDate" Binding="{Binding OutsoleActualFinishDate}" Header="Outsole&#10;Planned&#10;Finish&#10;Date" IsReadOnly="True" CanUserSort="False"/>
                 <DataGridTextColumn x:Name="colOutsoleActualStartDateAuto" Binding="{Binding OutsoleActualStartDateAuto}" Header="Outsole&#10;Actual&#10;Start&#10;Date" IsReadOnly="True" CanUserSort="False"/>
                 <DataGridTextColumn x:Name="colOutsoleActualFinishDateAuto" Binding="{Binding OutsoleActualFinishDateAuto}" Header="Outsole&#10;Actual&#10;Finish&#10;Date" IsReadOnly="True" CanUserSort="False"/>

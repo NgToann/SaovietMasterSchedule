@@ -32,6 +32,7 @@ namespace MasterSchedule.Models
         public string POStatus { get; set; }
         public int TotalQuantityCheckedOK { get; set; }
         public DateTime CreatedTime { get; set; }
+        public string RejectCurrentDetail { get; set; }
 
     }
 }

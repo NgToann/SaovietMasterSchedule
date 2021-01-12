@@ -18,7 +18,7 @@ namespace MasterSchedule.Views
     /// <summary>
     /// Interaction logic for InputAccessoriesWindow.xaml
     /// </summary>
-    public partial class InputAccessoriesWindow : Window
+    public partial class InputUpperAccessoriesInspectWindow : Window
     {
         BackgroundWorker bwLoad;
         BackgroundWorker bwUpload;
@@ -29,7 +29,7 @@ namespace MasterSchedule.Views
         List<SupplierModel> supplierAccessoriesList;
         List<SizeRunModel> sizeRunList;
         Button btnEditMatsPlan;
-        List<MaterialDeliveryModel> matsDeliveryList;
+        List<MaterialInspectModel> matsDeliveryList;
         SupplierModel supplierClicked;
         DataTable dtDelDetail;
         List<String> buttonSizeKeyList;
@@ -40,7 +40,7 @@ namespace MasterSchedule.Views
                                             "11", "12", "13", "14", "15", "16", "17", "18", "19" };
         private string _qtyOK = "Quantity OK";
         private DateTime dtDefault = new DateTime(2000, 01, 01);
-        public InputAccessoriesWindow(string productNo, List<RejectModel> rejectUpperAccessoriesList, AccountModel account)
+        public InputUpperAccessoriesInspectWindow(string productNo, List<RejectModel> rejectUpperAccessoriesList, AccountModel account)
         {
             this.productNo = productNo;
             this.rejectUpperAccessoriesList = rejectUpperAccessoriesList;
@@ -59,7 +59,7 @@ namespace MasterSchedule.Views
             sizeRunList = new List<SizeRunModel>();
 
             btnEditMatsPlan = new Button();
-            matsDeliveryList = new List<MaterialDeliveryModel>();
+            matsDeliveryList = new List<MaterialInspectModel>();
             dtDelDetail = new DataTable();
             buttonSizeKeyList = new List<string>();
             InitializeComponent();
@@ -81,7 +81,7 @@ namespace MasterSchedule.Views
             materialPlanList.ForEach(t => t.ActualDateString = t.ActualDate != dtDefault ? String.Format("{0:MM/dd}", t.ActualDate) : "");
             supplierAccessoriesList = SupplierController.GetSuppliersAccessories();
             sizeRunList = SizeRunController.Select(productNo);
-            matsDeliveryList = MaterialDeliveryController.GetMaterialDeliveryByPO(productNo);
+            matsDeliveryList = MaterialInspectController.GetMaterialInspectByPO(productNo);
         }
 
         private void BwLoad_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -324,14 +324,14 @@ namespace MasterSchedule.Views
         {
             // Load Delivery Infor
             var deliveryDetailBySupplierClicked = matsDeliveryList.Where(w => w.SupplierId == materialPlanChecking.SupplierId).ToList();
-            var deliveryThisTimeList = new List<MaterialDeliveryModel>();
+            var deliveryThisTimeList = new List<MaterialInspectModel>();
             if (deliveryDetailBySupplierClicked.Where(w => w.DeliveryDate.Equals(dpDeliveryDate.SelectedDate.Value.Date)).Count() == 0
                 && account.MaterialDelivery)
             {
                 foreach (var sizeRun in sizeRunList)
                 {
                     deliveryThisTimeList.Add(
-                        new MaterialDeliveryModel
+                        new MaterialInspectModel
                         {
                             ProductNo = productNo,
                             SupplierId = materialPlanChecking.SupplierId,
@@ -350,7 +350,7 @@ namespace MasterSchedule.Views
             tblDeliveryDetailOf.Text = String.Format("Delivery detail of: {0}", supplierClicked.Name);
         }
 
-        private void LoadDeliveryDetail(List<MaterialDeliveryModel> deliveryList)
+        private void LoadDeliveryDetail(List<MaterialInspectModel> deliveryList)
         {
             HighLightError("");
             dgDeliveryDetail.Columns.Clear();
@@ -671,7 +671,7 @@ namespace MasterSchedule.Views
             if (supplierClicked == null || materialPlanChecking == null || account.MaterialDelivery == false)
                 return;
 
-            List<MaterialDeliveryModel> deliveryOKList = new List<MaterialDeliveryModel>();
+            List<MaterialInspectModel> deliveryOKList = new List<MaterialInspectModel>();
             for (int r = 0; r < dtDelDetail.Rows.Count; r++)
             {
                 DataRow dr = dtDelDetail.Rows[r];
@@ -687,7 +687,7 @@ namespace MasterSchedule.Views
                     int qtyBySize = 0;
                     Int32.TryParse(dr[String.Format("Column{0}", sizeBinding)].ToString(), out qtyBySize);
                     deliveryOKList.Add(
-                        new MaterialDeliveryModel
+                        new MaterialInspectModel
                         {
                             ProductNo       = productNo,
                             SupplierId      = supplierClicked.SupplierId,
@@ -710,14 +710,14 @@ namespace MasterSchedule.Views
 
         private void BwUpload_DoWork(object sender, DoWorkEventArgs e)
         {
-            var deliveryOKList = e.Argument as List<MaterialDeliveryModel>;
+            var deliveryOKList = e.Argument as List<MaterialInspectModel>;
             try
             {
                 if (eAction == EExcute.AddNew)
                 {
                     foreach (var itemInsert in deliveryOKList)
                     {
-                        MaterialDeliveryController.Insert(itemInsert, insertQty: true, insertReject: false, deleteReject: false);
+                        MaterialInspectController.Insert(itemInsert, insertQty: true, insertReject: false, deleteReject: false);
                         matsDeliveryList.RemoveAll(r => r.SupplierId.Equals(itemInsert.SupplierId)
                                                     && r.DeliveryDate.Equals(itemInsert.DeliveryDate)
                                                     && r.SizeNo.Equals(itemInsert.SizeNo)
@@ -727,7 +727,7 @@ namespace MasterSchedule.Views
                 }
                 else if (eAction == EExcute.Delete)
                 {
-                    MaterialDeliveryController.DeleteByPOBySupplier(productNo, supplierClicked.SupplierId);
+                    MaterialInspectController.DeleteByPOBySupplier(productNo, supplierClicked.SupplierId);
                     matsDeliveryList.RemoveAll(r => r.SupplierId.Equals(supplierClicked.SupplierId));
                 }
                 e.Result = true;
@@ -823,7 +823,7 @@ namespace MasterSchedule.Views
             workerId = "";
             txtReviser.Text = "";
             tblDeliveryDetailOf.Text = "";
-            LoadDeliveryDetail(new List<MaterialDeliveryModel>());
+            LoadDeliveryDetail(new List<MaterialInspectModel>());
         }
 
         string workerId = "";

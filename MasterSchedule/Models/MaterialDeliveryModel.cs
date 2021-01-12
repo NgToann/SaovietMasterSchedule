@@ -8,13 +8,15 @@ namespace MasterSchedule.Models
     public class MaterialDeliveryModel
     {
         public string ProductNo { get; set; }
-        public string SizeNo { get; set; }
         public int SupplierId { get; set; }
-        public DateTime DeliveryDate { get; set; }
+        public string SizeNo { get; set; }
         public int Quantity { get; set; }
         public int Reject { get; set; }
-        public int RejectId { get; set; }
-        //public int Excess { get; set; }
-        public string  Reviser { get; set; }
+        public int RejectSewing { get; set; }
+        public int Excess { get; set; }
+
+        public string SupplierName { get; set; }
+        public DateTime ETD { get; set; }
+        public DateTime ActualDeliveryDate { get; set; }
     }
 }

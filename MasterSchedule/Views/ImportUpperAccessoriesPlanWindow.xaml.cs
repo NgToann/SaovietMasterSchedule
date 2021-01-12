@@ -1,26 +1,15 @@
-﻿using System;
+﻿using MasterSchedule.Controllers;
+using MasterSchedule.Models;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
-using System.ComponentModel;
-using Microsoft.Win32;
 using Excel = Microsoft.Office.Interop.Excel;
-using System.Reflection;
-using System.Threading;
-
-using MasterSchedule.Controllers;
-using MasterSchedule.Helpers;
-using MasterSchedule.Models;
-using MasterSchedule.ViewModels;
 
 namespace MasterSchedule.Views
 {

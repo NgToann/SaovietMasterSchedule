@@ -1130,7 +1130,7 @@ namespace MasterSchedule.Views
                         return;
                     }
                     string productNo = rawMaterialView.ProductNo;
-                    var window = new InputAccessoriesWindow(productNo, rejectUpperAccessoriesList, account);
+                    var window = new InputUpperAccessoriesInspectWindow(productNo, rejectUpperAccessoriesList, account);
                     window.ShowDialog();
                     if (account.UpperAccessories)
                     {
@@ -1173,38 +1173,47 @@ namespace MasterSchedule.Views
                     }
                 }
 
-                //if (cellCurrent != null && cellCurrent.Column != null && cellCurrent.Column == Column25_2)
-                //{
-                //    var rawMaterialView = (RawMaterialViewModel)cellCurrent.Item;
-                //    if (rawMaterialView == null)
-                //    {
-                //        return;
-                //    }
-                //    string productNo = rawMaterialView.ProductNo;
-                //    var window = new UpperComponentInputMaterialWindow(productNo);
-                //    window.ShowDialog();
-                //    if (window.DialogResult == true)
-                //    {
-                //        rawMaterialCellChangedList.Add(new RawMaterialCellChangedModel
-                //        {
-                //            ProductNo = productNo,
-                //            MaterialType = 12,
-                //        });
+                if (cellCurrent != null && cellCurrent.Column != null && cellCurrent.Column == Column25_2_1)
+                {
+                    var rawMaterialView = (RawMaterialViewModel)cellCurrent.Item;
+                    if (rawMaterialView == null)
+                        return;
+                    var window = new InputMaterialDeliveryWindow(rawMaterialView.ProductNo);
+                    window.ShowDialog();
+                }
 
-                //        if (window.rawMaterial.ActualDate != dtNothing)
-                //        {
-                //            rawMaterialView.UPPERCOMPONENT_ActualDate = String.Format("{0:M/d}", window.rawMaterial.ActualDate);
-                //            if (window.rawMaterial.ActualDate == dtDefault)
-                //            {
-                //                rawMaterialView.UPPERCOMPONENT_ActualDate = "";
-                //            }
-                //        }
-                //        rawMaterialView.UPPERCOMPONENT_Remarks = window.rawMaterial.Remarks != "0" ? window.rawMaterial.Remarks : "";
-                //    }
-                //}
-                
-                
-                if (account.Insock == true)
+                    //if (cellCurrent != null && cellCurrent.Column != null && cellCurrent.Column == Column25_2)
+                    //{
+                    //    var rawMaterialView = (RawMaterialViewModel)cellCurrent.Item;
+                    //    if (rawMaterialView == null)
+                    //    {
+                    //        return;
+                    //    }
+                    //    string productNo = rawMaterialView.ProductNo;
+                    //    var window = new UpperComponentInputMaterialWindow(productNo);
+                    //    window.ShowDialog();
+                    //    if (window.DialogResult == true)
+                    //    {
+                    //        rawMaterialCellChangedList.Add(new RawMaterialCellChangedModel
+                    //        {
+                    //            ProductNo = productNo,
+                    //            MaterialType = 12,
+                    //        });
+
+                    //        if (window.rawMaterial.ActualDate != dtNothing)
+                    //        {
+                    //            rawMaterialView.UPPERCOMPONENT_ActualDate = String.Format("{0:M/d}", window.rawMaterial.ActualDate);
+                    //            if (window.rawMaterial.ActualDate == dtDefault)
+                    //            {
+                    //                rawMaterialView.UPPERCOMPONENT_ActualDate = "";
+                    //            }
+                    //        }
+                    //        rawMaterialView.UPPERCOMPONENT_Remarks = window.rawMaterial.Remarks != "0" ? window.rawMaterial.Remarks : "";
+                    //    }
+                    //}
+
+
+                    if (account.Insock == true)
                 {
                     if (cellCurrent != null && cellCurrent.Column != null && cellCurrent.Column == Column25_4)
                     {

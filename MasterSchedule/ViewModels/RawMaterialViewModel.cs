@@ -193,6 +193,18 @@ namespace MasterSchedule.ViewModels
             }
         }
 
+        private string _UpperAccessories_ActualDeliveryDate;
+        public string UpperAccessories_ActualDeliveryDate
+        {
+            get { return _UpperAccessories_ActualDeliveryDate; }
+            set
+            {
+                _UpperAccessories_ActualDeliveryDate = value;
+                OnPropertyChanged("UpperAccessories_ActualDeliveryDate");
+            }
+        }
+
+
         private string _UpperAccessories_Remarks;
         public string UpperAccessories_Remarks
         {

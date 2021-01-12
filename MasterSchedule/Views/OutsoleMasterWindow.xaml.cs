@@ -212,10 +212,20 @@ namespace MasterSchedule.Views
                 var rawMaterialViewModelNew = rawMaterialViewModelNewList.FirstOrDefault(f => f.ProductNo == order.ProductNo);
                 outsoleMasterView.OSMatsArrivalForeground = Brushes.Blue;
                 outsoleMasterView.OSMatsArrivalBackground = Brushes.Transparent;
+
+                // Testing
+                if (outsoleMasterView.ProductNo == "109-6765")
+                {
+                    var x = "TTTTTTTTTTTTTT";
+                }
+
                 // Deliveried
                 if (String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_Remarks) &&
                     !String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_ActualDate))
+                {
                     outsoleMasterView.OSMatsArrival = rawMaterialViewModelNew.OUTSOLE_ActualDate;
+                    outsoleMasterView.OSMatsArrivalOrginal = rawMaterialViewModelNew.OUTSOLE_ActualDate_DATE;
+                }
                 else
                 {
                     outsoleMasterView.OSMatsArrivalForeground = Brushes.Black;
@@ -225,7 +235,7 @@ namespace MasterSchedule.Views
                     if (rawMaterialViewModelNew.OUTSOLE_ETD_DATE < DateTime.Now.Date &&
                         rawMaterialViewModelNew.OUTSOLE_ETD_DATE != dtDefault)
                         outsoleMasterView.OSMatsArrivalBackground = Brushes.Red;
-                    
+
                     // Still Have Balance
                     if (!String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_Remarks))
                     {
@@ -302,9 +312,9 @@ namespace MasterSchedule.Views
                     outsoleMasterView.SewingBalance = "";
                 }
 
-
                 outsoleMasterView.OutsoleStartDateForeground = Brushes.Black;
                 outsoleMasterView.OutsoleFinishDateForeground = Brushes.Black;
+                
                 if (outsoleMasterView.OutsoleStartDate < outsoleMasterView.OSMatsArrivalOrginal || outsoleMasterView.OutsoleStartDate > outsoleMasterView.SewingStartDate)
                 {
                     outsoleMasterView.OutsoleStartDateForeground = Brushes.Red;

@@ -375,6 +375,8 @@ namespace MasterSchedule.ViewModels
             }
         }
 
+        public string SewingActualStartDateForSaving { get; set; }
+
         private string _SewingActualFinishDate; //Input Manual
         public string SewingActualFinishDate
         {

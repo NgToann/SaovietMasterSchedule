@@ -208,8 +208,8 @@ namespace MasterSchedule.Views
 
                         var qtyOKBySize = reportBySizeList.FirstOrDefault(f => f.RejectId == 0);
                         List<String> displayCellList = new List<string>();
-                        displayCellList.Add(qtyOKBySize.Quantity.ToString());
-
+                        if (qtyOKBySize != null)
+                            displayCellList.Add(qtyOKBySize.Quantity.ToString());
                         var rejectsBySize = reportBySizeList.Where(f => f.RejectId > 0);
                         foreach (var reject in rejectsBySize)
                         {

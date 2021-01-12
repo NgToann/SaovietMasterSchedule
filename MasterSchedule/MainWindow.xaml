@@ -22,6 +22,7 @@
                     <MenuItem x:Name="miImportMachineRequest" Header="Machine Request" Click="miImportMachineRequest_Click" Visibility="Collapsed"/>
                     <MenuItem x:Name="miUpperMaterialSchedule" IsEnabled="False" Header="Upper Material Schedule" Click="miUpperMaterialSchedule_Click"/>
                     <MenuItem x:Name="miImportUpperAccessoriesPlan" IsEnabled="False" Header="Accessories Material Plan" Click="miImportUpperAccessoriesPlan_Click"/>
+                    <MenuItem x:Name="miImportLaminationMaterial" Header="Lamination Material" Click="miImportLaminationMaterial_Click"/>
                 </MenuItem>
                 <MenuItem x:Name="miExit" Header="Logout" Click="miExit_Click"/>
             </MenuItem>

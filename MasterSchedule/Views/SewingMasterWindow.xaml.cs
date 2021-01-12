@@ -1140,12 +1140,19 @@ namespace MasterSchedule.Views
                         {
                             SewingMasterViewModel sewingMasterView = sewingMasterViewLineList[i];
 
+                            // Testing
+                            if (sewingMasterView.ProductNo == "109-4567")
+                            {
+                                var x = sewingMasterView.ProductNo;
+                            }
+
                             #region Calculate for Sewing
                             int qtySewingQuota = sewingMasterView.SewingQuota;
                             int optSewing = 0;
                             if (qtySewingQuota > 0)
                             {
                                 DateTime dtSewingStartDateTemp = TimeHelper.Convert(sewingMasterView.SewingActualStartDate);
+
                                 if ((String.IsNullOrEmpty(sewingMasterView.SewingActualStartDate) == false && dtSewingStartDateTemp != dtNothing)
                                     || sewingMasterView == sewingMasterViewLineList.First())
                                 {

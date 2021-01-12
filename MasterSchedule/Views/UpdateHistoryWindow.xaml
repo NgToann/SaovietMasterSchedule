@@ -6,7 +6,7 @@
         WindowStartupLocation="CenterScreen"
         FontSize="14" KeyUp="Window_KeyUp"
         WindowStyle="None" ResizeMode="NoResize" BorderBrush="LightGray" BorderThickness="1,1,1,1"
-        Loaded="Window_Loaded" FontFamily="Calibri" >
+        Loaded="Window_Loaded" FontFamily="Arial" >
     <Window.Resources>
         <LinearGradientBrush x:Key="StandardBG" StartPoint="1,0" EndPoint="0,0.8">
             <LinearGradientBrush.GradientStops>

@@ -82,7 +82,7 @@
                     <TextBlock Text="Reviser Incentive Report" FontWeight="SemiBold" Foreground="Blue" Padding="3"/>
                 </TabItem.Header>
                 <WindowsFormsHost>
-                    <rpv:ReportViewer x:Name="reportViewerReviserIncentive" ShowFindControls="False"/>
+                    <rpv:ReportViewer x:Name="reportViewerReviserIncentive" ShowFindControls="True"/>
                 </WindowsFormsHost>
             </TabItem>
             <TabItem>
@@ -90,7 +90,7 @@
                     <TextBlock Text="Reject Detail Report" FontWeight="SemiBold" Foreground="Red" Padding="3"/>
                 </TabItem.Header>
                 <WindowsFormsHost Grid.Row="1">
-                    <rpv:ReportViewer x:Name="reportViewerRejectDetail" ShowFindControls="False"/>
+                    <rpv:ReportViewer x:Name="reportViewerRejectDetail" ShowFindControls="True"/>
                 </WindowsFormsHost>
             </TabItem>
             <TabItem>

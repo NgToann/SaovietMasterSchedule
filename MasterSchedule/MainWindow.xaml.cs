@@ -926,6 +926,12 @@ namespace MasterSchedule
             window.Show();
         }
 
+        private void miImportLaminationMaterial_Click(object sender, RoutedEventArgs e)
+        {
+            ImportLaminationMaterialWindow window = new ImportLaminationMaterialWindow();
+            window.Show();
+        }
+
         private void Window_StateChanged(object sender, EventArgs e)
         {
             if (this.WindowState == System.Windows.WindowState.Minimized && loaded == true)
@@ -1025,10 +1031,11 @@ namespace MasterSchedule
                 "1.2.7.3: " + "Update: Counter WorkingTime OSMWHChecking, Speed Report OSMWH, OSMWHChecking View Detail 'SV', col OSMatsArrival UpperDetailReport; Keys,Input Reject 'TL'.\n" +
                 "1.2.7.4: " + "Update: PO OsMasterFile Empty, Reviser PO 'SV'.\n" +
                 "1.2.7.8: " + "Update: Print Size Run Report, Add Import SizeRunAndOrders 'SV'.\n" +
-                "1.2.7.9: " + "Update: Add LastSize (SizeRun) 'SV'\n"+
+                "1.2.7.9: " + "Update: Add LastSize (SizeRun) 'SV'\n" +
                 "1.2.8.1: " + "Update: Combine Reject O/SWHMasterFile and O/SMaterial Check 'SV', Hidden OSSize.\n" +
                 "1.2.8.2: " + "Update: Add OSMaterialWHCheck Inventory Report 'SV'.\n" +
-                "1.2.8.3: " + "Update: Add Input UpperAccessories, Import Excel Data, Revise Supplier, Create Report, Report Detail 'SV'";
+                "1.2.8.3: " + "Update: Add Input UpperAccessories, Import Excel Data, Revise Supplier, Create Report, Report Detail 'SV.'\n" +
+                "1.2.8.4: " + "Update: Import WHLamination Material, Report(OSWHMaterialCheckDetail) 'SV'";
             //MessageBox.Show(version, string.Format("Current Version: {0}", AssemblyHelper.Version()), MessageBoxButton.OK, MessageBoxImage.Information);
             UpdateHistoryWindow window = new UpdateHistoryWindow(version, AssemblyHelper.Version());
             window.Show();

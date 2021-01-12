@@ -101,9 +101,11 @@
     <Compile Include="Controllers\InsockMaterialController.cs" />
     <Compile Include="Controllers\InsockRawMaterialController.cs" />
     <Compile Include="Controllers\InsockSuppliersController.cs" />
+    <Compile Include="Controllers\LaminationMaterialController.cs" />
     <Compile Include="Controllers\MachineController.cs" />
     <Compile Include="Controllers\MachineRequestController.cs" />
     <Compile Include="Controllers\MaterialDeliveryController.cs" />
+    <Compile Include="Controllers\MaterialInspectController.cs" />
     <Compile Include="Controllers\MaterialPlanController.cs" />
     <Compile Include="Controllers\OSWHWorkingTimeController.cs" />
     <Compile Include="Controllers\OutsoleMaterialCheckingController.cs" />
@@ -214,9 +216,11 @@
     <Compile Include="Models\InsockMaterialModel.cs" />
     <Compile Include="Models\InsockRawMaterialModel.cs" />
     <Compile Include="Models\InsockSuppliersModel.cs" />
+    <Compile Include="Models\LaminationMaterialModel.cs" />
     <Compile Include="Models\MachineModel.cs" />
     <Compile Include="Models\MachineRequestModel.cs" />
     <Compile Include="Models\MaterialDeliveryModel.cs" />
+    <Compile Include="Models\MaterialInspectModel.cs" />
     <Compile Include="Models\MaterialPlanModel.cs" />
     <Compile Include="Models\OSWHWorkingTimeModel.cs" />
     <Compile Include="Models\OutsoleMaterialBalanceReportModel.cs" />
@@ -322,6 +326,9 @@
     <Compile Include="Views\ImportInsockRawMaterialWindow.xaml.cs">
       <DependentUpon>ImportInsockRawMaterialWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ImportLaminationMaterialWindow.xaml.cs">
+      <DependentUpon>ImportLaminationMaterialWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ImportMachineRequestWindow.xaml.cs">
       <DependentUpon>ImportMachineRequestWindow.xaml</DependentUpon>
     </Compile>
@@ -340,8 +347,11 @@
     <Compile Include="Views\ImportUpperMaterialScheduleWindow.xaml.cs">
       <DependentUpon>ImportUpperMaterialScheduleWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\InputAccessoriesWindow.xaml.cs">
-      <DependentUpon>InputAccessoriesWindow.xaml</DependentUpon>
+    <Compile Include="Views\InputMaterialDeliveryWindow.xaml.cs">
+      <DependentUpon>InputMaterialDeliveryWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\InputUpperAccessoriesInspectWindow.xaml.cs">
+      <DependentUpon>InputUpperAccessoriesInspectWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\InsockDeliveryDetailWindow.xaml.cs">
       <DependentUpon>InsockDeliveryDetailWindow.xaml</DependentUpon>
@@ -924,6 +934,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ImportLaminationMaterialWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ImportMachineRequestWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -948,7 +962,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\InputAccessoriesWindow.xaml">
+    <Page Include="Views\InputMaterialDeliveryWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\InputUpperAccessoriesInspectWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
