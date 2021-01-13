@@ -1,9 +1,11 @@
 ﻿using MasterSchedule.Controllers;
 using MasterSchedule.Models;
+using MasterSchedule.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -24,7 +26,10 @@ namespace MasterSchedule.Views
     public partial class InputMaterialDeliveryWindow : Window
     {
         private string productNo;
+        private AccountModel account;
+        RawMaterialViewModel rawMaterialView;
         BackgroundWorker bwLoad;
+        BackgroundWorker bwUpload;
         List<SizeRunModel> sizeRunList;
         List<MaterialDeliveryModel> matsDeliveryByPOList;
         List<MaterialPlanModel> matsPlanByPOList;
@@ -32,13 +37,19 @@ namespace MasterSchedule.Views
         DataTable dtDelivery;
         private const string RowQuantity = "Quantity", RowReject = "Reject", RowRejectSewing = "Reject Sewing";
         private DateTime dtDefault = new DateTime(2000, 01, 01);
-        public InputMaterialDeliveryWindow(string productNo)
+        private EExcute eAction = EExcute.None;
+        public InputMaterialDeliveryWindow(string productNo, AccountModel account, RawMaterialViewModel rawMaterialView)
         {
-            this.productNo = productNo;
-
+            this.productNo  = productNo;
+            this.account    = account;
+            this.rawMaterialView = rawMaterialView;
             bwLoad = new BackgroundWorker();
             bwLoad.DoWork += BwLoad_DoWork;
             bwLoad.RunWorkerCompleted += BwLoad_RunWorkerCompleted;
+
+            bwUpload = new BackgroundWorker();
+            bwUpload.DoWork += BwUpload_DoWork; 
+            bwUpload.RunWorkerCompleted += BwUpload_RunWorkerCompleted;
 
             sizeRunList          = new List<SizeRunModel>();
             matsDeliveryByPOList = new List<MaterialDeliveryModel>();
@@ -47,7 +58,7 @@ namespace MasterSchedule.Views
             supplierList = new List<SupplierModel>();
             InitializeComponent();
         }
-
+        
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             if (bwLoad.IsBusy==false)
@@ -88,8 +99,10 @@ namespace MasterSchedule.Views
 
                     //Column ETD
                     dtDelivery.Columns.Add("ETD", typeof(String));
+                    dtDelivery.Columns.Add("ETDDate", typeof(DateTime));
                     DataGridTemplateColumn colETD = new DataGridTemplateColumn();
                     colETD.Header = String.Format("EFD");
+                    colETD.MinWidth = 60;
                     DataTemplate templateETD = new DataTemplate();
                     FrameworkElementFactory tblETD = new FrameworkElementFactory(typeof(TextBlock));
                     templateETD.VisualTree = tblETD;
@@ -129,7 +142,7 @@ namespace MasterSchedule.Views
                         //dtDelDetail.Columns.Add(String.Format("Column{0}ToolTip", sizeBinding), typeof(String));
                         DataGridTextColumn column = new DataGridTextColumn();
                         column.SetValue(TagProperty, sizeRun.SizeNo);
-                        column.Header = string.Format("{0}\n{1}\n", sizeRun.SizeNo, sizeRun.Quantity);
+                        column.Header = string.Format("{0}\n\n{1}", sizeRun.SizeNo, sizeRun.Quantity);
                         column.MinWidth = 40;
                         column.MaxWidth = 200;
                         column.Binding = new Binding(String.Format("Column{0}", sizeBinding));
@@ -148,7 +161,7 @@ namespace MasterSchedule.Views
                     //Column Total
                     dtDelivery.Columns.Add("Balance", typeof(String));
                     DataGridTemplateColumn colBalance = new DataGridTemplateColumn();
-                    colBalance.Header = String.Format("Total\n{0}\n", sizeRunList.Sum(s => s.Quantity));
+                    colBalance.Header = String.Format("Total\n\n{0}", sizeRunList.Sum(s => s.Quantity));
                     colBalance.MinWidth = 80;
                     colBalance.MaxWidth = 80;
                     DataTemplate templateBalance = new DataTemplate();
@@ -183,18 +196,25 @@ namespace MasterSchedule.Views
                             {
                                 matsDeliveryByPOList.Add(new MaterialDeliveryModel
                                 {
-                                    SupplierId = matsPlan.SupplierId,
-                                    SupplierName = supplierByPlan != null ? supplierByPlan.Name : "",
-                                    ProductNo = matsPlan.ProductNo,
-                                    ETD = matsPlan.ETD,
-                                    ActualDeliveryDate = dtDefault,
-                                    SizeNo = sizeRun.SizeNo,
-                                    Quantity        = 0,
-                                    Reject          = 0,
-                                    RejectSewing    = 0
+                                    SupplierId          = matsPlan.SupplierId,
+                                    SupplierNameDisplay = supplierByPlan != null ? String.Format("{0} - {1}", supplierByPlan.Name, supplierByPlan.ProvideAccessories) : "",
+                                    ProductNo           = matsPlan.ProductNo,
+                                    ETD                 = matsPlan.ETD,
+                                    ActualDeliveryDate  = dtDefault,
+                                    SizeNo              = sizeRun.SizeNo,
+                                    Quantity            = 0,
+                                    Reject              = 0,
+                                    RejectSewing        = 0
                                 });
                             }
                         }
+                    }
+                    else
+                    {
+                        // Put Supplier Name - Accessories Name
+                        matsDeliveryByPOList.ForEach(f => f.SupplierNameDisplay = String.Format("{0} - {1}", 
+                            supplierList.FirstOrDefault(w => w.SupplierId == f.SupplierId).Name, 
+                            supplierList.FirstOrDefault(w => w.SupplierId == f.SupplierId).ProvideAccessories));
                     }
                     
                     var supplierIdList = matsDeliveryByPOList.Select(s => s.SupplierId).Distinct().ToList();
@@ -212,7 +232,7 @@ namespace MasterSchedule.Views
                         drReject["Status"]          = RowReject;
                         drRejectSewing["Status"]    = RowRejectSewing;
 
-                        drQuantity["Name"]      = materialInfoBySupp.SupplierName;
+                        drQuantity["Name"]      = materialInfoBySupp.SupplierNameDisplay;
                         drReject["Name"]        = RowReject;
                         drRejectSewing["Name"]  = RowRejectSewing;
 
@@ -223,6 +243,9 @@ namespace MasterSchedule.Views
                         drQuantity["ETD"]           = string.Format("{0:MM/dd}", materialInfoBySupp.ETD);
                         if (materialInfoBySupp.ActualDeliveryDate != dtDefault)
                             drQuantity["ActualDate"] = string.Format("{0:MM/dd}", materialInfoBySupp.ActualDeliveryDate);
+                        
+                        drQuantity["ActualDateDate"]        = materialInfoBySupp.ActualDeliveryDate;
+                        drQuantity["ETDDate"] = materialInfoBySupp.ETD;
 
                         foreach (var sizeRun in sizeRunList)
                         {
@@ -249,6 +272,14 @@ namespace MasterSchedule.Views
                                 }
                             }
                         }
+
+                        int totalBalanceBySupp  = sizeRunList.Sum(s => s.Quantity) - deliveryListBySupp.Sum(s => s.Quantity);
+                        int totalReject         = deliveryListBySupp.Sum(s => s.Reject);
+                        int totalRejectSewing   = deliveryListBySupp.Sum(s => s.RejectSewing);
+                        
+                        drQuantity["Balance"]   = totalBalanceBySupp > 0 ? totalBalanceBySupp.ToString() : "";
+                        drReject["Balance"]     = totalReject > 0 ? totalReject.ToString() : "";
+                        drRejectSewing["Balance"] = totalRejectSewing > 0 ? totalRejectSewing.ToString() : "";
 
                         dtDelivery.Rows.Add(drQuantity);
                         dtDelivery.Rows.Add(drReject);
@@ -301,7 +332,7 @@ namespace MasterSchedule.Views
         {
             if (dgDeliveryInfo.CurrentItem == null)
                 return;
-            var drEditting = ((DataRowView)dgDeliveryInfo.CurrentItem).Row;
+            var drEditting = ((DataRowView)e.Row.Item).Row;
             if (e.Column.GetValue(TagProperty) == null)
                 return;
             string sizeNoEditting = e.Column.GetValue(TagProperty).ToString();
@@ -331,50 +362,274 @@ namespace MasterSchedule.Views
             }
 
             int qtyAfterPlusValue = qtyOld + qtyCurrent;
-            int qtyOrder = sizeRunList.FirstOrDefault(f => f.SizeNo == sizeNoEditting).Quantity;
+            int qtyOrderBySize = sizeRunList.FirstOrDefault(f => f.SizeNo == sizeNoEditting).Quantity;
 
-            if (qtyAfterPlusValue > qtyOrder)
-                qtyAfterPlusValue = qtyOrder;
+            if (qtyAfterPlusValue > qtyOrderBySize)
+                qtyAfterPlusValue = qtyOrderBySize;
             else if (qtyAfterPlusValue <= 0)
                 qtyAfterPlusValue = 0;
 
-            txtCurrent.Text = qtyAfterPlusValue != 0 ? qtyAfterPlusValue.ToString() : "";
-            int totalQtyOrder = sizeRunList.Sum(s => s.Quantity);
+            var sizeNoBind = sizeNoEditting.Contains(".") ? sizeNoEditting.Replace(".", "@") : sizeNoEditting;
+            txtCurrent.Text = qtyAfterPlusValue > 0 ? qtyAfterPlusValue.ToString() : "";
+            drEditting[String.Format("Column{0}", sizeNoBind)] = txtCurrent.Text;
 
-            // Update Balance
-            // Collect Data At Row Editting
-            int totalQuantityAtRow = 0;
-            for (int r = 0; r < dtDelivery.Rows.Count; r++)
+            // Highlight Cell
+            if (statusEditting == RowQuantity)
             {
-                DataRow drCurrent = dtDelivery.Rows[r];
-                if (drCurrent["Status"].ToString() != RowQuantity)
-                    continue;
-                sizeNoEditting = sizeNoEditting.Contains(".") ? sizeNoEditting.Replace(".", "@") : sizeNoEditting;
-                drCurrent[String.Format("Column{0}", sizeNoEditting)] = txtCurrent.Text;
+                drEditting[String.Format("Column{0}Foreground", sizeNoBind)] = Brushes.Black;
+                if (qtyAfterPlusValue == qtyOrderBySize)
+                    drEditting[String.Format("Column{0}Foreground", sizeNoBind)] = Brushes.Blue;
+            }
+            else
+            {
+                drEditting[String.Format("Column{0}Foreground", sizeNoBind)] = Brushes.Red;
+            }
 
-                foreach (var sizeRun in sizeRunList)
+            // Collect data at the row editting
+            int totalQtyAtRow = 0;
+            foreach (var sizeRun in sizeRunList)
+            {
+                int qty = 0;
+                var sizeNo = sizeRun.SizeNo.Contains(".") ? sizeRun.SizeNo.Replace(".", "@") : sizeRun.SizeNo;
+                Int32.TryParse(drEditting[String.Format("Column{0}", sizeNo)].ToString(), out qty);
+                totalQtyAtRow += qty;
+            }
+
+            int totalQtyOrder = sizeRunList.Sum(s => s.Quantity);
+            int totalQtyDeliveryOld = matsDeliveryByPOList.Where(w => w.SupplierId.ToString().Equals(supplierEditting)).Sum(s => s.Quantity);
+            drEditting["Balance"] = "";
+            drEditting["ActualDate"] = "";
+            drEditting["ActualDateDate"] = dtDefault;
+
+            // Display Balance and Actual Date
+            if (statusEditting == RowQuantity)
+            {
+                if (totalQtyOrder - totalQtyAtRow > 0)
+                    drEditting["Balance"] = totalQtyOrder - totalQtyAtRow;
+                if (totalQtyAtRow == totalQtyOrder &&
+                    totalQtyDeliveryOld != totalQtyOrder)
                 {
-                    var sizeBinding = sizeRun.SizeNo.Contains(".") ? sizeRun.SizeNo.Replace(".", "@") : sizeRun.SizeNo;
-                    int qtyAtCell = 0;
-                    Int32.TryParse(drCurrent[String.Format("Column{0}",sizeBinding)].ToString(), out qtyAtCell);
-                    totalQuantityAtRow += qtyAtCell;
+                    drEditting["ActualDate"] = String.Format("{0:MM/dd}", DateTime.Now);
+                    drEditting["ActualDateDate"] = DateTime.Now;
                 }
             }
-            
-            if (statusEditting == RowQuantity)
-                drEditting["Balance"] = totalQtyOrder - totalQuantityAtRow;
+            // Display Total Reject Or Reject Sewing
             else
-                drEditting["Balance"] = totalQuantityAtRow;
+            {
+                drEditting["Balance"] = totalQtyAtRow;
+            }
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-
+            if (account.MaterialDelivery == false)
+            {
+                MessageBox.Show("User does not have permission excute data", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+            if (MessageBox.Show(string.Format("Confirm delete upper accessories delivery PO: {0}?", productNo), this.Title, MessageBoxButton.OKCancel, MessageBoxImage.Question) != MessageBoxResult.OK)
+            {
+                return;
+            }
+            if (bwUpload.IsBusy == false)
+            {
+                this.Cursor = Cursors.Wait;
+                eAction = EExcute.Delete;
+                btnDelete.IsEnabled = false;
+                object[] par = new object[] { new List<MaterialDeliveryModel>(), new List<MaterialPlanModel>() };
+                bwUpload.RunWorkerAsync(par);
+            }
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
+            if (dgDeliveryInfo.Items == null)
+                return;
+            if (account.MaterialDelivery == false)
+            {
+                MessageBox.Show("User does not have permission excute data", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+            // Get Data From Datatable
+            List<MaterialDeliveryModel> matsFromGridList = new List<MaterialDeliveryModel>();
+            var actualDate  = dtDefault;
+            var etd         = dtDefault;
+            for (int r = 0; r < dtDelivery.Rows.Count; r++)
+            {
+                var dr = dtDelivery.Rows[r];
+                var status = dr["Status"].ToString();
+                var supplierId = dr["SupplierId"].ToString();
+                if (status == RowQuantity)
+                {
+                    actualDate = (DateTime)dr["ActualDateDate"];
+                    etd = (DateTime)dr["ETDDate"];
+                }
 
+                foreach (var sizeRun in sizeRunList)
+                {
+                    string sizeBinding = sizeRun.SizeNo.Contains(".") ? sizeRun.SizeNo.Replace(".", "@") : sizeRun.SizeNo;
+                    int qtyAtCell = 0;
+                    Int32.TryParse(dr[String.Format("Column{0}", sizeBinding)].ToString(), out qtyAtCell);
+                    var materialDeliveryAddModel = new MaterialDeliveryModel
+                    {
+                        ProductNo           = productNo,
+                        SupplierId          = int.Parse(supplierId),
+                        ActualDeliveryDate  = actualDate,
+                        ETD                 = etd,
+                        SizeNo              = sizeRun.SizeNo
+                    };
+                    if (status == RowQuantity)
+                        materialDeliveryAddModel.Quantity = qtyAtCell;
+                    else if (status == RowReject)
+                        materialDeliveryAddModel.Reject = qtyAtCell;
+                    else
+                        materialDeliveryAddModel.RejectSewing = qtyAtCell;
+
+                    matsFromGridList.Add(materialDeliveryAddModel);
+                }
+            }
+            
+            if (bwUpload.IsBusy == false)
+            {
+                this.Cursor = Cursors.Wait;
+                eAction = EExcute.AddNew;
+                btnSave.IsEnabled = false;
+
+                // Created Add List
+                var supplierIdList = matsFromGridList.Select(s => s.SupplierId).Distinct().ToList();
+                var matsDeliveryAddList = new List<MaterialDeliveryModel>();
+                var matsPlanUpdateList  = new List<MaterialPlanModel>();
+                foreach (var supplierId in supplierIdList)
+                {
+                    var matsBySuppList  = matsFromGridList.Where(w => w.SupplierId == supplierId).ToList();
+                    var matsFisrt       = matsBySuppList.FirstOrDefault();
+                    matsPlanUpdateList.Add(new MaterialPlanModel
+                    {
+                        ProductNo = matsFisrt.ProductNo,
+                        SupplierId = matsFisrt.SupplierId,
+                        ActualDeliveryDate = matsFisrt.ActualDeliveryDate,
+                        ETD = matsFisrt.ETD,
+                        BalanceDelivery = sizeRunList.Sum(s => s.Quantity) - matsBySuppList.Sum(s => s.Quantity) + matsBySuppList.Sum(s => s.Reject),
+                        TotalDeliveryQuantity = matsBySuppList.Sum(s => s.Quantity)
+                    });
+                    foreach (var sizeRun in sizeRunList)
+                    {
+                        matsDeliveryAddList.Add(new MaterialDeliveryModel
+                        {
+                            ProductNo   = matsFisrt.ProductNo,
+                            SupplierId  = matsFisrt.SupplierId,
+                            SizeNo      = sizeRun.SizeNo,
+                            ActualDeliveryDate = matsFisrt.ActualDeliveryDate,
+                            Quantity        = matsBySuppList.Where(w => w.SizeNo == sizeRun.SizeNo).Sum(s => s.Quantity),
+                            Reject          = matsBySuppList.Where(w => w.SizeNo == sizeRun.SizeNo).Sum(s => s.Reject),
+                            RejectSewing    = matsBySuppList.Where(w => w.SizeNo == sizeRun.SizeNo).Sum(s => s.RejectSewing),
+                        });
+                    }
+                }
+                object[] par = new object[] { matsDeliveryAddList, matsPlanUpdateList };
+                bwUpload.RunWorkerAsync(par);
+            }
+        }
+
+        private void BwUpload_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var args = e.Argument as object[];
+            var matsUploadList      = args[0] as List<MaterialDeliveryModel>;
+            var matsPlanUpdateList  = args[1] as List<MaterialPlanModel>;
+            e.Result = true;
+            try
+            {
+                if (eAction == EExcute.AddNew)
+                {
+                    foreach (var item in matsUploadList)
+                    {
+                        MaterialDeliveryController.Insert(item);
+                    }
+
+                    // Update MaterialPlan
+                    string remarksPO = "";
+                    string etdPO = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", matsPlanUpdateList.Max(m => m.ETD));
+
+                    // max actualDeliveryDate
+                    if (matsPlanUpdateList.Where(w => w.ActualDeliveryDate == dtDefault).Count() == 0)
+                    {
+                        remarksPO = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", matsPlanUpdateList.Max(m => m.ActualDeliveryDate));
+                    }
+                    if (matsPlanUpdateList.Sum(s => s.TotalDeliveryQuantity) > 0 &&
+                        matsPlanUpdateList.Max(m => m.BalanceDelivery) > 0)
+                    {
+                        remarksPO = matsPlanUpdateList.Max(m => m.BalanceDelivery).ToString();
+
+                        var etdNotYetFinishDelivery = matsPlanUpdateList.Where(w => w.ActualDeliveryDate == dtDefault).ToList();
+                        if (etdNotYetFinishDelivery.Count() > 0)
+                            etdPO = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", etdNotYetFinishDelivery.Max(m => m.ETD));
+                    }
+
+                    foreach (var item in matsPlanUpdateList)
+                    {
+                        item.RemarksPO      = remarksPO;
+                        item.ETDPO          = etdPO;
+                        MaterialPlanController.UpdateActualDateWhenDelivery(item);
+                    }
+
+                    // Update RawMaterialViewModel
+                    rawMaterialView.UpperAccessories_ActualDeliveryDate = "";
+                    rawMaterialView.UpperAccessories_Remarks = "";
+                    rawMaterialView.UpperAccessories_ETD = etdPO;
+
+                    if (matsPlanUpdateList.Where(w => w.ActualDeliveryDate == dtDefault).Count() == 0)
+                        rawMaterialView.UpperAccessories_ActualDeliveryDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", matsPlanUpdateList.Max(m => m.ActualDeliveryDate));
+                    if (matsPlanUpdateList.Sum(s => s.TotalDeliveryQuantity) > 0 &&
+                        matsPlanUpdateList.Max(m => m.BalanceDelivery) > 0)
+                        rawMaterialView.UpperAccessories_Remarks = matsPlanUpdateList.Max(m => m.BalanceDelivery).ToString();
+                }
+                else if (eAction == EExcute.Delete)
+                {
+                    MaterialDeliveryController.DeleteByPO(productNo);
+                    // Update RawMaterialViewModel
+                    rawMaterialView.UpperAccessories_ActualDeliveryDate = "";
+                    rawMaterialView.UpperAccessories_Remarks = "";
+                }
+            }
+            catch (Exception ex)
+            {
+                e.Result = false;
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    MessageBox.Show(ex.InnerException.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                }));
+            }
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                this.Close();
+            }
+        }
+
+        private void BwUpload_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            string msg = "";
+            if ((bool)e.Result == false || e.Cancelled == true)
+                msg = "An error occurred when excute data !";
+            else
+            {
+                if (eAction == EExcute.AddNew)
+                {
+                    msg = "Saved !";
+                }
+                else if (eAction == EExcute.Delete)
+                {
+                    msg = "Deleted !";
+                    dgDeliveryInfo.ItemsSource = null;
+                }
+            }
+            MessageBox.Show(msg, this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+            this.Cursor = null;
+            btnSave.IsEnabled = true;
+            btnDelete.IsEnabled = true;
         }
 
         private void dgDeliveryInfo_LoadingRow(object sender, DataGridRowEventArgs e)

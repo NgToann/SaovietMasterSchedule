@@ -59,6 +59,26 @@ namespace MasterSchedule.Controllers
             }
         }
 
+        //
+        public static bool UpdateActualDateWhenDelivery(MaterialPlanModel model)
+        {
+            var @ProductNo          = new SqlParameter("@ProductNo", model.ProductNo);
+            var @SupplierId         = new SqlParameter("@SupplierId", model.SupplierId);
+            var @ActualDeliveryDate = new SqlParameter("@ActualDeliveryDate", model.ActualDeliveryDate);
+            var @RemarksPO          = new SqlParameter("@RemarksPO", model.RemarksPO);
+            var @ETDPO              = new SqlParameter("@ETDPO", model.ETDPO);
+
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                if (db.ExecuteStoreCommand("EXEC spm_UpdateMaterialPlanWhenDelivery @ProductNo, @SupplierId, @ActualDeliveryDate, @RemarksPO, @ETDPO",
+                                                                                    @ProductNo, @SupplierId, @ActualDeliveryDate, @RemarksPO, @ETDPO) > 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         public static bool Delete(MaterialPlanModel model)
         {
             var @ProductNo = new SqlParameter("@ProductNo", model.ProductNo);

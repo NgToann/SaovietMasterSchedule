@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MasterSchedule.Views" Loaded="Window_Loaded" KeyUp="Window_KeyUp"
         mc:Ignorable="d" FontSize="13" WindowStartupLocation="CenterScreen" WindowState="Maximized"
-        Title="MasterSchedule - Input Accessories Delivery" MinHeight="450" MinWidth="800">
+        Title="MasterSchedule - Inspect Upper Accessories" MinHeight="450" MinWidth="800">
     <Grid Margin="2" x:Name="gridMain">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>

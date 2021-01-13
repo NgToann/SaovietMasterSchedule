@@ -15,7 +15,7 @@ namespace MasterSchedule.Models
         public int RejectSewing { get; set; }
         public int Excess { get; set; }
 
-        public string SupplierName { get; set; }
+        public string SupplierNameDisplay { get; set; }
         public DateTime ETD { get; set; }
         public DateTime ActualDeliveryDate { get; set; }
     }

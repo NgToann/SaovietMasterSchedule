@@ -37,5 +37,6 @@ namespace MasterSchedule.Models
         public bool UpperAccessories { get; set; }
         public bool MaterialPlan { get; set; }
         public bool MaterialDelivery { get; set; }
+        public bool MaterialReviser { get; set; }
     }
 }

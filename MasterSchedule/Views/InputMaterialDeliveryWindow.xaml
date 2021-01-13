@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MasterSchedule.Views"
+        xmlns:local="clr-namespace:MasterSchedule.Views" KeyDown="Window_KeyDown"
         mc:Ignorable="d" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen"
         Title="Master Schedule - Input Upper Accessories Material Delivery" Height="450" Width="800">
     <Grid Margin="2">
@@ -13,13 +13,13 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <TextBlock x:Name="tblTitle" Text="Upper Accessories Delivery PO: " FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold"/>
-        <DataGrid Grid.Row="1" x:Name="dgDeliveryInfo" AutoGenerateColumns="False" IsReadOnly="False" SelectionUnit="Cell" CanUserAddRows="False" CellEditEnding="dgDeliveryInfo_CellEditEnding"
-                  CanUserSortColumns="False" AlternationCount="2" LoadingRow="dgDeliveryInfo_LoadingRow" RowHeaderWidth="NaN"
+        <DataGrid Grid.Row="1" x:Name="dgDeliveryInfo" AutoGenerateColumns="False" IsReadOnly="False" SelectionUnit="CellOrRowHeader" CanUserAddRows="False" CellEditEnding="dgDeliveryInfo_CellEditEnding"
+                  CanUserSortColumns="False" AlternationCount="2" LoadingRow="dgDeliveryInfo_LoadingRow" RowHeaderWidth="NaN" FontSize="13"
                   HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray">
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                    <Setter Property="FontSize" Value="13"/>
+                    <Setter Property="FontSize" Value="14"/>
                     <Setter Property="FontWeight" Value="SemiBold"/>
                     <Setter Property="Background" Value="LightGray"/>
                     <Setter Property="Foreground" Value="Black"/>
@@ -45,7 +45,14 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="btnDelete" MinWidth="100" Cursor="Hand" Template="{DynamicResource ResourceKey=ButtonTemplate}" Content="  Delete  " Grid.Column="1" Click="btnDelete_Click"/>
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" VerticalAlignment="Center">
+                <Image Width="20" Height="20" Source="/Images/viewDetail.png"/>
+            </StackPanel>
+            <Button x:Name="btnDelete" MinWidth="100" Cursor="Hand" Template="{DynamicResource ResourceKey=ButtonTemplate}" Grid.Column="1" Click="btnDelete_Click">
+                <Button.Content>
+                    <TextBlock Text="  Delete  " Foreground="Red" FontSize="14"/>
+                </Button.Content>
+            </Button>
             <Button x:Name="btnSave" MinWidth="80" Margin="10,0,0,0" Cursor="Hand" Template="{DynamicResource ResourceKey=ButtonTemplate}" Content="  Save  " Grid.Column="2" Click="btnSave_Click"/>
         </Grid>
     </Grid>

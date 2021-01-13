@@ -90,7 +90,7 @@ namespace MasterSchedule.Views
             LoadMaterialPlan(materialPlanList);
             LoadListOfSizeNo(sizeRunList);
             LoadDeliveryDetail(matsDeliveryList);
-            tblDeliveryDetailOf.Text = String.Format("Delivery detail of: {0}", productNo);
+            tblDeliveryDetailOf.Text = String.Format("Inspect detail of: {0}", productNo);
             dgDeliveryDetail.IsReadOnly = true;
 
             this.Cursor = null;
@@ -347,7 +347,7 @@ namespace MasterSchedule.Views
             deliveryDetailBySupplierClicked.AddRange(deliveryThisTimeList);
             LoadDeliveryDetail(deliveryDetailBySupplierClicked);
             dgDeliveryDetail.IsReadOnly = false;
-            tblDeliveryDetailOf.Text = String.Format("Delivery detail of: {0}", supplierClicked.Name);
+            tblDeliveryDetailOf.Text = String.Format("Inspection detail of: {0}", supplierClicked.Name);
         }
 
         private void LoadDeliveryDetail(List<MaterialInspectModel> deliveryList)
@@ -388,7 +388,7 @@ namespace MasterSchedule.Views
 
             dtDelDetail.Columns.Add("Title", typeof(String));
             DataGridTemplateColumn colTitle = new DataGridTemplateColumn();
-            colTitle.Header = String.Format("Order Size");
+            colTitle.Header = String.Format("Order Size\nQty");
             DataTemplate templateTitle = new DataTemplate();
             FrameworkElementFactory tblTitle = new FrameworkElementFactory(typeof(TextBlock));
             templateTitle.VisualTree = tblTitle;
@@ -435,7 +435,7 @@ namespace MasterSchedule.Views
             // Column Total
             dtDelDetail.Columns.Add("Total", typeof(String));
             DataGridTemplateColumn colTotal = new DataGridTemplateColumn();
-            colTotal.Header = String.Format("Total");
+            colTotal.Header = String.Format("Total\n{0}", sizeRunList.Sum(s => s.Quantity));
             DataTemplate templateTotal = new DataTemplate();
             FrameworkElementFactory tblTotal = new FrameworkElementFactory(typeof(TextBlock));
             templateTotal.VisualTree = tblTotal;
@@ -447,6 +447,18 @@ namespace MasterSchedule.Views
             colTotal.ClipboardContentBinding = new Binding(String.Format("Total"));
             dgDeliveryDetail.Columns.Add(colTotal);
 
+            DataGridTemplateColumn colButtonOK = new DataGridTemplateColumn();
+            colButtonOK.MinWidth = 40;
+            colButtonOK.MaxWidth = 40;
+            DataTemplate templateButtonOK = new DataTemplate();
+            FrameworkElementFactory fefButtonOK = new FrameworkElementFactory(typeof(Button));
+            templateButtonOK.VisualTree = fefButtonOK;
+            fefButtonOK.SetValue(Button.ContentProperty, "Ok");
+            fefButtonOK.AddHandler(Button.ClickEvent, new RoutedEventHandler(BtnOK_Click));
+            colButtonOK.CellTemplate = templateButtonOK;
+            dgDeliveryDetail.Columns.Add(colButtonOK);
+
+            // Binding Data
             var supplierList = deliveryList.Select(s => s.SupplierId).Distinct().ToList();
             foreach (var supplierId in supplierList)
             {
@@ -522,6 +534,24 @@ namespace MasterSchedule.Views
 
             dgDeliveryDetail.ItemsSource = dtDelDetail.AsDataView();
             dgDeliveryDetail.Items.Refresh();
+        }
+
+        private void BtnOK_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgDeliveryDetail.CurrentItem == null)
+                return;
+            var drClicked = ((DataRowView)dgDeliveryDetail.CurrentItem).Row;
+            if (!drClicked["Title"].ToString().Equals(_qtyOK))
+                return;
+            var supplierIdOK = drClicked["SupplierId"].ToString();
+            foreach (var sizeRun in sizeRunList)
+            {
+                string sizeBinding = sizeRun.SizeNo.Contains(".") ? sizeRun.SizeNo.Replace(".", "@") : sizeRun.SizeNo;
+                drClicked[String.Format("Column{0}", sizeBinding)] = sizeRun.Quantity;
+                drClicked[String.Format("Column{0}Foreground", sizeBinding)] = Brushes.Blue;
+            }
+            drClicked["Total"] = "";
+            drClicked["Total"] = sizeRunList.Sum(s => s.Quantity);
         }
 
         private void dgDeliveryDetail_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
@@ -708,6 +738,11 @@ namespace MasterSchedule.Views
             }
         }
 
+        private void GetDataFromDatagrid(DataTable tableSource)
+        {
+            
+        }
+
         private void BwUpload_DoWork(object sender, DoWorkEventArgs e)
         {
             var deliveryOKList = e.Argument as List<MaterialInspectModel>;
@@ -739,15 +774,15 @@ namespace MasterSchedule.Views
                                         {
                                             SupplierId = s.Key,
                                             TotalDelivery = matsDeliveryList.Where(w => w.SupplierId.Equals(s.Key)).Sum(sum => sum.Quantity),
-                                            TotalReject = matsDeliveryList.Where(w => w.SupplierId.Equals(s.Key)).Sum(r=>r.Reject),
+                                            TotalReject = matsDeliveryList.Where(w => w.SupplierId.Equals(s.Key)).Sum(r => r.Reject),
                                             MaxDeliveryDate = matsDeliveryList.Where(w => w.SupplierId.Equals(s.Key)).Max(m => m.DeliveryDate)
                                         }).ToList();
                 foreach (var materialPlan in materialPlanList)
                 {
                     var deliveryBySupp = deliveryListBySupp.FirstOrDefault(f => f.SupplierId.Equals(materialPlan.SupplierId));
-                    materialPlan.Balance = sizeRunList.Sum(s => s.Quantity) - deliveryBySupp.TotalDelivery + deliveryBySupp.TotalReject;
                     if (deliveryBySupp != null && deliveryBySupp.TotalDelivery.Equals(sizeRunList.Sum(s => s.Quantity)))
                     {
+                        materialPlan.Balance = sizeRunList.Sum(s => s.Quantity) - deliveryBySupp.TotalDelivery + deliveryBySupp.TotalReject;
                         materialPlan.ActualDate = deliveryBySupp.MaxDeliveryDate.Date;
                     }
                     else
