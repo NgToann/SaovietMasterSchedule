@@ -90,44 +90,43 @@
                         <ColumnDefinition Width="{Binding ElementName=Column38, Path=ActualWidth}" />
                     </Grid.ColumnDefinitions>
                     <Border Grid.Column="13" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1,1,1,0">
-                        <TextBlock Margin="0,3,0,3" Text="TAIWAN" TextAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Margin="0,3,0,3" Text="TAIWAN" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
                     </Border>
                     <Border Grid.Column="16" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="0,1,1,0">
-                        <TextBlock Margin="0,3,0,3" Text="LAMINATION" TextAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Margin="0,3,0,3" Text="LAMINATION" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
                     </Border>
                     <Border Grid.Column="19" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="0,1,1,0">
-                        <TextBlock Margin="0,3,0,3" Text="CUTTING" TextAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Margin="0,3,0,3" Text="CUTTING" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
                     </Border>
                     <Border Grid.Column="22" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="0,1,1,0">
-                        <TextBlock Margin="0,3,0,3" Text="LEATHER" TextAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Margin="0,3,0,3" Text="LEATHER" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
                     </Border>
                     <Border Grid.Column="25" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="0,1,1,0">
-                        <TextBlock Margin="0,3,0,3" Text="SEMI-PROCESS" TextAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Margin="0,3,0,3" Text="SEMI-PROCESS" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
                     </Border>
                     <Border Grid.Column="28" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="0,1,1,0">
-                        <TextBlock Margin="0,3,0,3" Text="SEWING" TextAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Margin="0,3,0,3" Text="SEWING" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
                     </Border>
                     <Border Grid.Column="31" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="0,1,1,0">
-                        <TextBlock Margin="0,3,0,3" Text="OUTSOLE" TextAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Margin="0,3,0,3" Text="OUTSOLE" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
                     </Border>
                     <Border Grid.Column="34" Grid.ColumnSpan="4" BorderBrush="Black" BorderThickness="0,1,1,0">
-                        <!--<TextBlock Margin="0,3,0,3" Text="UPPER COMPONENT" TextAlignment="Center" FontWeight="Bold"/>-->
-                        <TextBlock Margin="0,3,0,3" Text="UPPER ACCESSORIES" TextAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Margin="0,3,0,3" Text="UPPER ACCESSORIES" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
                     </Border>
                     <Border Grid.Column="38" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="0,1,1,0">
-                        <TextBlock Margin="0,3,0,3" Text="MOLDED INSOCK" TextAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Margin="0,3,0,3" Text="MOLDED INSOCK" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
                     </Border>
                     <Border Grid.Column="41" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="0,1,1,0">
-                        <TextBlock Margin="0,3,0,3" Text="SECURITY LABEL" TextAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Margin="0,3,0,3" Text="SECURITY LABEL" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
                     </Border>
                     <Border Grid.Column="44" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="0,1,1,0">
-                        <TextBlock Margin="0,3,0,3" Text="ASSEMBLY" TextAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Margin="0,3,0,3" Text="ASSEMBLY" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
                     </Border>
                     <Border Grid.Column="47" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="0,1,1,0">
-                        <TextBlock Margin="0,3,0,3" Text="SOCK LINING" TextAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Margin="0,3,0,3" Text="SOCK LINING" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
                     </Border>
                     <Border Grid.Column="50" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="0,1,1,0">
-                        <TextBlock Margin="0,3,0,3" Text="CARTON" TextAlignment="Center" FontWeight="Bold"/>
+                        <TextBlock Margin="0,3,0,3" Text="CARTON" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
                     </Border>
                 </Grid>
             </ScrollViewer>
@@ -221,7 +220,7 @@
                     <DataGridTextColumn x:Name="Column25_2" Header="Actual&#10;Date" Width="Auto" Binding="{Binding UPPERCOMPONENT_ActualDate, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
                     <DataGridTextColumn x:Name="Column25_3" Header="REMARKS" Width="Auto" Binding="{Binding UPPERCOMPONENT_Remarks, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>-->
                     <DataGridTextColumn x:Name="Column25_1" Header="EFD" Width="Auto" Binding="{Binding UpperAccessories_ETD, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
-                    <DataGridTextColumn x:Name="Column25_2" Header="Actual&#10;Revise&#10;Date" Width="Auto" Binding="{Binding UpperAccessories_ActualDate, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+                    <DataGridTextColumn x:Name="Column25_2" Header="Actual&#10;Inspect&#10;Date" Width="Auto" Binding="{Binding UpperAccessories_ActualDate, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
                     <DataGridTextColumn x:Name="Column25_2_1" Header="Actual&#10;Delivery&#10;Date" Width="Auto" Binding="{Binding UpperAccessories_ActualDeliveryDate, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
                     <DataGridTextColumn x:Name="Column25_3" Header="REMARKS" Width="Auto" Binding="{Binding UpperAccessories_Remarks, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
 

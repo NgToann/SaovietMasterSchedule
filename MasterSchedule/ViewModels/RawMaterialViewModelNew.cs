@@ -70,6 +70,7 @@ namespace MasterSchedule.ViewModels
 
         public string UpperAccessories_ETD { get; set; }
         public string UpperAccessories_ActualDate { get; set; }
+        public string UpperAccessories_ActualDeliveryDate { get; set; }
         public string UpperAccessories_Remarks { get; set; }
 
         public string SECURITYLABEL_ETD { get; set; }

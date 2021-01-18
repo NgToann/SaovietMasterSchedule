@@ -23,7 +23,7 @@ namespace MasterSchedule.Views
     /// <summary>
     /// Interaction logic for InputMaterialDeliveryWindow.xaml
     /// </summary>
-    public partial class InputMaterialDeliveryWindow : Window
+    public partial class InputUpperAccessoriesMaterialDeliveryWindow : Window
     {
         private string productNo;
         private AccountModel account;
@@ -38,7 +38,7 @@ namespace MasterSchedule.Views
         private const string RowQuantity = "Quantity", RowReject = "Reject", RowRejectSewing = "Reject Sewing";
         private DateTime dtDefault = new DateTime(2000, 01, 01);
         private EExcute eAction = EExcute.None;
-        public InputMaterialDeliveryWindow(string productNo, AccountModel account, RawMaterialViewModel rawMaterialView)
+        public InputUpperAccessoriesMaterialDeliveryWindow(string productNo, AccountModel account, RawMaterialViewModel rawMaterialView)
         {
             this.productNo  = productNo;
             this.account    = account;
@@ -300,6 +300,8 @@ namespace MasterSchedule.Views
 
         private void BtnOK_Click(object sender, RoutedEventArgs e)
         {
+            if (!account.MaterialDelivery)
+                return;
             if (dgDeliveryInfo.CurrentItem == null)
                 return;
             var drClicked = ((DataRowView)dgDeliveryInfo.CurrentItem).Row;
@@ -318,7 +320,7 @@ namespace MasterSchedule.Views
             int totalDeliveryOld = matsDeliveryByPOList.Where(w => w.SupplierId.ToString().Equals(supplierIdOK)).Sum(s => s.Quantity);
             if (totalDeliveryOld != sizeRunList.Sum(s => s.Quantity))
             {
-                drClicked["ActualDate"]     = string.Format("{0:MM/dd}", DateTime.Now);
+                drClicked["ActualDate"] = string.Format("{0:MM/dd}", DateTime.Now);
                 drClicked["ActualDateDate"] = DateTime.Now;
             }
         }
@@ -397,14 +399,14 @@ namespace MasterSchedule.Views
 
             int totalQtyOrder = sizeRunList.Sum(s => s.Quantity);
             int totalQtyDeliveryOld = matsDeliveryByPOList.Where(w => w.SupplierId.ToString().Equals(supplierEditting)).Sum(s => s.Quantity);
-            drEditting["Balance"] = "";
-            drEditting["ActualDate"] = "";
-            drEditting["ActualDateDate"] = dtDefault;
 
-            // Display Balance and Actual Date
+            // Update Balance and Actual Date
             if (statusEditting == RowQuantity)
             {
-                if (totalQtyOrder - totalQtyAtRow > 0)
+                drEditting["ActualDate"] = "";
+                drEditting["ActualDateDate"] = dtDefault;
+
+                if (totalQtyOrder - totalQtyAtRow >= 0)
                     drEditting["Balance"] = totalQtyOrder - totalQtyAtRow;
                 if (totalQtyAtRow == totalQtyOrder &&
                     totalQtyDeliveryOld != totalQtyOrder)
@@ -505,11 +507,12 @@ namespace MasterSchedule.Views
                     var matsFisrt       = matsBySuppList.FirstOrDefault();
                     matsPlanUpdateList.Add(new MaterialPlanModel
                     {
-                        ProductNo = matsFisrt.ProductNo,
-                        SupplierId = matsFisrt.SupplierId,
+                        ProductNo   = matsFisrt.ProductNo,
+                        SupplierId  = matsFisrt.SupplierId,
                         ActualDeliveryDate = matsFisrt.ActualDeliveryDate,
                         ETD = matsFisrt.ETD,
-                        BalanceDelivery = sizeRunList.Sum(s => s.Quantity) - matsBySuppList.Sum(s => s.Quantity) + matsBySuppList.Sum(s => s.Reject),
+                        BalancePO   = sizeRunList.Sum(s => s.Quantity) - matsBySuppList.Sum(s => s.Quantity),
+                        RejectPO    = matsBySuppList.Sum(s => s.Reject),
                         TotalDeliveryQuantity = matsBySuppList.Sum(s => s.Quantity)
                     });
                     foreach (var sizeRun in sizeRunList)
@@ -547,19 +550,25 @@ namespace MasterSchedule.Views
                     }
 
                     // Update MaterialPlan
-                    string remarksPO = "";
+                    string remarksPO = "", actualDeliveryPO = "";
                     string etdPO = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", matsPlanUpdateList.Max(m => m.ETD));
 
-                    // max actualDeliveryDate
+                    // Finish Delivery
                     if (matsPlanUpdateList.Where(w => w.ActualDeliveryDate == dtDefault).Count() == 0)
                     {
-                        remarksPO = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", matsPlanUpdateList.Max(m => m.ActualDeliveryDate));
+                        actualDeliveryPO = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", matsPlanUpdateList.Max(m => m.ActualDeliveryDate));
                     }
-                    if (matsPlanUpdateList.Sum(s => s.TotalDeliveryQuantity) > 0 &&
-                        matsPlanUpdateList.Max(m => m.BalanceDelivery) > 0)
-                    {
-                        remarksPO = matsPlanUpdateList.Max(m => m.BalanceDelivery).ToString();
 
+                    int qtyDeliveryPO   = matsPlanUpdateList.Sum(s => s.TotalDeliveryQuantity);
+                    int balancePO       = matsPlanUpdateList.Max(m => m.BalancePO);
+                    int rejectPO        = matsPlanUpdateList.Max(m => m.RejectPO);
+                    int remarksNumber   = matsPlanUpdateList.Max(m => m.BalancePO + m.RejectPO);
+
+                    // Already Delivery
+                    if (qtyDeliveryPO > 0 && (balancePO > 0 || rejectPO > 0) )
+                    {
+                        //remarksPO = balancePO + rejectPO > 0 ? (balancePO + rejectPO).ToString() : "";
+                        remarksPO = remarksNumber.ToString();
                         var etdNotYetFinishDelivery = matsPlanUpdateList.Where(w => w.ActualDeliveryDate == dtDefault).ToList();
                         if (etdNotYetFinishDelivery.Count() > 0)
                             etdPO = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", etdNotYetFinishDelivery.Max(m => m.ETD));
@@ -567,9 +576,9 @@ namespace MasterSchedule.Views
 
                     foreach (var item in matsPlanUpdateList)
                     {
-                        item.RemarksPO      = remarksPO;
-                        item.ETDPO          = etdPO;
-                        MaterialPlanController.UpdateActualDateWhenDelivery(item);
+                        item.ETDPO              = etdPO;
+                        item.ActualDeliveryPO   = actualDeliveryPO;
+                        MaterialPlanController.UpdatePlanWhenDelivery(item);
                     }
 
                     // Update RawMaterialViewModel
@@ -577,11 +586,10 @@ namespace MasterSchedule.Views
                     rawMaterialView.UpperAccessories_Remarks = "";
                     rawMaterialView.UpperAccessories_ETD = etdPO;
 
-                    if (matsPlanUpdateList.Where(w => w.ActualDeliveryDate == dtDefault).Count() == 0)
-                        rawMaterialView.UpperAccessories_ActualDeliveryDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", matsPlanUpdateList.Max(m => m.ActualDeliveryDate));
-                    if (matsPlanUpdateList.Sum(s => s.TotalDeliveryQuantity) > 0 &&
-                        matsPlanUpdateList.Max(m => m.BalanceDelivery) > 0)
-                        rawMaterialView.UpperAccessories_Remarks = matsPlanUpdateList.Max(m => m.BalanceDelivery).ToString();
+                    if (!String.IsNullOrEmpty(actualDeliveryPO))
+                        rawMaterialView.UpperAccessories_ActualDeliveryDate = actualDeliveryPO;
+                    if (!String.IsNullOrEmpty(remarksPO))
+                        rawMaterialView.UpperAccessories_Remarks = remarksPO;
                 }
                 else if (eAction == EExcute.Delete)
                 {
@@ -607,6 +615,17 @@ namespace MasterSchedule.Views
             {
                 this.Close();
             }
+        }
+
+        private void dgDeliveryInfo_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+        {
+            if (!account.MaterialDelivery)
+                e.Cancel = true;
+            
+            // Deny Input Reject
+            var drEditting = ((DataRowView)e.Row.Item).Row;
+            if (drEditting["Status"].ToString() == RowReject)
+                e.Cancel = true;
         }
 
         private void BwUpload_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

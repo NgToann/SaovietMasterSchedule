@@ -1063,3 +1063,17 @@ F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSc
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csproj.CoreCompileInputs.cache
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.exe
 F:\SV PROJECT\MS\1.2.8.3 Cdingg\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.pdb
+F:\SV PROJECT\MS\1.2.8.6 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\bin\Debug\CheckUpdate.exe
+F:\SV PROJECT\MS\1.2.8.6 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\bin\Debug\CheckUpdate.pdb
+F:\SV PROJECT\MS\1.2.8.6 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csprojAssemblyReference.cache
+F:\SV PROJECT\MS\1.2.8.6 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\App.baml
+F:\SV PROJECT\MS\1.2.8.6 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\MainWindow.baml
+F:\SV PROJECT\MS\1.2.8.6 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\App.g.cs
+F:\SV PROJECT\MS\1.2.8.6 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\MainWindow.g.cs
+F:\SV PROJECT\MS\1.2.8.6 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate_MarkupCompile.cache
+F:\SV PROJECT\MS\1.2.8.6 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.g.resources
+F:\SV PROJECT\MS\1.2.8.6 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.Properties.Resources.resources
+F:\SV PROJECT\MS\1.2.8.6 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csproj.GenerateResource.cache
+F:\SV PROJECT\MS\1.2.8.6 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csproj.CoreCompileInputs.cache
+F:\SV PROJECT\MS\1.2.8.6 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.exe
+F:\SV PROJECT\MS\1.2.8.6 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.pdb

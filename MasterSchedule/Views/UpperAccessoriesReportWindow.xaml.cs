@@ -12,6 +12,7 @@ using System.Windows.Media;
 using MasterSchedule.Controllers;
 using MasterSchedule.DataSets;
 using MasterSchedule.Models;
+using Microsoft.Reporting.WinForms;
 
 namespace MasterSchedule.Views
 {
@@ -22,11 +23,15 @@ namespace MasterSchedule.Views
     {
         BackgroundWorker bwLoad;
         List<ReportUpperAccessoriesSummaryModel> summaryReportList;
+        List<ReportUpperAccessoriesModel> reportUpperAccessoriesList;
         List<SupplierModel> supplierList;
         int idRowTotal = -9999;
         int supIdDefault = -999;
+        private DateTime dtDefault = new DateTime(2000, 01, 01);
         private bool loaded = false;
-        
+        private string header = "UPPER ACCESSORIES DELIVERY REPORT";
+        private EReportWhat eRpWhat = EReportWhat.Delivery;
+
         public UpperAccessoriesReportWindow()
         {
             bwLoad = new BackgroundWorker();
@@ -35,6 +40,7 @@ namespace MasterSchedule.Views
 
             summaryReportList = new List<ReportUpperAccessoriesSummaryModel>();
             supplierList = new List<SupplierModel>();
+            reportUpperAccessoriesList = new List<ReportUpperAccessoriesModel>();
 
             InitializeComponent();
         }
@@ -47,13 +53,167 @@ namespace MasterSchedule.Views
                 bwLoad.RunWorkerAsync();
             }
         }
-        
+
         private void BwLoad_DoWork(object sender, DoWorkEventArgs e)
         {
             summaryReportList = ReportController.SelectUpperAccessoriesDeliverySummary();
             supplierList = SupplierController.GetSuppliers();
+            reportUpperAccessoriesList = ReportController.GetUpperAccessories();
+            Dispatcher.Invoke(new Action(() =>
+            {
+                CreateReport();
+            }));
         }
-        
+
+        private void CreateReport()
+        {
+            DataTable dt = new UpperAccessoriesDataSet().Tables["UpperAccessoriesTable"];
+            var reportList = new List<ReportUpperAccessoriesModel>();
+            int showRejectColumn = 0, showDeliveryColumn = 0, showBalanceColumn = 0;
+            string totalTitle = "";
+            if (eRpWhat == EReportWhat.Delivery)
+            {
+                reportList = reportUpperAccessoriesList.Where(w => w.QuantityDelivery > 0).ToList();
+                totalTitle = "Delivery";
+            }
+            else if (eRpWhat == EReportWhat.Reject)
+            {
+                reportList = reportUpperAccessoriesList.Where(w => w.Reject > 0).ToList();
+                totalTitle = "Reject";
+            }
+            else if (eRpWhat == EReportWhat.Balance)
+            {
+                reportList = reportUpperAccessoriesList.Where(w => w.Balance > 0).ToList();
+                totalTitle = "Balance";
+            }
+            else if (eRpWhat == EReportWhat.BalanceAndReject)
+            {
+                reportList = reportUpperAccessoriesList.Where(w => w.BalanceAndReject > 0).ToList();
+                totalTitle = "Balance";
+            }
+
+            var supplierIdList = reportList.Select(s => s.SupplierId).Distinct().ToList();
+            
+            foreach (var supplierId in supplierIdList)
+            {
+                var productNolist = reportList.Where(w => w.SupplierId == supplierId).Select(s => s.ProductNo).Distinct().ToList();
+                var reportBySuppList = reportList.Where(w => w.SupplierId == supplierId).ToList();
+                var reportBySuppFirst = reportBySuppList.FirstOrDefault();
+                int totalQtyDisplayBySupp = 0;
+                foreach (var productNo in productNolist)
+                {
+                    var reportByPOList  = reportBySuppList.Where(w => w.ProductNo == productNo).ToList();
+                    var reportByPOFirst = reportByPOList.FirstOrDefault();
+
+                    int totalQtyDisplay = 0;
+                    var sizeNoList = reportByPOList.Select(s => s.SizeNo).Distinct().ToList();
+                    foreach (var sizeNo in sizeNoList)
+                    {
+                        DataRow dr = dt.NewRow();
+                        dr["SupplierId"]    = reportByPOFirst.SupplierId;
+                        dr["ProductNo"]     = productNo;
+                        dr["SupplierName"]  = String.Format("Supplier: {0} - {1}", reportByPOFirst.SupplierName, reportByPOFirst.ProvideAccessories);
+                        dr["ArticleNo"]     = reportByPOFirst.ArticleNo;
+                        dr["ShoeName"]      = reportByPOFirst.ShoeName;
+                        if (reportByPOFirst.SupplierEFD != dtDefault)
+                            dr["SupplierEFD"] = String.Format("{0:MM/dd/yyyy}", reportByPOFirst.SupplierEFD);
+                        if (reportByPOFirst.ActualDeliveryDate != dtDefault)
+                            dr["ActualDeliveryDate"] = String.Format("{0:MM/dd/yyyy}", reportByPOFirst.ActualDeliveryDate);
+
+                        var reportBySize = reportByPOList.FirstOrDefault(f => f.SizeNo == sizeNo);
+                        dr["SizeNo"] = sizeNo;
+
+                        double sizeDouble = 0;
+                        Double.TryParse(sizeNo, out sizeDouble);
+                        sizeDouble = sizeDouble > 0 ? sizeDouble : 100;
+                        dr["SizeNoDouble"] = sizeDouble;
+                        int qtyDisplay = 0;
+                        if (eRpWhat == EReportWhat.Delivery)
+                        {
+                            qtyDisplay              = reportBySize.QuantityDelivery;
+                            totalQtyDisplay         = reportByPOList.Sum(s => s.QuantityDelivery);
+                            totalQtyDisplayBySupp   = reportBySuppList.Sum(s => s.QuantityDelivery);
+                            showRejectColumn = 1;
+                            showBalanceColumn = 1;
+                            showDeliveryColumn = 0;
+                        }
+                        else if (eRpWhat == EReportWhat.Reject)
+                        {
+                            qtyDisplay              = reportBySize.Reject;
+                            totalQtyDisplay         = reportByPOList.Sum(s => s.Reject);
+                            totalQtyDisplayBySupp   = reportBySuppList.Sum(s => s.Reject);
+
+                            showRejectColumn = 0;
+                            showBalanceColumn = 0;
+                            showDeliveryColumn = 1;
+                        }
+                        else if (eRpWhat == EReportWhat.Balance)
+                        {
+                            qtyDisplay              = reportBySize.Balance;
+                            totalQtyDisplay         = reportByPOList.Sum(s => s.Balance);
+                            totalQtyDisplayBySupp   = reportBySuppList.Sum(s => s.Balance);
+
+                            showRejectColumn = 0;
+                            showBalanceColumn = 0;
+                            showDeliveryColumn = 1;
+                        }
+                        else if (eRpWhat == EReportWhat.BalanceAndReject)
+                        {
+                            qtyDisplay              = reportBySize.BalanceAndReject;
+                            totalQtyDisplay         = reportByPOList.Sum(s => s.BalanceAndReject);
+                            totalQtyDisplayBySupp   = reportBySuppList.Sum(s => s.BalanceAndReject);
+                            
+                            showRejectColumn = 0;
+                            showBalanceColumn = 0;
+                            showDeliveryColumn = 1;
+                        }
+
+                        if (qtyDisplay  > 0)
+                            dr["QuantityDisplay"] = qtyDisplay;
+
+                        dr["TotalQuantityDisplay"] = totalQtyDisplay > 0 ? totalQtyDisplay.ToString() : "";
+
+                        dr["TotalDelivery"] = reportByPOList.Sum(s => s.QuantityDelivery) > 0 ? reportByPOList.Sum(s => s.QuantityDelivery).ToString() : "";
+                        dr["TotalReject"]   = reportByPOList.Sum(s => s.Reject) > 0 ? reportByPOList.Sum(s => s.Reject).ToString() : "";
+                        dr["TotalBalance"]  = reportByPOList.Sum(s => s.Balance) > 0 ? reportByPOList.Sum(s => s.Balance).ToString() : "";
+                        
+                        dt.Rows.Add(dr);
+                    }
+                }
+
+
+                DataRow drTotal = dt.NewRow();
+                drTotal["SupplierId"]   = reportBySuppFirst.SupplierId;
+                drTotal["ProductNo"]    = "TOTAL";
+                drTotal["SizeNoDouble"] = -1;
+                drTotal["SupplierName"] = String.Format("Supplier: {0} - {1}", reportBySuppFirst.SupplierName, reportBySuppFirst.ProvideAccessories);
+                drTotal["TotalQuantityDisplay"] = totalQtyDisplayBySupp > 0 ? totalQtyDisplayBySupp.ToString() : "";
+                
+                drTotal["TotalDelivery"]    = reportBySuppList.Sum(s => s.QuantityDelivery) > 0 ? reportBySuppList.Sum(s => s.QuantityDelivery).ToString() : "";
+                drTotal["TotalReject"]      = reportBySuppList.Sum(s => s.Reject) > 0 ? reportBySuppList.Sum(s => s.Reject).ToString() : "";
+                drTotal["TotalBalance"]     = reportBySuppList.Sum(s => s.Balance) > 0 ? reportBySuppList.Sum(s => s.Balance).ToString() : "";
+
+                if (productNolist.Count() > 1)
+                    dt.Rows.Add(drTotal);
+            }
+
+            ReportDataSource rds = new ReportDataSource();
+            ReportParameter rp = new ReportParameter("ReportHeader", header);
+            ReportParameter rp1 = new ReportParameter("ShowRejectColumn",   showRejectColumn.ToString());
+            ReportParameter rp2 = new ReportParameter("ShowDeliveryColumn", showDeliveryColumn.ToString());
+            ReportParameter rp3 = new ReportParameter("ShowBalanceColumn",  showBalanceColumn.ToString());
+            ReportParameter rp4 = new ReportParameter("TotalTitle", totalTitle);
+
+            rds.Name = "UpperAccessoriesRejectSource";
+            rds.Value = dt;
+
+            reportViewer.LocalReport.ReportPath = @"Reports\UpperAccessoriesRejectReport.rdlc";
+            reportViewer.LocalReport.SetParameters(new ReportParameter[] { rp, rp1, rp2, rp3, rp4 });
+            reportViewer.LocalReport.DataSources.Clear();
+            reportViewer.LocalReport.DataSources.Add(rds);
+            reportViewer.RefreshReport();
+        }
+
         private void BwLoad_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             var supplierHasDeliveryList = summaryReportList.Select(s => s.SupplierId).Distinct().ToList();
@@ -65,12 +225,13 @@ namespace MasterSchedule.Views
             });
 
             supplierFilterList.AddRange(supplierList.Where(w => supplierHasDeliveryList.Contains(w.SupplierId)).ToList());
-            cboSupplier.ItemsSource = supplierFilterList;
-            cboSupplier.SelectedItem = supplierFilterList.FirstOrDefault();
+            cboSupplier.ItemsSource     = supplierFilterList;
+            cboSupplier.SelectedItem    = supplierFilterList.FirstOrDefault();
 
             ReloadDatagrid(summaryReportList);
             this.Cursor = null;
             btnRefresh.IsEnabled = true;
+            btnRefresh1.IsEnabled = true;
             loaded = true;
         }
 
@@ -299,9 +460,51 @@ namespace MasterSchedule.Views
             if (bwLoad.IsBusy==false)
             {
                 btnRefresh.IsEnabled = false;
+                btnRefresh1.IsEnabled = false;
                 this.Cursor = Cursors.Wait;
                 bwLoad.RunWorkerAsync();
             }
+        }
+
+        private void radReject_Checked(object sender, RoutedEventArgs e)
+        {
+            header = "UPPER ACCESSORIES REJECT REPORT";
+            eRpWhat = EReportWhat.Reject;
+            if (tcMain.SelectedIndex == 0 && loaded)
+                tcMain.SelectedIndex = 1;
+            CreateReport();
+        }
+
+        private void radBalance_Checked(object sender, RoutedEventArgs e)
+        {
+            header = "UPPER ACCESSORIES BALANCE REPORT";
+            eRpWhat = EReportWhat.Balance;
+            if (tcMain.SelectedIndex == 0 && loaded)
+                tcMain.SelectedIndex = 1;
+            CreateReport();
+        }
+              
+        private void radBalanceAndReject_Checked(object sender, RoutedEventArgs e)
+        {
+            header = "UPPER ACCESSORIES BALANCE + REJECT REPORT";
+            eRpWhat = EReportWhat.BalanceAndReject;
+            if (tcMain.SelectedIndex == 0 && loaded)
+                tcMain.SelectedIndex = 1;
+            CreateReport();
+        }
+        
+        private void radDelivery_Checked(object sender, RoutedEventArgs e)
+        {
+            header = "UPPER ACCESSORIES DELIVERY REPORT";
+            eRpWhat = EReportWhat.Delivery;
+            if (tcMain.SelectedIndex == 0 && loaded)
+                tcMain.SelectedIndex = 1;
+            CreateReport();
+        }
+
+        enum EReportWhat
+        {
+            Delivery, Reject, Balance, BalanceAndReject
         }
     }
 }

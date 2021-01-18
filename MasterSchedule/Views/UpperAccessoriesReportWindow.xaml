@@ -1,104 +1,102 @@
-﻿<Window x:Class="MasterSchedule.Views.UpperAccessoriesReportWindow"
+﻿<Window xmlns:rpv="clr-namespace:Microsoft.Reporting.WinForms;assembly=Microsoft.Reportviewer.WinForms" 
+        x:Class="MasterSchedule.Views.UpperAccessoriesReportWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MasterSchedule.Views" Loaded="Window_Loaded"
-        mc:Ignorable="d" FontSize="13" WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d" FontSize="13" WindowStartupLocation="CenterScreen" WindowState="Maximized"
         Title="Master Schedule - Upper Accessories Report" Height="450" Width="800">
-    <Grid Margin="2">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal">
-                <Button x:Name="btnRefresh" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" ToolTip="Refresh" Cursor="Hand" Click="btnRefresh_Click">
-                    <Button.Content>
-                        <Image Width="16" Height="16" Source="/Images/mini_refresh.png"/>
-                    </Button.Content>
-                </Button>
-                <TextBlock Margin="2,0,0,0" Text="UPPER ACCESSORIES SUMMARY REPORT" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Bottom"/>
-            </StackPanel>
-            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <ComboBox x:Name="cboSupplier" DisplayMemberPath="Name" SelectedValue="SupplierId" VerticalContentAlignment="Center" SelectionChanged="cboSupplier_SelectionChanged"/>
-                <TextBox Margin="2,0,0,0" x:Name="txtAccessoriesName" MinWidth="120" BorderBrush="Black" VerticalContentAlignment="Center" Padding="2,1,0,1" FontSize="14" PreviewKeyUp="txtAccessoriesName_PreviewKeyUp" ToolTip="Input Accessories Name"/>
-                <Button x:Name="btnFilter" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" Cursor="Hand" Click="btnFilter_Click">
-                    <Button.Content>
-                        <Image Width="16" Height="16" Source="/Images/search.png"/>
-                    </Button.Content>
-                </Button>
-            </StackPanel>
-        </Grid>
-        <DataGrid Grid.Row="1" Margin="0,1,0,0" x:Name="dgSummaryReport" AutoGenerateColumns="False" IsReadOnly="True" MouseLeftButtonDown="dgSummaryReport_MouseLeftButtonDown"
-                  AlternatingRowBackground="LightCyan" AlternationCount="2" LoadingRow="dgSummaryReport_LoadingRow" RowHeaderWidth="NaN"
-                   HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" ClipboardCopyMode="IncludeHeader">
-            <DataGrid.ColumnHeaderStyle>
-                <Style TargetType="DataGridColumnHeader">
-                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                    <Setter Property="FontSize" Value="14"/>
-                    <Setter Property="Background" Value="GhostWhite"/>
-                    <Setter Property="Foreground" Value="Black"/>
-                    <Setter Property="BorderBrush" Value="Gray"/>
-                    <Setter Property="BorderThickness" Value="0.5,0.5,0.5,0.5"/>
-                    <Setter Property="Padding" Value="5,4,5,4"/>
-                </Style>
-            </DataGrid.ColumnHeaderStyle>
-            <DataGrid.CellStyle>
-                <Style TargetType="DataGridCell">
-                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                    <Setter Property="Padding" Value="2"/>
-                    <Style.Triggers>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Foreground" Value="White"/>
-                            <Setter Property="Background" Value="RoyalBlue"/>
-                            <Setter Property="BorderThickness" Value="0,0,0,0"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </DataGrid.CellStyle>
-            <!--<DataGrid.Columns>
-                <DataGridTemplateColumn Header="Accessories Name" SortMemberPath="AccessoriesName" ClipboardContentBinding="{Binding AccessoriesName}">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding AccessoriesName}" VerticalAlignment="Center" Padding="4,2,4,2"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Supplier" SortMemberPath="Name" ClipboardContentBinding="{Binding Name}">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Padding="4,2,4,2"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Qty Order" SortMemberPath="QuantityOrder" ClipboardContentBinding="{Binding QuantityOrder}">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding QuantityOrder, StringFormat=N0}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="4,2,4,2"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Qty Check OK" SortMemberPath="QuantityCheckOK" ClipboardContentBinding="{Binding QuantityCheckOK}">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding QuantityCheckOK, StringFormat=N0}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="4,2,4,2"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Qty Reject" SortMemberPath="QuantityReject" ClipboardContentBinding="{Binding QuantityReject}">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding QuantityReject, StringFormat=N0}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="4,2,4,2"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>-->
-        </DataGrid>
+    <Grid>
+        <TabControl x:Name="tcMain">
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="Inspection Report" FontWeight="SemiBold" Foreground="Black" Padding="3"/>
+                </TabItem.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="btnRefresh" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" ToolTip="Refresh" Cursor="Hand" Click="btnRefresh_Click">
+                                <Button.Content>
+                                    <Image Width="16" Height="16" Source="/Images/mini_refresh.png"/>
+                                </Button.Content>
+                            </Button>
+                            <TextBlock Margin="2,0,0,0" Text="UPPER ACCESSORIES INSPECTION SUMMARY REPORT" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Bottom"/>
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                            <ComboBox x:Name="cboSupplier" DisplayMemberPath="Name" SelectedValue="SupplierId" VerticalContentAlignment="Center" SelectionChanged="cboSupplier_SelectionChanged"/>
+                            <TextBox Margin="2,0,0,0" x:Name="txtAccessoriesName" MinWidth="120" BorderBrush="Black" VerticalContentAlignment="Center" Padding="2,1,0,1" FontSize="14" PreviewKeyUp="txtAccessoriesName_PreviewKeyUp" ToolTip="Input Accessories Name"/>
+                            <Button x:Name="btnFilter" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" Cursor="Hand" Click="btnFilter_Click">
+                                <Button.Content>
+                                    <Image Width="16" Height="16" Source="/Images/search.png"/>
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                    <DataGrid Grid.Row="1" Margin="0,1,0,0" x:Name="dgSummaryReport" AutoGenerateColumns="False" IsReadOnly="True" MouseLeftButtonDown="dgSummaryReport_MouseLeftButtonDown"
+                            AlternatingRowBackground="LightCyan" AlternationCount="2" LoadingRow="dgSummaryReport_LoadingRow" RowHeaderWidth="NaN"
+                            HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" FrozenColumnCount="4" ClipboardCopyMode="IncludeHeader">
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                <Setter Property="FontSize" Value="14"/>
+                                <Setter Property="Background" Value="GhostWhite"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                                <Setter Property="BorderBrush" Value="Gray"/>
+                                <Setter Property="BorderThickness" Value="0.5,0.5,0.5,0.5"/>
+                                <Setter Property="Padding" Value="5,4,5,4"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                <Setter Property="Padding" Value="2"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="Background" Value="RoyalBlue"/>
+                                        <Setter Property="BorderThickness" Value="0,0,0,0"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.CellStyle>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <RadioButton x:Name="radDelivery" GroupName="UpperAccessoriesReport" Content="Delivery Report" FontWeight="SemiBold" Foreground="Blue" VerticalContentAlignment="Center" VerticalAlignment="Center" Checked="radDelivery_Checked"/>
+                        <RadioButton x:Name="radReject" GroupName="UpperAccessoriesReport" Grid.Column="1" Content="Reject Report" Margin="10,0,0,0" FontWeight="SemiBold" Foreground="Red" VerticalAlignment="Center" VerticalContentAlignment="Center" Checked="radReject_Checked"/>
+                        <RadioButton x:Name="radBalance" GroupName="UpperAccessoriesReport" Grid.Column="2" Content="Balance Report" Margin="10,0,10,0" FontWeight="SemiBold" Foreground="Black" VerticalAlignment="Center" VerticalContentAlignment="Center" Checked="radBalance_Checked"/>
+                        <RadioButton x:Name="radBalanceAndReject" GroupName="UpperAccessoriesReport" Grid.Column="3" Content="Balance + Reject Report" FontWeight="SemiBold" Foreground="Red" VerticalAlignment="Center" VerticalContentAlignment="Center" Checked="radBalanceAndReject_Checked"/>
+                        <Button x:Name="btnRefresh1" Margin="10,0,0,0" Grid.Column="4" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" ToolTip="Refresh" Cursor="Hand" Click="btnRefresh_Click">
+                            <Button.Content>
+                                <Image Width="16" Height="16" Source="/Images/mini_refresh.png"/>
+                            </Button.Content>
+                        </Button>
+                    </Grid>
+                </TabItem.Header>
+                <WindowsFormsHost>
+                    <rpv:ReportViewer x:Name="reportViewer" ShowFindControls="True"/>
+                </WindowsFormsHost>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

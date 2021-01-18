@@ -241,44 +241,44 @@ namespace MasterSchedule.Views
             }
         }
 
-        private RawMaterialViewModel ConvertX( RawMaterialViewModelNew material)
+        private RawMaterialViewModel ConvertX( RawMaterialViewModelNew rawNew)
         {
             var rawMaterialView = new RawMaterialViewModel();
-            rawMaterialView.ProductNo = material.ProductNo;
+            rawMaterialView.ProductNo = rawNew.ProductNo;
             rawMaterialView.ProductNoBackground = Brushes.Transparent;
-            rawMaterialView.Country = material.Country;
-            rawMaterialView.ShoeName = material.ShoeName;
-            rawMaterialView.ArticleNo = material.ArticleNo;
-            rawMaterialView.PatternNo = material.PatternNo;
-            rawMaterialView.OutsoleCode = material.OutsoleCode;
-            rawMaterialView.Quantity = material.Quantity;
-            rawMaterialView.ETD = material.ETD;
-            rawMaterialView.CutAStartDate = material.CutAStartDate;
-            rawMaterialView.AssemblyStartDate = material.AssemblyStartDate;
+            rawMaterialView.Country = rawNew.Country;
+            rawMaterialView.ShoeName = rawNew.ShoeName;
+            rawMaterialView.ArticleNo = rawNew.ArticleNo;
+            rawMaterialView.PatternNo = rawNew.PatternNo;
+            rawMaterialView.OutsoleCode = rawNew.OutsoleCode;
+            rawMaterialView.Quantity = rawNew.Quantity;
+            rawMaterialView.ETD = rawNew.ETD;
+            rawMaterialView.CutAStartDate = rawNew.CutAStartDate;
+            rawMaterialView.AssemblyStartDate = rawNew.AssemblyStartDate;
             
             // Highlight CutAStartDate Column
             // da giao hang
-            if (material.MatterialArrival != dtDefault)
+            if (rawNew.MatterialArrival != dtDefault)
             {
                 rawMaterialView.CutAStartDateForeground = Brushes.Blue;
-                var range = (material.CutAStartDate - material.MatterialArrival).TotalDays;
+                var range = (rawNew.CutAStartDate - rawNew.MatterialArrival).TotalDays;
                 if (range <= 3 && range >= 0)
                     rawMaterialView.CutAStartDateForeground = Brushes.Orange;
-                if (material.CutAStartDate < material.MatterialArrival)
+                if (rawNew.CutAStartDate < rawNew.MatterialArrival)
                     rawMaterialView.CutAStartDateForeground = Brushes.Red;
             }
             // chua giao hang
             else
             {
                 rawMaterialView.CutAStartDateForeground = Brushes.Black;
-                if (material.MatterialETD != dtDefault)
+                if (rawNew.MatterialETD != dtDefault)
                 {
-                    if (material.MatterialETD < DateTime.Now.Date)
+                    if (rawNew.MatterialETD < DateTime.Now.Date)
                         rawMaterialView.CutAStartDateForeground = Brushes.Red;
                     else
                     {
                         // chua giao hang, co remarks
-                        if (String.IsNullOrEmpty(material.MatterialRemarks) == false)
+                        if (String.IsNullOrEmpty(rawNew.MatterialRemarks) == false)
                             rawMaterialView.CutAStartDateForeground = Brushes.Yellow;
                     }
                 }
@@ -286,7 +286,7 @@ namespace MasterSchedule.Views
 
             // Highlight AssemblyStartDate Column
             rawMaterialView.AssemblyStartDateForeground = Brushes.Black;
-            if (material.AssemblyStartDate < new DateTime(Math.Max(material.OutsoleFinishDate.Ticks, material.SewingFinishDate.Ticks)))
+            if (rawNew.AssemblyStartDate < new DateTime(Math.Max(rawNew.OutsoleFinishDate.Ticks, rawNew.SewingFinishDate.Ticks)))
             {
                 rawMaterialView.AssemblyStartDateForeground = Brushes.Red;
             }
@@ -295,105 +295,106 @@ namespace MasterSchedule.Views
             rawMaterialView.CARTON_ETD_Background           = Brushes.Transparent;
             rawMaterialView.CARTON_ActualDate_Background    = Brushes.Transparent;
             double x = 0;
-            if (material.Carton_ETD_Sort != dtDefault)
-                x = (material.AssemblyStartDate - material.Carton_ETD_Sort).TotalDays;            
-            if (material.Carton_ActualDate_Sort != dtDefault)
-                x = (material.AssemblyStartDate - material.Carton_ActualDate_Sort).TotalDays;
+            if (rawNew.Carton_ETD_Sort != dtDefault)
+                x = (rawNew.AssemblyStartDate - rawNew.Carton_ETD_Sort).TotalDays;            
+            if (rawNew.Carton_ActualDate_Sort != dtDefault)
+                x = (rawNew.AssemblyStartDate - rawNew.Carton_ActualDate_Sort).TotalDays;
             
             if (x <= 2)
             {
-                if (material.Carton_ETD_Sort != dtDefault)
+                if (rawNew.Carton_ETD_Sort != dtDefault)
                     rawMaterialView.CARTON_ETD_Background = Brushes.Red;
-                if (material.Carton_ActualDate_Sort != dtDefault)
+                if (rawNew.Carton_ActualDate_Sort != dtDefault)
                     rawMaterialView.CARTON_ActualDate_Background = Brushes.Red;
             }
             if (x > 14)
             {
-                if (material.Carton_ETD_Sort != dtDefault)
+                if (rawNew.Carton_ETD_Sort != dtDefault)
                     rawMaterialView.CARTON_ETD_Background = Brushes.Yellow;
-                if (material.Carton_ActualDate_Sort != dtDefault)
+                if (rawNew.Carton_ActualDate_Sort != dtDefault)
                     rawMaterialView.CARTON_ActualDate_Background = Brushes.Yellow;
             }
 
             // Highlight Outsole Column
-            if (String.IsNullOrEmpty(material.OUTSOLE_AssemblyReject) == false)
+            if (String.IsNullOrEmpty(rawNew.OUTSOLE_AssemblyReject) == false)
                 rawMaterialView.OUTSOLE_ActualDate_BACKGROUND = Brushes.Yellow;
 
-            var memoByPOList = productionMemoList.Where(p => p.ProductionNumbers.Contains(material.ProductNo) == true).Select(s => s.MemoId).ToList();
+            var memoByPOList = productionMemoList.Where(p => p.ProductionNumbers.Contains(rawNew.ProductNo) == true).Select(s => s.MemoId).ToList();
 
             rawMaterialView.MemoId = memoByPOList.Count() > 0 ? String.Join("\n", memoByPOList) : "";
             // LAMINATION 1
-            rawMaterialView.LAMINATION_ETD = material.LAMINATION_ETD;
-            rawMaterialView.LAMINATION_ActualDate = material.LAMINATION_ActualDate;
-            rawMaterialView.LAMINATION_Remarks = material.LAMINATION_Remarks;
+            rawMaterialView.LAMINATION_ETD = rawNew.LAMINATION_ETD;
+            rawMaterialView.LAMINATION_ActualDate = rawNew.LAMINATION_ActualDate;
+            rawMaterialView.LAMINATION_Remarks = rawNew.LAMINATION_Remarks;
 
             // TAIWAN 10
-            rawMaterialView.TAIWAN_ETD = material.TAIWAN_ETD;
-            rawMaterialView.TAIWAN_ActualDate = material.TAIWAN_ActualDate;
-            rawMaterialView.TAIWAN_Remarks = material.TAIWAN_Remarks;
+            rawMaterialView.TAIWAN_ETD = rawNew.TAIWAN_ETD;
+            rawMaterialView.TAIWAN_ActualDate = rawNew.TAIWAN_ActualDate;
+            rawMaterialView.TAIWAN_Remarks = rawNew.TAIWAN_Remarks;
 
             // CUTTING 2
-            rawMaterialView.CUTTING_ETD = material.CUTTING_ETD;
-            rawMaterialView.CUTTING_ActualDate = material.CUTTING_ActualDate;
-            rawMaterialView.CUTTING_Remarks = material.CUTTING_Remarks;
+            rawMaterialView.CUTTING_ETD = rawNew.CUTTING_ETD;
+            rawMaterialView.CUTTING_ActualDate = rawNew.CUTTING_ActualDate;
+            rawMaterialView.CUTTING_Remarks = rawNew.CUTTING_Remarks;
 
             // LEATHER 3
-            rawMaterialView.LEATHER_ETD = material.LEATHER_ETD;
-            rawMaterialView.LEATHER_ActualDate = material.LEATHER_ActualDate;
-            rawMaterialView.LEATHER_Remarks = material.LEATHER_Remarks;
+            rawMaterialView.LEATHER_ETD = rawNew.LEATHER_ETD;
+            rawMaterialView.LEATHER_ActualDate = rawNew.LEATHER_ActualDate;
+            rawMaterialView.LEATHER_Remarks = rawNew.LEATHER_Remarks;
 
             // SEMIPROCESS 4
-            rawMaterialView.SEMIPROCESS_ETD = material.SEMIPROCESS_ETD;
-            rawMaterialView.SEMIPROCESS_ActualDate = material.SEMIPROCESS_ActualDate;
-            rawMaterialView.SEMIPROCESS_Remarks = material.SEMIPROCESS_Remarks;
+            rawMaterialView.SEMIPROCESS_ETD = rawNew.SEMIPROCESS_ETD;
+            rawMaterialView.SEMIPROCESS_ActualDate = rawNew.SEMIPROCESS_ActualDate;
+            rawMaterialView.SEMIPROCESS_Remarks = rawNew.SEMIPROCESS_Remarks;
 
             // SEWING 4
-            rawMaterialView.SEWING_ETD = material.SEWING_ETD;
-            rawMaterialView.SEWING_ActualDate = material.SEWING_ActualDate;
-            rawMaterialView.SEWING_Remarks = material.SEWING_Remarks;
+            rawMaterialView.SEWING_ETD = rawNew.SEWING_ETD;
+            rawMaterialView.SEWING_ActualDate = rawNew.SEWING_ActualDate;
+            rawMaterialView.SEWING_Remarks = rawNew.SEWING_Remarks;
 
             // OUTSOLE 6
-            rawMaterialView.OUTSOLE_ETD = material.OUTSOLE_ETD;
-            rawMaterialView.OUTSOLE_ActualDate = material.OUTSOLE_ActualDate;
-            rawMaterialView.OUTSOLE_Remarks = material.OUTSOLE_Remarks;
+            rawMaterialView.OUTSOLE_ETD = rawNew.OUTSOLE_ETD;
+            rawMaterialView.OUTSOLE_ActualDate = rawNew.OUTSOLE_ActualDate;
+            rawMaterialView.OUTSOLE_Remarks = rawNew.OUTSOLE_Remarks;
 
             // UPPER COMPONENT 12
-            rawMaterialView.UPPERCOMPONENT_ETD = material.UPPERCOMPONENT_ETD;
-            rawMaterialView.UPPERCOMPONENT_ActualDate = material.UPPERCOMPONENT_ActualDate;
-            rawMaterialView.UPPERCOMPONENT_Remarks = material.UPPERCOMPONENT_Remarks;
+            rawMaterialView.UPPERCOMPONENT_ETD = rawNew.UPPERCOMPONENT_ETD;
+            rawMaterialView.UPPERCOMPONENT_ActualDate = rawNew.UPPERCOMPONENT_ActualDate;
+            rawMaterialView.UPPERCOMPONENT_Remarks = rawNew.UPPERCOMPONENT_Remarks;
 
             // INSOCK 13
-            rawMaterialView.INSOCK_ETD = material.INSOCK_ETD;
-            rawMaterialView.INSOCK_ActualDate = material.INSOCK_ActualDate;
-            rawMaterialView.INSOCK_Remarks = material.INSOCK_Remarks;
+            rawMaterialView.INSOCK_ETD = rawNew.INSOCK_ETD;
+            rawMaterialView.INSOCK_ActualDate = rawNew.INSOCK_ActualDate;
+            rawMaterialView.INSOCK_Remarks = rawNew.INSOCK_Remarks;
 
             // SECURITY 7
-            rawMaterialView.SECURITYLABEL_ETD = material.SECURITYLABEL_ETD;
-            rawMaterialView.SECURITYLABEL_ActualDate = material.SECURITYLABEL_ActualDate;
-            rawMaterialView.SECURITYLABEL_Remarks = material.SECURITYLABEL_Remarks;
+            rawMaterialView.SECURITYLABEL_ETD = rawNew.SECURITYLABEL_ETD;
+            rawMaterialView.SECURITYLABEL_ActualDate = rawNew.SECURITYLABEL_ActualDate;
+            rawMaterialView.SECURITYLABEL_Remarks = rawNew.SECURITYLABEL_Remarks;
 
             // ASSEMBLY 8
-            rawMaterialView.ASSEMBLY_ETD = material.ASSEMBLY_ETD;
-            rawMaterialView.ASSEMBLY_ActualDate = material.ASSEMBLY_ActualDate;
-            rawMaterialView.ASSEMBLY_Remarks = material.ASSEMBLY_Remarks;
+            rawMaterialView.ASSEMBLY_ETD = rawNew.ASSEMBLY_ETD;
+            rawMaterialView.ASSEMBLY_ActualDate = rawNew.ASSEMBLY_ActualDate;
+            rawMaterialView.ASSEMBLY_Remarks = rawNew.ASSEMBLY_Remarks;
 
             // SOCKLINING 8
-            rawMaterialView.SOCKLINING_ETD = material.SOCKLINING_ETD;
-            rawMaterialView.SOCKLINING_ActualDate = material.SOCKLINING_ActualDate;
-            rawMaterialView.SOCKLINING_Remarks = material.SOCKLINING_Remarks;
+            rawMaterialView.SOCKLINING_ETD = rawNew.SOCKLINING_ETD;
+            rawMaterialView.SOCKLINING_ActualDate = rawNew.SOCKLINING_ActualDate;
+            rawMaterialView.SOCKLINING_Remarks = rawNew.SOCKLINING_Remarks;
 
             // CARTON 11
-            rawMaterialView.CARTON_ETD = material.CARTON_ETD;
-            rawMaterialView.CARTON_ActualDate = material.CARTON_ActualDate;
-            rawMaterialView.CARTON_Remarks = material.CARTON_Remarks;
-            rawMaterialView.CARTON_ETD_Sort = material.Carton_ETD_Sort;
-            rawMaterialView.CARTON_ActualDate_Sort = material.Carton_ActualDate_Sort;
+            rawMaterialView.CARTON_ETD = rawNew.CARTON_ETD;
+            rawMaterialView.CARTON_ActualDate = rawNew.CARTON_ActualDate;
+            rawMaterialView.CARTON_Remarks = rawNew.CARTON_Remarks;
+            rawMaterialView.CARTON_ETD_Sort = rawNew.Carton_ETD_Sort;
+            rawMaterialView.CARTON_ActualDate_Sort = rawNew.Carton_ActualDate_Sort;
 
-            rawMaterialView.UpperAccessories_ETD = material.UpperAccessories_ETD;
-            rawMaterialView.UpperAccessories_ActualDate = material.UpperAccessories_ActualDate;
-            rawMaterialView.UpperAccessories_Remarks = material.UpperAccessories_Remarks;
+            rawMaterialView.UpperAccessories_ETD        = rawNew.UpperAccessories_ETD;
+            rawMaterialView.UpperAccessories_ActualDate = rawNew.UpperAccessories_ActualDate;
+            rawMaterialView.UpperAccessories_Remarks    = rawNew.UpperAccessories_Remarks;
+            rawMaterialView.UpperAccessories_ActualDeliveryDate = rawNew.UpperAccessories_ActualDeliveryDate;
 
-            rawMaterialView.LoadingDate = material.LoadingDate;
+            rawMaterialView.LoadingDate = rawNew.LoadingDate;
 
             return rawMaterialView;
         }
@@ -1134,30 +1135,26 @@ namespace MasterSchedule.Views
                     window.ShowDialog();
                     if (account.UpperAccessories)
                     {
-                        rawMaterialView.UpperAccessories_ETD = "";
-                        rawMaterialView.UpperAccessories_ActualDate = "";
                         if (window.materialPlanList.Count() > 0)
                         {
                             var materialPlanList = window.materialPlanList.ToList();
-                            var etd = dtDefault;
-                            var actualDate = dtDefault;
-                            if (materialPlanList.Where(s => s.ActualDate.Equals(dtDefault)).Count() == 0)
-                            {
-                                actualDate = materialPlanList.Max(s => s.ActualDate);
-                                etd = materialPlanList.Max(s => s.ETD);
-                            }
-                            else
-                            {
-                                actualDate = dtDefault;
-                                var maxEtdCurrent = materialPlanList.Where(w => w.ActualDate.Equals(dtDefault)).ToList();
-                                if (maxEtdCurrent.Count() > 0)
-                                    etd = maxEtdCurrent.Max(m => m.ETD);
-                                else
-                                    etd = materialPlanList.Max(m => m.ETD);
-                            }
-                            rawMaterialView.UpperAccessories_ETD = String.Format("{0:M/d}", etd);
-                            if (!actualDate.Equals(dtDefault))
-                                rawMaterialView.UpperAccessories_ActualDate = String.Format("{0:M/d}", actualDate);
+                            var etd = materialPlanList.Max(m => m.ETD);
+                            if (String.IsNullOrEmpty(rawMaterialView.UpperAccessories_ActualDeliveryDate))
+                                rawMaterialView.UpperAccessories_ETD = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", etd);
+                            
+                            var actualDate = materialPlanList.Max(s => s.ActualDate);
+                            if (actualDate != dtDefault)
+                                rawMaterialView.UpperAccessories_ActualDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", actualDate);
+
+                            var remarksNumber = materialPlanList.Max(m => m.RejectPO) + materialPlanList.Max(m => m.BalancePO);
+                            rawMaterialView.UpperAccessories_Remarks = remarksNumber > 0 ? remarksNumber.ToString() : "";
+                        }
+                        else
+                        {
+                            rawMaterialView.UpperAccessories_ETD = "";
+                            rawMaterialView.UpperAccessories_ActualDate = "";
+                            rawMaterialView.UpperAccessories_ActualDeliveryDate = "";
+                            rawMaterialView.UpperAccessories_Remarks = "";
                         }
                         rawMaterialCellChangedList.Add(new RawMaterialCellChangedModel
                         {
@@ -1172,7 +1169,7 @@ namespace MasterSchedule.Views
                     var rawMaterialView = (RawMaterialViewModel)cellCurrent.Item;
                     if (rawMaterialView == null)
                         return;
-                    var window = new InputMaterialDeliveryWindow(rawMaterialView.ProductNo, account, rawMaterialView);
+                    var window = new InputUpperAccessoriesMaterialDeliveryWindow(rawMaterialView.ProductNo, account, rawMaterialView);
                     window.ShowDialog();
                 }
 

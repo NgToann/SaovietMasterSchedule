@@ -39,10 +39,25 @@ namespace MasterSchedule.Controllers
             }
         }
 
+        public static bool UpdateRejectWhenInspect (MaterialPlanModel model)
+        {
+            var @ProductNo  = new SqlParameter("@ProductNo", model.ProductNo);
+            var @SupplierId = new SqlParameter("@SupplierId", model.SupplierId);
+
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                if (db.ExecuteStoreCommand("EXEC spm_UpdateRejectWhenInspectUpperAccesoriesMaterial @ProductNo, @SupplierId",
+                                                                                                    @ProductNo, @SupplierId) > 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         public static bool DeleteByPO(string productNo)
         {
             var @ProductNo = new SqlParameter("@ProductNo", productNo);
-
             using (var db = new SaovietMasterScheduleEntities())
             {
                 if (db.ExecuteStoreCommand("EXEC spm_DeleteMaterialDeliveryByPO @ProductNo",

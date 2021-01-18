@@ -18,11 +18,12 @@ namespace MasterSchedule.Models
         public DateTime ActualDeliveryDate { get; set; }
         public string ActualDateString { get; set; }
         public string Remarks { get; set; }
-        public int Balance { get; set; }
-        public int BalanceDelivery { get; set; }
         public int TotalDeliveryQuantity { get; set; }
         public string RemarksPO { get; set; }
         public string ETDPO { get; set; }
         public string ActualDatePO { get; set; }
+        public int  RejectPO { get; set; }
+        public int BalancePO { get; set; }
+        public String ActualDeliveryPO { get; set; }
     }
 }

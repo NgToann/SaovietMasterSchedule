@@ -30,31 +30,32 @@ namespace MasterSchedule.Views
         List<RejectModel> rejectClickedList;
 
         private SizeRunModel sizeRunClicked;
+        List<SizeRunModel> sizeRunList;
         private MaterialPlanModel materialPlanChecking;
         private DataRowView rowEditting;
-        private List<MaterialInspectModel> deliveryCurrentList;
+        private List<MaterialInspectModel> inspectListCurrent;
         private string workerId;
         BackgroundWorker bwUpload;
-        public List<MaterialInspectModel> deliveryHasRejectList;
+        public List<MaterialInspectModel> inspectListHasReject;
         public EExcute eAction = EExcute.None;
         DataTable dtReject;
         int totalRejectCurrent;
-        public AddRejectForMaterialWindow(List<RejectModel> rejectUpperAccessoriesList, SizeRunModel sizeRunClicked, MaterialPlanModel materialPlanChecking, DataRowView rowEditting, List<MaterialInspectModel> deliveryCurrentList, int totalRejectCurrent, string workerId)
+        public AddRejectForMaterialWindow(List<RejectModel> rejectUpperAccessoriesList, SizeRunModel sizeRunClicked, MaterialPlanModel materialPlanChecking, DataRowView rowEditting, List<MaterialInspectModel> deliveryCurrentList, int totalRejectCurrent, string workerId, List<SizeRunModel> sizeRunList)
         {
             this.rejectUpperAccessoriesList = rejectUpperAccessoriesList;
             this.sizeRunClicked             = sizeRunClicked;
             this.materialPlanChecking       = materialPlanChecking;
             this.rowEditting                = rowEditting;
-            this.deliveryCurrentList        = deliveryCurrentList;
+            this.inspectListCurrent         = deliveryCurrentList;
             this.totalRejectCurrent         = totalRejectCurrent;
             this.workerId                   = workerId;
-
+            this.sizeRunList                = sizeRunList;
             bwUpload = new BackgroundWorker();
             bwUpload.DoWork += BwUpload_DoWork;
             bwUpload.RunWorkerCompleted += BwUpload_RunWorkerCompleted;
 
             rejectClickedList       = new List<RejectModel>();
-            deliveryHasRejectList   = new List<MaterialInspectModel>();
+            inspectListHasReject   = new List<MaterialInspectModel>();
             dtReject                = new DataTable();
             InitializeComponent();
         }
@@ -66,12 +67,12 @@ namespace MasterSchedule.Views
                 txtSizeNo.Text = sizeRunClicked.SizeNo;
                 txtSizeNo.IsReadOnly = true;
 
-                if (deliveryCurrentList.Count() > 0)
+                if (inspectListCurrent.Count() > 0)
                 {
-                    var rejectIdList = deliveryCurrentList.Select(s => s.RejectId).Distinct().ToList();
+                    var rejectIdList = inspectListCurrent.Select(s => s.RejectId).Distinct().ToList();
                     foreach (var rId in rejectIdList)
                     {
-                        var delById = deliveryCurrentList.Where(w => w.RejectId.Equals(rId)).FirstOrDefault();
+                        var delById = inspectListCurrent.Where(w => w.RejectId.Equals(rId)).FirstOrDefault();
                         for (int i = 0; i < delById.Reject; i++)
                         {
                             rejectClickedList.Add(rejectUpperAccessoriesList.FirstOrDefault(f => f.RejectId.Equals(rId)));
@@ -94,32 +95,32 @@ namespace MasterSchedule.Views
             {
                 if (eAction.Equals(EExcute.AddNew))
                 {
-                    // Add New
-                    if (deliveryCurrentList.Count() == 0)
+                    // Delete Reject Current List First
+                    if (inspectListHasReject.Count() > 0)
                     {
-                        foreach (var rejectItem in deliveryHasRejectList)
+                        foreach (var rejectItem in inspectListCurrent)
                         {
-                            MaterialInspectController.Insert(rejectItem, insertQty: false, insertReject: true, deleteReject: false);
+                            MaterialInspectController.Insert(rejectItem, insertQty: false, insertReject: false, deleteReject: true);
                         }
                     }
-                    else // Update
+                    // Add New
+                    foreach (var rejectItem in inspectListHasReject)
                     {
-                        foreach (var rejectItem in deliveryCurrentList)
-                        {
-                            if (deliveryHasRejectList.Where(w => w.RejectId.Equals(rejectItem.RejectId)).Count() == 0)
-                                MaterialInspectController.Insert(rejectItem, insertQty: false, insertReject: false, deleteReject: true);
-                            else
-                                MaterialInspectController.Insert(rejectItem, insertQty: false, insertReject: true, deleteReject: false);
-                        }
+                        MaterialInspectController.Insert(rejectItem, insertQty: false, insertReject: true, deleteReject: false);
                     }
                 }
+
                 else if (eAction.Equals(EExcute.Delete))
                 {
-                    foreach (var rejectItem in deliveryHasRejectList)
+                    foreach (var rejectItem in inspectListHasReject)
                     {
                         MaterialInspectController.Insert(rejectItem, insertQty: false, insertReject: false, deleteReject: true);
                     }
                 }
+
+                // Update Reject Delivery
+                MaterialDeliveryController.UpdateRejectWhenInspect(materialPlanChecking);
+                
                 e.Result = true;
             }
             catch (Exception ex)
@@ -318,13 +319,19 @@ namespace MasterSchedule.Views
                 {
                     ProductNo = materialPlanChecking.ProductNo,
                     SupplierId = materialPlanChecking.SupplierId,
-                    DeliveryDate = (DateTime)rowEditting["DeliveryDateDate"],
+                    DeliveryDate = (DateTime)rowEditting["InspectionDateDate"],
                     SizeNo = sizeRunClicked.SizeNo,
                     Reject = noOfReject,
                     RejectId = rId,
                     Reviser = workerId
                 };
-                deliveryHasRejectList.Add(delReject);
+                inspectListHasReject.Add(delReject);
+            }
+
+            if (inspectListHasReject.Count() == 0)
+            {
+                MessageBox.Show(String.Format("Reject list is empty !"), this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
 
             if (bwUpload.IsBusy == false)
@@ -351,13 +358,13 @@ namespace MasterSchedule.Views
                 {
                     ProductNo = materialPlanChecking.ProductNo,
                     SupplierId = materialPlanChecking.SupplierId,
-                    DeliveryDate = (DateTime)rowEditting["DeliveryDateDate"],
+                    DeliveryDate = (DateTime)rowEditting["InspectionDateDate"],
                     SizeNo = sizeRunClicked.SizeNo,
                     Reject = noOfReject,
                     RejectId = rId,
                     Reviser = workerId
                 };
-                deliveryHasRejectList.Add(delReject);
+                inspectListHasReject.Add(delReject);
             }
 
             if (bwUpload.IsBusy == false)

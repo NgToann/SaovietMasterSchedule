@@ -207,6 +207,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SewingSummaryDataset.xsd</DependentUpon>
     </Compile>
+    <Compile Include="DataSets\UpperAccessoriesDataSet.cs">
+      <DependentUpon>UpperAccessoriesDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="DataSets\UpperAccessoriesDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UpperAccessoriesDataSet.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\AppSettingHelper.cs" />
     <Compile Include="Helpers\ExcelHelper.cs" />
     <Compile Include="Models\EExcute.cs" />
@@ -247,6 +255,7 @@
     <Compile Include="Models\ReportOutsoleMaterialDeliverySummary.cs" />
     <Compile Include="Models\ReportSewingSummaryModel.cs" />
     <Compile Include="Models\ReportUpperAccessoriesDetailBySupplierModel.cs" />
+    <Compile Include="Models\ReportUpperAccessoriesModel.cs" />
     <Compile Include="Models\ReportUpperAccessoriesSummaryModel.cs" />
     <Compile Include="Models\SockliningInputModel.cs" />
     <Compile Include="Models\SupplierModel.cs" />
@@ -347,8 +356,8 @@
     <Compile Include="Views\ImportUpperMaterialScheduleWindow.xaml.cs">
       <DependentUpon>ImportUpperMaterialScheduleWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\InputMaterialDeliveryWindow.xaml.cs">
-      <DependentUpon>InputMaterialDeliveryWindow.xaml</DependentUpon>
+    <Compile Include="Views\InputUpperAccessoriesMaterialDeliveryWindow.xaml.cs">
+      <DependentUpon>InputUpperAccessoriesMaterialDeliveryWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\InputUpperAccessoriesInspectWindow.xaml.cs">
       <DependentUpon>InputUpperAccessoriesInspectWindow.xaml</DependentUpon>
@@ -962,7 +971,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\InputMaterialDeliveryWindow.xaml">
+    <Page Include="Views\InputUpperAccessoriesMaterialDeliveryWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1375,6 +1384,7 @@
     <EmbeddedResource Include="Reports\OutsoleDeliveryReport.rdlc" />
     <EmbeddedResource Include="Reports\OutsoleReleaseMaterialReport.rdlc" />
     <EmbeddedResource Include="Reports\SummarySewingReport.rdlc" />
+    <EmbeddedResource Include="Reports\UpperAccessoriesRejectReport.rdlc" />
     <EmbeddedResource Include="Reports\UpperWHInventoryDetailReport.rdlc" />
     <EntityDeploy Include="Entities\SaovietMasterScheduleModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
@@ -1592,6 +1602,17 @@
     <None Include="DataSets\SewingSummaryDataset.xss">
       <DependentUpon>SewingSummaryDataset.xsd</DependentUpon>
     </None>
+    <None Include="DataSets\UpperAccessoriesDataSet.xsc">
+      <DependentUpon>UpperAccessoriesDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="DataSets\UpperAccessoriesDataSet.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>UpperAccessoriesDataSet.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="DataSets\UpperAccessoriesDataSet.xss">
+      <DependentUpon>UpperAccessoriesDataSet.xsd</DependentUpon>
+    </None>
     <None Include="DataSets\UpperWHInventoryDataSet.xsc">
       <DependentUpon>UpperWHInventoryDataSet.xsd</DependentUpon>
     </None>
@@ -1790,7 +1811,15 @@
     <None Include="Properties\DataSources\MasterSchedule.DataSets.LeadTimeReportDataSet+LeadTimeTableRowChangeEvent.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.LeadTimeReportDataSet+LeadTimeTableRowChangeEventHandler.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.LeadTimeReportDataSet.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMatWHCheckDetailByCart+OSMatCheckDetailByCartTableDataTable.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMatWHCheckDetailByCart+OSMatCheckDetailByCartTableRow.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMatWHCheckDetailByCart+OSMatCheckDetailByCartTableRowChangeEvent.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMatWHCheckDetailByCart+OSMatCheckDetailByCartTableRowChangeEventHandler.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMatWHCheckDetailByCart.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMatWHCheckDetailBySize+OSMatWHCheckDetailBySizeTableDataTable.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMatWHCheckDetailBySize+OSMatWHCheckDetailBySizeTableRow.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMatWHCheckDetailBySize+OSMatWHCheckDetailBySizeTableRowChangeEvent.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMatWHCheckDetailBySize+OSMatWHCheckDetailBySizeTableRowChangeEventHandler.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMatWHCheckDetailBySize.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMWHCheckingDataSet+OSMWHCheckingTableDataTable.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMWHCheckingDataSet+OSMWHCheckingTableRow.datasource" />
@@ -1802,6 +1831,11 @@
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMWHCheckingDetailDataset+OSMWHCheckingDetailTableRowChangeEvent.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMWHCheckingDetailDataset+OSMWHCheckingDetailTableRowChangeEventHandler.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMWHCheckingDetailDataset.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMWHReviserIncentiveDataSet+ReviserIncentiveTableDataTable.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMWHReviserIncentiveDataSet+ReviserIncentiveTableRow.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMWHReviserIncentiveDataSet+ReviserIncentiveTableRowChangeEvent.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMWHReviserIncentiveDataSet+ReviserIncentiveTableRowChangeEventHandler.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMWHReviserIncentiveDataSet.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OutsoleDelayDataSet+OutsoleDelayTableDataTable.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OutsoleDelayDataSet+OutsoleDelayTableRow.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OutsoleDelayDataSet+OutsoleDelayTableRowChangeEvent.datasource" />
@@ -1853,6 +1887,10 @@
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OutSoleWHInventoryDetailDataSet+OutSoleWHInventoryDetailTableRowChangeEvent.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OutSoleWHInventoryDetailDataSet+OutSoleWHInventoryDetailTableRowChangeEventHandler.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OutSoleWHInventoryDetailDataSet.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.PrintSizeRunDataSet+PrintSizeRunDataTableDataTable.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.PrintSizeRunDataSet+PrintSizeRunDataTableRow.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.PrintSizeRunDataSet+PrintSizeRunDataTableRowChangeEvent.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.PrintSizeRunDataSet+PrintSizeRunDataTableRowChangeEventHandler.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.PrintSizeRunDataSet.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.SewingMasterDataSet+SewingMasterTableDataTable.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.SewingMasterDataSet+SewingMasterTableRow.datasource" />
@@ -1875,6 +1913,11 @@
     <None Include="Properties\DataSources\MasterSchedule.DataSets.SockliningMasterDataSet+SockliningMasterTableRowChangeEventHandler.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.SockliningMasterDataSet.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.testcolumn.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.UpperAccessoriesDataSet+UpperAccessoriesTableDataTable.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.UpperAccessoriesDataSet+UpperAccessoriesTableRow.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.UpperAccessoriesDataSet+UpperAccessoriesTableRowChangeEvent.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.UpperAccessoriesDataSet+UpperAccessoriesTableRowChangeEventHandler.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.UpperAccessoriesDataSet.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.UpperWHInventoryDataSet+UpperWHInventoryTableDataTable.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.UpperWHInventoryDataSet+UpperWHInventoryTableRow.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.UpperWHInventoryDataSet+UpperWHInventoryTableRowChangeEvent.datasource" />

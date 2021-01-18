@@ -1034,8 +1034,10 @@ namespace MasterSchedule
                 "1.2.7.9: " + "Update: Add LastSize (SizeRun) 'SV'\n" +
                 "1.2.8.1: " + "Update: Combine Reject O/SWHMasterFile and O/SMaterial Check 'SV', Hidden OSSize.\n" +
                 "1.2.8.2: " + "Update: Add OSMaterialWHCheck Inventory Report 'SV'.\n" +
-                "1.2.8.3: " + "Update: Add Input UpperAccessories, Import Excel Data, Revise Supplier, Create Report, Report Detail 'SV.'\n" +
-                "1.2.8.4: " + "Update: Import WHLamination Material, Report(OSWHMaterialCheckDetail) 'SV'";
+                "1.2.8.3: " + "Update: Add Input Inspect Upper Accessories, Import Excel Data, Revise Supplier, Create Report, Report Detail 'SV.'\n" +
+                "1.2.8.4: " + "Update: Import WHLamination Material, Report(OSWHMaterialCheckDetail) 'SV'.\n" +
+                "1.2.8.5: " + "Update: Input Upper Accessories Delivery 'SV'.\n" +
+                "1.2.8.6: " + "Update: Upper Accessories Reports 'SV'";
             //MessageBox.Show(version, string.Format("Current Version: {0}", AssemblyHelper.Version()), MessageBoxButton.OK, MessageBoxImage.Information);
             UpdateHistoryWindow window = new UpdateHistoryWindow(version, AssemblyHelper.Version());
             window.Show();

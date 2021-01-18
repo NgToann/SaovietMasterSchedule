@@ -153,5 +153,14 @@ namespace MasterSchedule.Controllers
                 return db.ExecuteStoreQuery<ReportUpperAccessoriesDetailBySupplierModel>("reporter_AccessoriesDeliveryBySupplier @SupplierId", @SupplierId).ToList();
             }
         }
+
+        //
+        public static List<ReportUpperAccessoriesModel> GetUpperAccessories()
+        {
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<ReportUpperAccessoriesModel>("reporter_ReportUpperAccessories").ToList();
+            }
+        }
     }
 }

@@ -60,18 +60,20 @@ namespace MasterSchedule.Controllers
         }
 
         //
-        public static bool UpdateActualDateWhenDelivery(MaterialPlanModel model)
+        public static bool UpdatePlanWhenDelivery(MaterialPlanModel model)
         {
             var @ProductNo          = new SqlParameter("@ProductNo", model.ProductNo);
             var @SupplierId         = new SqlParameter("@SupplierId", model.SupplierId);
             var @ActualDeliveryDate = new SqlParameter("@ActualDeliveryDate", model.ActualDeliveryDate);
-            var @RemarksPO          = new SqlParameter("@RemarksPO", model.RemarksPO);
             var @ETDPO              = new SqlParameter("@ETDPO", model.ETDPO);
+            var @BalancePO          = new SqlParameter("@BalancePO", model.BalancePO);
+            var @RejectPO           = new SqlParameter("@RejectPO", model.RejectPO);
+            var @ActualDeliveryPO   = new SqlParameter("@ActualDeliveryPO", model.ActualDeliveryPO);
 
             using (var db = new SaovietMasterScheduleEntities())
             {
-                if (db.ExecuteStoreCommand("EXEC spm_UpdateMaterialPlanWhenDelivery @ProductNo, @SupplierId, @ActualDeliveryDate, @RemarksPO, @ETDPO",
-                                                                                    @ProductNo, @SupplierId, @ActualDeliveryDate, @RemarksPO, @ETDPO) > 0)
+                if (db.ExecuteStoreCommand("EXEC spm_UpdateMaterialPlanWhenDelivery @ProductNo, @SupplierId, @ActualDeliveryDate, @ETDPO, @BalancePO, @RejectPO, @ActualDeliveryPO",
+                                                                                    @ProductNo, @SupplierId, @ActualDeliveryDate, @ETDPO, @BalancePO, @RejectPO, @ActualDeliveryPO) > 0)
                 {
                     return true;
                 }
@@ -81,7 +83,7 @@ namespace MasterSchedule.Controllers
 
         public static bool Delete(MaterialPlanModel model)
         {
-            var @ProductNo = new SqlParameter("@ProductNo", model.ProductNo);
+            var @ProductNo  = new SqlParameter("@ProductNo", model.ProductNo);
             var @SupplierId = new SqlParameter("@SupplierId", model.SupplierId);
 
             using (var db = new SaovietMasterScheduleEntities())

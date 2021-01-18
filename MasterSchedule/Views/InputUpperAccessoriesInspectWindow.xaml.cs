@@ -12,6 +12,7 @@ using System.Windows.Media;
 
 using MasterSchedule.Controllers;
 using MasterSchedule.Models;
+using MasterSchedule.ViewModels;
 
 namespace MasterSchedule.Views
 {
@@ -29,9 +30,10 @@ namespace MasterSchedule.Views
         List<SupplierModel> supplierAccessoriesList;
         List<SizeRunModel> sizeRunList;
         Button btnEditMatsPlan;
-        List<MaterialInspectModel> matsDeliveryList;
+        List<MaterialInspectModel> matsInspectionList;
+        List<MaterialDeliveryModel> matsDeliveryList;
         SupplierModel supplierClicked;
-        DataTable dtDelDetail;
+        DataTable dtInspectionDetail;
         List<String> buttonSizeKeyList;
         private EExcute eAction = EExcute.None;
         private AccountModel account;
@@ -55,12 +57,13 @@ namespace MasterSchedule.Views
             bwUpload.RunWorkerCompleted += BwUpload_RunWorkerCompleted;
 
             materialPlanList = new List<MaterialPlanModel>();
+            matsDeliveryList = new List<MaterialDeliveryModel>();
             supplierAccessoriesList = new List<SupplierModel>();
             sizeRunList = new List<SizeRunModel>();
 
             btnEditMatsPlan = new Button();
-            matsDeliveryList = new List<MaterialInspectModel>();
-            dtDelDetail = new DataTable();
+            matsInspectionList = new List<MaterialInspectModel>();
+            dtInspectionDetail = new DataTable();
             buttonSizeKeyList = new List<string>();
             InitializeComponent();
         }        
@@ -81,7 +84,8 @@ namespace MasterSchedule.Views
             materialPlanList.ForEach(t => t.ActualDateString = t.ActualDate != dtDefault ? String.Format("{0:MM/dd}", t.ActualDate) : "");
             supplierAccessoriesList = SupplierController.GetSuppliersAccessories();
             sizeRunList = SizeRunController.Select(productNo);
-            matsDeliveryList = MaterialInspectController.GetMaterialInspectByPO(productNo);
+            matsInspectionList  = MaterialInspectController.GetMaterialInspectByPO(productNo);
+            matsDeliveryList    = MaterialDeliveryController.GetMaterialDeliveryByPO(productNo);
         }
 
         private void BwLoad_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -89,7 +93,7 @@ namespace MasterSchedule.Views
             dpDeliveryDate.SelectedDate = DateTime.Now;
             LoadMaterialPlan(materialPlanList);
             LoadListOfSizeNo(sizeRunList);
-            LoadDeliveryDetail(matsDeliveryList);
+            LoadInspectionDetail(matsInspectionList);
             tblDeliveryDetailOf.Text = String.Format("Inspect detail of: {0}", productNo);
             dgDeliveryDetail.IsReadOnly = true;
 
@@ -277,7 +281,7 @@ namespace MasterSchedule.Views
                     {
                         materialPlanList.RemoveAt(indexOf);
                         materialPlanList.Insert(indexOf, window.materialUpdate);
-                        foreach (var matsDelivery in matsDeliveryList)
+                        foreach (var matsDelivery in matsInspectionList)
                         {
                             if (matsDelivery.SupplierId.Equals(rowClicked.SupplierId))
                                 matsDelivery.SupplierId = window.materialUpdate.SupplierId;
@@ -286,10 +290,10 @@ namespace MasterSchedule.Views
                     else if (window.runModeRespone == EExcute.Delete)
                     {
                         materialPlanList.RemoveAt(indexOf);
-                        matsDeliveryList.RemoveAll(r => r.SupplierId.Equals(rowClicked.SupplierId));
+                        matsInspectionList.RemoveAll(r => r.SupplierId.Equals(rowClicked.SupplierId));
                     }
                     LoadMaterialPlan(materialPlanList);
-                    LoadDeliveryDetail(matsDeliveryList);
+                    LoadInspectionDetail(matsInspectionList);
                 }
                 catch { }
             }
@@ -323,7 +327,7 @@ namespace MasterSchedule.Views
         private void LoadSupplierClicked()
         {
             // Load Delivery Infor
-            var deliveryDetailBySupplierClicked = matsDeliveryList.Where(w => w.SupplierId == materialPlanChecking.SupplierId).ToList();
+            var deliveryDetailBySupplierClicked = matsInspectionList.Where(w => w.SupplierId == materialPlanChecking.SupplierId).ToList();
             var deliveryThisTimeList = new List<MaterialInspectModel>();
             if (deliveryDetailBySupplierClicked.Where(w => w.DeliveryDate.Equals(dpDeliveryDate.SelectedDate.Value.Date)).Count() == 0
                 && account.MaterialDelivery)
@@ -345,20 +349,20 @@ namespace MasterSchedule.Views
                 }
             }
             deliveryDetailBySupplierClicked.AddRange(deliveryThisTimeList);
-            LoadDeliveryDetail(deliveryDetailBySupplierClicked);
+            LoadInspectionDetail(deliveryDetailBySupplierClicked);
             dgDeliveryDetail.IsReadOnly = false;
             tblDeliveryDetailOf.Text = String.Format("Inspection detail of: {0}", supplierClicked.Name);
         }
 
-        private void LoadDeliveryDetail(List<MaterialInspectModel> deliveryList)
+        private void LoadInspectionDetail(List<MaterialInspectModel> inspectionList)
         {
             HighLightError("");
             dgDeliveryDetail.Columns.Clear();
-            dtDelDetail = new DataTable();
+            dtInspectionDetail = new DataTable();
 
             //Column Supplier name
-            dtDelDetail.Columns.Add("Name", typeof(String));
-            dtDelDetail.Columns.Add("SupplierId", typeof(String));
+            dtInspectionDetail.Columns.Add("Name", typeof(String));
+            dtInspectionDetail.Columns.Add("SupplierId", typeof(String));
             DataGridTemplateColumn colSuppName = new DataGridTemplateColumn();
             colSuppName.Header = String.Format("Supplier");
             DataTemplate templateSuppName = new DataTemplate();
@@ -372,21 +376,21 @@ namespace MasterSchedule.Views
             dgDeliveryDetail.Columns.Add(colSuppName);
 
             //Column Delivery Date
-            dtDelDetail.Columns.Add("DeliveryDate", typeof(String));
-            dtDelDetail.Columns.Add("DeliveryDateDate", typeof(DateTime));
-            DataGridTemplateColumn colDelDate = new DataGridTemplateColumn();
-            colDelDate.Header = String.Format("Delivery\nDate");
-            DataTemplate templateDelDate = new DataTemplate();
-            FrameworkElementFactory tblDelDate = new FrameworkElementFactory(typeof(TextBlock));
-            templateDelDate.VisualTree = tblDelDate;
-            tblDelDate.SetBinding(TextBlock.TextProperty, new Binding(String.Format("DeliveryDate")));
-            tblDelDate.SetValue(TextBlock.VerticalAlignmentProperty, VerticalAlignment.Center);
-            tblDelDate.SetValue(TextBlock.PaddingProperty, new Thickness(3, 0, 3, 0));
-            colDelDate.CellTemplate = templateDelDate;
-            colDelDate.ClipboardContentBinding = new Binding(String.Format("DeliveryDate"));
-            dgDeliveryDetail.Columns.Add(colDelDate);
+            dtInspectionDetail.Columns.Add("InspectionDate", typeof(String));
+            dtInspectionDetail.Columns.Add("InspectionDateDate", typeof(DateTime));
+            DataGridTemplateColumn colInspDate = new DataGridTemplateColumn();
+            colInspDate.Header = String.Format("Inspection\nDate");
+            DataTemplate templateInspDate = new DataTemplate();
+            FrameworkElementFactory tblInspDate = new FrameworkElementFactory(typeof(TextBlock));
+            templateInspDate.VisualTree = tblInspDate;
+            tblInspDate.SetBinding(TextBlock.TextProperty, new Binding(String.Format("InspectionDate")));
+            tblInspDate.SetValue(TextBlock.VerticalAlignmentProperty, VerticalAlignment.Center);
+            tblInspDate.SetValue(TextBlock.PaddingProperty, new Thickness(3, 0, 3, 0));
+            colInspDate.CellTemplate = templateInspDate;
+            colInspDate.ClipboardContentBinding = new Binding(String.Format("InspectionDate"));
+            dgDeliveryDetail.Columns.Add(colInspDate);
 
-            dtDelDetail.Columns.Add("Title", typeof(String));
+            dtInspectionDetail.Columns.Add("Title", typeof(String));
             DataGridTemplateColumn colTitle = new DataGridTemplateColumn();
             colTitle.Header = String.Format("Order Size\nQty");
             DataTemplate templateTitle = new DataTemplate();
@@ -406,9 +410,9 @@ namespace MasterSchedule.Views
             {
                 string sizeBinding = sizeRun.SizeNo.Contains(".") ? sizeRun.SizeNo.Replace(".", "@") : sizeRun.SizeNo;
 
-                dtDelDetail.Columns.Add(String.Format("Column{0}", sizeBinding), typeof(String));
-                dtDelDetail.Columns.Add(String.Format("Column{0}Foreground", sizeBinding), typeof(SolidColorBrush));
-                dtDelDetail.Columns.Add(String.Format("Column{0}ToolTip", sizeBinding), typeof(String));
+                dtInspectionDetail.Columns.Add(String.Format("Column{0}", sizeBinding), typeof(String));
+                dtInspectionDetail.Columns.Add(String.Format("Column{0}Foreground", sizeBinding), typeof(SolidColorBrush));
+                dtInspectionDetail.Columns.Add(String.Format("Column{0}ToolTip", sizeBinding), typeof(String));
                 DataGridTextColumn column = new DataGridTextColumn();
                 column.SetValue(TagProperty, sizeRun.SizeNo);
                 column.Header = string.Format("{0}\n{1}", sizeRun.SizeNo, sizeRun.Quantity);
@@ -433,7 +437,7 @@ namespace MasterSchedule.Views
             }
 
             // Column Total
-            dtDelDetail.Columns.Add("Total", typeof(String));
+            dtInspectionDetail.Columns.Add("Total", typeof(String));
             DataGridTemplateColumn colTotal = new DataGridTemplateColumn();
             colTotal.Header = String.Format("Total\n{0}", sizeRunList.Sum(s => s.Quantity));
             DataTemplate templateTotal = new DataTemplate();
@@ -459,19 +463,19 @@ namespace MasterSchedule.Views
             dgDeliveryDetail.Columns.Add(colButtonOK);
 
             // Binding Data
-            var supplierList = deliveryList.Select(s => s.SupplierId).Distinct().ToList();
+            var supplierList = inspectionList.Select(s => s.SupplierId).Distinct().ToList();
             foreach (var supplierId in supplierList)
             {
-                var deliveryBySuppList = deliveryList.Where(w => w.SupplierId == supplierId).ToList();
-                var dateList = deliveryBySuppList.Select(s => s.DeliveryDate).Distinct().ToList();
+                var inspectionListBySupp = inspectionList.Where(w => w.SupplierId == supplierId).ToList();
+                var dateList = inspectionListBySupp.Select(s => s.DeliveryDate).Distinct().ToList();
                 if (dateList.Count() > 0)
                     dateList = dateList.OrderBy(o => o).ToList();
 
                 bool addSupp = false;
                 foreach (var date in dateList)
                 {
-                    DataRow dr = dtDelDetail.NewRow();
-                    DataRow drReject = dtDelDetail.NewRow();
+                    DataRow dr = dtInspectionDetail.NewRow();
+                    DataRow drReject = dtInspectionDetail.NewRow();
 
                     if (addSupp == false)
                     {
@@ -480,19 +484,18 @@ namespace MasterSchedule.Views
                     }
                     dr["SupplierId"] = supplierId;
                     drReject["SupplierId"] = supplierId;
-
-                    dr["DeliveryDate"]      = string.Format("{0:MM/dd/yyyy}", date);
-
-                    dr["DeliveryDateDate"]  = date;
-                    drReject["DeliveryDateDate"] = date;
+                    
+                    dr["InspectionDate"]      = string.Format("{0:MM/dd/yyyy}", date);
+                    dr["InspectionDateDate"]  = date;
+                    drReject["InspectionDateDate"] = date;
 
                     dr["Title"] = _qtyOK;
                     drReject["Title"] = "Reject";
 
-                    var deliveryByDateList = deliveryBySuppList.Where(w => w.DeliveryDate.Equals(date)).ToList();
+                    var inspectionListByDate = inspectionListBySupp.Where(w => w.DeliveryDate.Equals(date)).ToList();
                     foreach (var sizeRun in sizeRunList)
                     {
-                        var deliveryBySize = deliveryByDateList.Where(w => w.SizeNo == sizeRun.SizeNo).ToList();
+                        var deliveryBySize = inspectionListByDate.Where(w => w.SizeNo == sizeRun.SizeNo).ToList();
                         string sizeBinding = sizeRun.SizeNo.Contains(".") ? sizeRun.SizeNo.Replace(".", "@") : sizeRun.SizeNo;
                         var qtyOK = deliveryBySize.Sum(s => s.Quantity);
                         if (qtyOK > 0)
@@ -520,19 +523,19 @@ namespace MasterSchedule.Views
                         }
                     }
 
-                    var totalDel = deliveryByDateList.Sum(s => s.Quantity);
-                    var totalReject = deliveryByDateList.Sum(s => s.Reject);
-                    if (totalDel > 0)
-                        dr["Total"] = totalDel.ToString();
+                    var totalQtyOK = inspectionListByDate.Sum(s => s.Quantity);
+                    var totalReject = inspectionListByDate.Sum(s => s.Reject);
+                    if (totalQtyOK > 0)
+                        dr["Total"] = totalQtyOK.ToString();
                     if (totalReject > 0)
                         drReject["Total"] = totalReject.ToString();
 
-                    dtDelDetail.Rows.Add(dr);
-                    dtDelDetail.Rows.Add(drReject);
+                    dtInspectionDetail.Rows.Add(dr);
+                    dtInspectionDetail.Rows.Add(drReject);
                 }
             }
 
-            dgDeliveryDetail.ItemsSource = dtDelDetail.AsDataView();
+            dgDeliveryDetail.ItemsSource = dtInspectionDetail.AsDataView();
             dgDeliveryDetail.Items.Refresh();
         }
 
@@ -540,6 +543,9 @@ namespace MasterSchedule.Views
         {
             if (dgDeliveryDetail.CurrentItem == null)
                 return;
+            if (materialPlanChecking == null)
+                return;
+
             var drClicked = ((DataRowView)dgDeliveryDetail.CurrentItem).Row;
             if (!drClicked["Title"].ToString().Equals(_qtyOK))
                 return;
@@ -547,11 +553,12 @@ namespace MasterSchedule.Views
             foreach (var sizeRun in sizeRunList)
             {
                 string sizeBinding = sizeRun.SizeNo.Contains(".") ? sizeRun.SizeNo.Replace(".", "@") : sizeRun.SizeNo;
-                drClicked[String.Format("Column{0}", sizeBinding)] = sizeRun.Quantity;
+                int qtyDeliveryBySize = matsDeliveryList.Where(w => w.SupplierId.ToString().Equals(supplierIdOK) && w.SizeNo == sizeRun.SizeNo).Sum(s => s.Quantity);
+                drClicked[String.Format("Column{0}", sizeBinding)] = qtyDeliveryBySize;
                 drClicked[String.Format("Column{0}Foreground", sizeBinding)] = Brushes.Blue;
             }
             drClicked["Total"] = "";
-            drClicked["Total"] = sizeRunList.Sum(s => s.Quantity);
+            drClicked["Total"] = matsDeliveryList.Where(w => w.SupplierId.ToString().Equals(supplierIdOK)).Sum(s => s.Quantity);
         }
 
         private void dgDeliveryDetail_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
@@ -564,70 +571,85 @@ namespace MasterSchedule.Views
 
             HighLightError("");
             var rowEditting = (DataRowView)e.Row.Item;
-            if (!rowEditting["Title"].ToString().Equals("Reject"))
+            if (rowEditting["Title"].ToString().Equals(_qtyOK))
+            {
                 return;
-
+            }
             // Not Allow Input Reject
             if (rowEditting["Title"].ToString().Equals("Reject"))
             {
                 e.Cancel = true;
             }
+
             if (e.Column.GetValue(TagProperty) == null)
                 return;
+
             string sizeNo = e.Column.GetValue(TagProperty).ToString();
             var sizeRunClicked = sizeRunList.FirstOrDefault(f => f.SizeNo.Equals(sizeNo));
-            var dateEditting = (DateTime)rowEditting["DeliveryDateDate"];
+            var dateEditting = (DateTime)rowEditting["InspectionDateDate"];
+            
+            var supplierIdEdditing = rowEditting["SupplierId"].ToString();
+            int qtyDeliveryBySize = matsDeliveryList.Where(w => w.SupplierId.ToString().Equals(supplierIdEdditing) && w.SizeNo.Equals(sizeNo)).Sum(s => s.Quantity);
+            if (qtyDeliveryBySize == 0)
+            {
+                MessageBox.Show(String.Format("Size: {0} not yet Delivery !", sizeNo), this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
-            var matsDeliveryListBySuppTranfer = matsDeliveryList.Where(w => w.SupplierId.Equals(supplierClicked.SupplierId)).ToList();
+            var matsDeliveryListBySuppTranfer = matsInspectionList.Where(w => w.SupplierId.Equals(supplierClicked.SupplierId)).ToList();
             var matsDeliveryListByDate = matsDeliveryListBySuppTranfer.Where(w => w.RejectId > 0
                                                                                 && w.SizeNo.Equals(sizeRunClicked.SizeNo)
                                                                                 && w.DeliveryDate.Equals(dateEditting)).ToList();
             int totalRejectBySizeCurrent = matsDeliveryListBySuppTranfer.Where(w => w.RejectId > 0 && w.SizeNo.Equals(sizeRunClicked.SizeNo)).Count();
-            var window = new AddRejectForMaterialWindow(rejectUpperAccessoriesList, sizeRunClicked, materialPlanChecking, rowEditting, matsDeliveryListByDate, totalRejectBySizeCurrent, workerId);
+            var window = new AddRejectForMaterialWindow(rejectUpperAccessoriesList, sizeRunClicked, materialPlanChecking, rowEditting, matsDeliveryListByDate, totalRejectBySizeCurrent, workerId, sizeRunList);
             window.ShowDialog();
-            if (window.eAction == EExcute.AddNew && window.deliveryHasRejectList.Count() > 0)
+            if (window.eAction == EExcute.AddNew && window.inspectListHasReject.Count() > 0)
             {
-                matsDeliveryList.RemoveAll(r => r.DeliveryDate.Equals(dateEditting)
+                matsInspectionList.RemoveAll(r => r.DeliveryDate.Equals(dateEditting)
                                                 && r.RejectId > 0
                                                 && r.SizeNo.Equals(sizeRunClicked.SizeNo));
 
-                matsDeliveryList.AddRange(window.deliveryHasRejectList);
-                LoadDeliveryDetail(matsDeliveryList.Where(w => w.SupplierId.Equals(supplierClicked.SupplierId)).ToList());
+                matsInspectionList.AddRange(window.inspectListHasReject);
+                LoadInspectionDetail(matsInspectionList.Where(w => w.SupplierId.Equals(supplierClicked.SupplierId)).ToList());
             }
-            else if (window.eAction == EExcute.Delete && window.deliveryHasRejectList.Count() > 0)
+            else if (window.eAction == EExcute.Delete && window.inspectListHasReject.Count() > 0)
             {
-                matsDeliveryList.RemoveAll(r => r.DeliveryDate.Equals(dateEditting)
+                matsInspectionList.RemoveAll(r => r.DeliveryDate.Equals(dateEditting)
                                                 && r.RejectId > 0
                                                 && r.SizeNo.Equals(sizeRunClicked.SizeNo));
-                LoadDeliveryDetail(matsDeliveryList.Where(w => w.SupplierId.Equals(supplierClicked.SupplierId)).ToList());
+                LoadInspectionDetail(matsInspectionList.Where(w => w.SupplierId.Equals(supplierClicked.SupplierId)).ToList());
             }
         }
 
         private void dgDeliveryDetail_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
-            var rowEditting = (DataRowView)e.Row.Item;
+            var rowEditting = ((DataRowView)e.Row.Item).Row;
             if (e.Column.GetValue(TagProperty) == null)
                 return;
             string sizeNo = e.Column.GetValue(TagProperty).ToString();
-            if (sizeRunList.Select(s => s.SizeNo).Contains(sizeNo) == false)
+            string sizeCurrent = sizeNo.Contains(".") ? sizeNo.Replace(".", "@") : sizeNo;
+            
+            var supplierIdEdditing  = rowEditting["SupplierId"].ToString();
+            int qtyDeliveryBySize   = matsDeliveryList.Where(w => w.SupplierId.ToString().Equals(supplierIdEdditing) && w.SizeNo.Equals(sizeNo)).Sum(s => s.Quantity);
+            int qtyOrderBySize      = sizeRunList.Where(w => w.SizeNo.Equals(sizeNo)).Sum(s => s.Quantity);
+            int qtyInput = 0;
+            TextBox txtCurrent = (TextBox)e.EditingElement;
+            if (qtyDeliveryBySize == 0)
             {
+                MessageBox.Show(String.Format("Size: {0} not yet Delivery !", sizeNo), this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                txtCurrent.Text = "";
                 return;
             }
-            int qtyOrder = sizeRunList.Where(s => s.SizeNo == sizeNo).Sum(s => s.Quantity);
-            int qtyInput = 0;
-
-            TextBox txtCurrent = (TextBox)e.EditingElement;
             Int32.TryParse(txtCurrent.Text.Trim().ToString(), out qtyInput);
 
             // Get total qty the others day
             int totalQtyOfTheOthersDay = 0;
-            for (int r = 0; r < dtDelDetail.Rows.Count; r++)
+            for (int r = 0; r < dtInspectionDetail.Rows.Count; r++)
             {
-                string sizeCurrent = sizeNo.Contains(".") ? sizeNo.Replace(".", "@") : sizeNo;
-                DataRow dr = dtDelDetail.Rows[r];
+                DataRow dr = dtInspectionDetail.Rows[r];
                 if (!dr["Title"].ToString().Equals(_qtyOK))
                     continue;
-                if (!dr["DeliveryDate"].ToString().Equals(rowEditting["DeliveryDate"]))
+                if (!dr["InspectionDate"].ToString().Equals(rowEditting["InspectionDate"]))
                 {
                     int qtyAtCell = 0;
                     Int32.TryParse(dr[String.Format("Column{0}", sizeCurrent)].ToString(), out qtyAtCell);
@@ -635,47 +657,31 @@ namespace MasterSchedule.Views
                 }
             }
 
-            for (int r = 0; r < dtDelDetail.Rows.Count; r++)
+            rowEditting[String.Format("Column{0}Foreground", sizeCurrent)] = Brushes.Black;
+            // Validate
+            if (qtyInput + totalQtyOfTheOthersDay > qtyDeliveryBySize)
             {
-                DataRow dr = dtDelDetail.Rows[r];
-                if (!dr["Title"].ToString().Equals(_qtyOK))
-                    continue;
-                if (!dr["DeliveryDate"].ToString().Equals(rowEditting["DeliveryDate"]))
-                    continue;
-
-                string sizeEdittingBinding = sizeNo.Contains(".") ? sizeNo.Replace(".", "@") : sizeNo;
-                if (qtyInput <= 0)
-                {
-                    dr[String.Format("Column{0}Foreground", sizeEdittingBinding)] = Brushes.Red;
-                    dr[String.Format("Column{0}", sizeEdittingBinding)] = "0";
-                }
-
-                else if (qtyInput + totalQtyOfTheOthersDay >= qtyOrder)
-                {
-                    dr[String.Format("Column{0}", sizeEdittingBinding)] = (qtyOrder - totalQtyOfTheOthersDay).ToString();
-                    dr[String.Format("Column{0}Foreground", sizeEdittingBinding)] = Brushes.Black;
-                    if (qtyOrder - totalQtyOfTheOthersDay == qtyOrder)
-                        dr[String.Format("Column{0}Foreground", sizeEdittingBinding)] = Brushes.Blue;
-                }
-
-                else
-                {
-                    dr[String.Format("Column{0}", sizeEdittingBinding)] = qtyInput;
-                    dr[String.Format("Column{0}Foreground", sizeEdittingBinding)] = Brushes.Black;
-                }
-
-                // Update Total Cell
-                int totalDelivery = 0;
-                foreach (var sizeRun in sizeRunList)
-                {
-                    string sizeBinding = sizeRun.SizeNo.Contains(".") ? sizeRun.SizeNo.Replace(".", "@") : sizeRun.SizeNo;
-                    var x = dr[String.Format("Column{0}", sizeBinding)].ToString();
-                    int qty = 0;
-                    Int32.TryParse(x, out qty);
-                    totalDelivery += qty;
-                    dr["Total"] = totalDelivery.ToString();
-                }
+                MessageBox.Show(String.Format("Qty Inspect :{0} grather than qty delivery {1} !", qtyInput + totalQtyOfTheOthersDay, qtyDeliveryBySize), this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                txtCurrent.Text = "";
+                return;
             }
+            
+            rowEditting[String.Format("Column{0}", sizeCurrent)] = txtCurrent.Text;
+            if (qtyInput == qtyDeliveryBySize)
+                rowEditting[String.Format("Column{0}Foreground", sizeCurrent)] = Brushes.Blue;
+            
+            // Calculate total qty at row
+            int totalQtyAtRow = 0;
+            foreach (var sizeRun in sizeRunList)
+            {
+                int qty = 0;
+                var sizeBinding = sizeRun.SizeNo.Contains(".") ? sizeRun.SizeNo.Replace(".", "@") : sizeRun.SizeNo;
+                Int32.TryParse(rowEditting[String.Format("Column{0}", sizeBinding)].ToString(), out qty);
+                totalQtyAtRow += qty;
+            }
+            rowEditting["Total"] = "";
+            if (totalQtyAtRow > 0)
+                rowEditting["Total"] = totalQtyAtRow;
         }
 
         private void dpDeliveryDate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -702,13 +708,13 @@ namespace MasterSchedule.Views
                 return;
 
             List<MaterialInspectModel> deliveryOKList = new List<MaterialInspectModel>();
-            for (int r = 0; r < dtDelDetail.Rows.Count; r++)
+            for (int r = 0; r < dtInspectionDetail.Rows.Count; r++)
             {
-                DataRow dr = dtDelDetail.Rows[r];
+                DataRow dr = dtInspectionDetail.Rows[r];
                 if (!dr["Title"].ToString().Equals(_qtyOK))
                     continue;
 
-                var deliveryDate = (DateTime)dr["DeliveryDateDate"];
+                var deliveryDate = (DateTime)dr["InspectionDateDate"];
 
                 // Get Qty
                 foreach (var sizeRun in sizeRunList)
@@ -753,43 +759,44 @@ namespace MasterSchedule.Views
                     foreach (var itemInsert in deliveryOKList)
                     {
                         MaterialInspectController.Insert(itemInsert, insertQty: true, insertReject: false, deleteReject: false);
-                        matsDeliveryList.RemoveAll(r => r.SupplierId.Equals(itemInsert.SupplierId)
+                        matsInspectionList.RemoveAll(r => r.SupplierId.Equals(itemInsert.SupplierId)
                                                     && r.DeliveryDate.Equals(itemInsert.DeliveryDate)
                                                     && r.SizeNo.Equals(itemInsert.SizeNo)
                                                     && r.Quantity > 0);
-                        matsDeliveryList.Add(itemInsert);
+                        matsInspectionList.Add(itemInsert);
                     }
                 }
                 else if (eAction == EExcute.Delete)
                 {
                     MaterialInspectController.DeleteByPOBySupplier(productNo, supplierClicked.SupplierId);
-                    matsDeliveryList.RemoveAll(r => r.SupplierId.Equals(supplierClicked.SupplierId));
+                    matsInspectionList.RemoveAll(r => r.SupplierId.Equals(supplierClicked.SupplierId));
                 }
                 e.Result = true;
 
                 // Update ActualDate
-                var deliveryListBySupp = matsDeliveryList.
+                var deliveryListBySupp = matsInspectionList.
                                         GroupBy(g => g.SupplierId).
                                         Select(s => new
                                         {
                                             SupplierId = s.Key,
-                                            TotalDelivery = matsDeliveryList.Where(w => w.SupplierId.Equals(s.Key)).Sum(sum => sum.Quantity),
-                                            TotalReject = matsDeliveryList.Where(w => w.SupplierId.Equals(s.Key)).Sum(r => r.Reject),
-                                            MaxDeliveryDate = matsDeliveryList.Where(w => w.SupplierId.Equals(s.Key)).Max(m => m.DeliveryDate)
+                                            TotalInspect    = matsInspectionList.Where(w => w.SupplierId.Equals(s.Key)).Sum(sum => sum.Quantity),
+                                            TotalReject     = matsInspectionList.Where(w => w.SupplierId.Equals(s.Key)).Sum(r => r.Reject),
+                                            MaxDeliveryDate = matsInspectionList.Where(w => w.SupplierId.Equals(s.Key)).Max(m => m.DeliveryDate)
                                         }).ToList();
                 foreach (var materialPlan in materialPlanList)
                 {
                     var deliveryBySupp = deliveryListBySupp.FirstOrDefault(f => f.SupplierId.Equals(materialPlan.SupplierId));
-                    if (deliveryBySupp != null && deliveryBySupp.TotalDelivery.Equals(sizeRunList.Sum(s => s.Quantity)))
+                    if (deliveryBySupp != null)
                     {
-                        materialPlan.Balance = sizeRunList.Sum(s => s.Quantity) - deliveryBySupp.TotalDelivery + deliveryBySupp.TotalReject;
-                        materialPlan.ActualDate = deliveryBySupp.MaxDeliveryDate.Date;
+                        if (deliveryBySupp.TotalInspect.Equals(sizeRunList.Sum(s => s.Quantity)))
+                            materialPlan.ActualDate = deliveryBySupp.MaxDeliveryDate.Date;
+                        else
+                            materialPlan.ActualDate = dtDefault;
                     }
                     else
                     {
-                        materialPlan.ActualDate = new DateTime(2000, 01, 01);
+                        materialPlan.ActualDate = dtDefault;
                     }
-
                     MaterialPlanController.Insert(materialPlan, isUpdateActualDate: true);
                     materialPlanList.ForEach(t => t.ActualDateString = t.ActualDate != dtDefault ? String.Format("{0:MM/dd}", t.ActualDate) : "");
                 }
@@ -817,7 +824,7 @@ namespace MasterSchedule.Views
                     btnDelete.IsEnabled = true;
                 }
 
-                LoadDeliveryDetail(matsDeliveryList.Where(w => w.SupplierId.Equals(supplierClicked.SupplierId)).ToList());
+                LoadInspectionDetail(matsInspectionList.Where(w => w.SupplierId.Equals(supplierClicked.SupplierId)).ToList());
                 LoadMaterialPlan(materialPlanList);
             }
             this.Cursor = null;
@@ -858,7 +865,7 @@ namespace MasterSchedule.Views
             workerId = "";
             txtReviser.Text = "";
             tblDeliveryDetailOf.Text = "";
-            LoadDeliveryDetail(new List<MaterialInspectModel>());
+            LoadInspectionDetail(new List<MaterialInspectModel>());
         }
 
         string workerId = "";
@@ -884,6 +891,16 @@ namespace MasterSchedule.Views
         private void txtWorkerId_PreviewKeyUp(object sender, KeyEventArgs e)
         {
             btnWorkderId.IsDefault = true;
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            // Update Reject Reject By Supp
+            foreach (var materialPlan in materialPlanList)
+            {
+                var totalRejectBySupp = matsInspectionList.Where(w => w.SupplierId == materialPlan.SupplierId).Sum(s => s.Reject);
+                materialPlan.RejectPO = totalRejectBySupp;
+            }
         }
     }
 }

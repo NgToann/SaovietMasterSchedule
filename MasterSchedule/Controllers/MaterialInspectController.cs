@@ -39,13 +39,13 @@ namespace MasterSchedule.Controllers
             var @ProductNo  = new SqlParameter("@ProductNo", model.ProductNo);
             var @SupplierId = new SqlParameter("@SupplierId", model.SupplierId);
             var @DeliveryDate = new SqlParameter("@DeliveryDate", model.DeliveryDate);
-            var @SizeNo = new SqlParameter("@SizeNo", model.SizeNo);
-            var @Quantity = new SqlParameter("@Quantity", model.Quantity);
-            var @Reject = new SqlParameter("@Reject", model.Reject);
-            var @RejectId = new SqlParameter("@RejectId", model.RejectId);
-            var @Reviser = new SqlParameter("@Reviser", model.Reviser);
+            var @SizeNo     = new SqlParameter("@SizeNo", model.SizeNo);
+            var @Quantity   = new SqlParameter("@Quantity", model.Quantity);
+            var @Reject     = new SqlParameter("@Reject", model.Reject);
+            var @RejectId   = new SqlParameter("@RejectId", model.RejectId);
+            var @Reviser    = new SqlParameter("@Reviser", model.Reviser);
             var @InsertQuantity = new SqlParameter("@InsertQuantity", insertQty);
-            var @InsertReject = new SqlParameter("@InsertReject", insertReject);
+            var @InsertReject   = new SqlParameter("@InsertReject", insertReject);
             
             var @DeleteReject = new SqlParameter("@DeleteReject", deleteReject);
 

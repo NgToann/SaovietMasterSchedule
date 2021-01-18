@@ -39,7 +39,7 @@ namespace MasterSchedule.Views {
     /// <summary>
     /// InputMaterialDeliveryWindow
     /// </summary>
-    public partial class InputMaterialDeliveryWindow : System.Windows.Window, System.Windows.Markup.IComponentConnector {
+    public partial class InputUpperAccessoriesMaterialDeliveryWindow : System.Windows.Window, System.Windows.Markup.IComponentConnector {
         
         
         #line 15 "..\..\..\..\Views\InputMaterialDeliveryWindow.xaml"
@@ -106,13 +106,13 @@ namespace MasterSchedule.Views {
             case 1:
             
             #line 6 "..\..\..\..\Views\InputMaterialDeliveryWindow.xaml"
-            ((MasterSchedule.Views.InputMaterialDeliveryWindow)(target)).KeyDown += new System.Windows.Input.KeyEventHandler(this.Window_KeyDown);
+            ((MasterSchedule.Views.InputUpperAccessoriesMaterialDeliveryWindow)(target)).KeyDown += new System.Windows.Input.KeyEventHandler(this.Window_KeyDown);
             
             #line default
             #line hidden
             
             #line 7 "..\..\..\..\Views\InputMaterialDeliveryWindow.xaml"
-            ((MasterSchedule.Views.InputMaterialDeliveryWindow)(target)).Loaded += new System.Windows.RoutedEventHandler(this.Window_Loaded);
+            ((MasterSchedule.Views.InputUpperAccessoriesMaterialDeliveryWindow)(target)).Loaded += new System.Windows.RoutedEventHandler(this.Window_Loaded);
             
             #line default
             #line hidden
