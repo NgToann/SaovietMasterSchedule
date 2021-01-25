@@ -125,7 +125,15 @@ namespace MasterSchedule.Controllers
             var @SewingActualStartDateAuto          = new SqlParameter("@SewingActualStartDateAuto", sewingActualStartDateAutoString);
             var @SewingActualFinishDateAuto         = new SqlParameter("@SewingActualFinishDateAuto", sewingActualFinishDateAutoString);
 
-            var @SewingBalance                      = new SqlParameter("@SewingBalance", model.SewingBalance);
+            //var @SewingBalance                      = new SqlParameter("@SewingBalance", model.SewingBalance);
+
+            var sewingBalanceInsert = model.SewingBalance;
+            if (model.SewingBalance_Date != dtDefault)
+            {
+                sewingBalanceInsert = model.SewingBalance_Date.ToShortDateString();
+            }
+            var @SewingBalance = new SqlParameter("@SewingBalance", sewingBalanceInsert);
+
 
             var @CutAStartDate                      = new SqlParameter("@CutAStartDate", model.CutAStartDate);
             var @CutAFinishDate                     = new SqlParameter("@CutAFinishDate", model.CutAFinishDate);
@@ -134,7 +142,14 @@ namespace MasterSchedule.Controllers
             var @CutAActualStartDate                = new SqlParameter("@CutAActualStartDate", model.CutAActualStartDate);
             var @CutAActualFinishDate               = new SqlParameter("@CutAActualFinishDate", model.CutAActualFinishDate);
 
-            var @CutABalance                        = new SqlParameter("@CutABalance", model.CutABalance);
+            var cutABalanceInsert = model.CutABalance;
+            if (model.CutABalance_Date != dtDefault)
+            {
+                cutABalanceInsert = model.CutABalance_Date.ToShortDateString();
+            }
+            var @CutABalance = new SqlParameter("@CutABalance", cutABalanceInsert);
+
+
             var @PrintingBalance                    = new SqlParameter("@PrintingBalance", model.PrintingBalance);
             var @H_FBalance                         = new SqlParameter("@H_FBalance", model.H_FBalance);
             var @EmbroideryBalance                  = new SqlParameter("@EmbroideryBalance", model.EmbroideryBalance);
@@ -199,12 +214,18 @@ namespace MasterSchedule.Controllers
             var @IsComelzCutBUpdate                 = new SqlParameter("@IsComelzCutBUpdate", model.IsUpdateComelzCutB);
 
             var @Reviser                            = new SqlParameter("@Reviser", String.Format("{0}-{1}", model.Reviser, computerName));
+            var @SewingActualStartDate_Date         = new SqlParameter("@SewingActualStartDate_Date", model.SewingActualStartDate_Date);
+            var @SewingActualFinishDate_Date        = new SqlParameter("@SewingActualFinishDate_Date", model.SewingActualFinishDate_Date);
+
+            var @CutAActualStartDate_Date           = new SqlParameter("@CutAActualStartDate_Date", model.CutAActualStartDate_Date);
+            var @CutAActualFinishDate_Date          = new SqlParameter("@CutAActualFinishDate_Date", model.CutAActualFinishDate_Date);
+
 
             using (var db = new SaovietMasterScheduleEntities())
             {
                 db.CommandTimeout = 120;
-                if (db.ExecuteStoreCommand(@"EXEC spm_InsertSewingMaster_8  @ProductNo, @Sequence, @SewingLine, @SewingStartDate, @SewingFinishDate, @SewingQuota, @SewingPrep, @SewingActualStartDate, @SewingActualFinishDate, @SewingActualStartDateAuto, @SewingActualFinishDateAuto, @SewingBalance, @CutAStartDate, @CutAFinishDate, @CutAQuota, @CutAActualStartDate, @CutAActualFinishDate, @CutABalance, @PrintingBalance, @H_FBalance, @EmbroideryBalance, @CutBActualStartDate, @CutBBalance, @AutoCut, @LaserCut, @HuasenCut, @CutBStartDate, @AtomCutA, @AtomCutB, @LaserCutA, @LaserCutB, @HuasenCutA, @HuasenCutB, @ComelzCutA, @ComelzCutB, @IsSequenceUpdate, @IsSewingLineUpdate, @IsSewingStartDateUpdate, @IsSewingFinishDateUpdate, @IsSewingQuotaUpdate, @IsSewingPrepUpdate, @IsSewingActualStartDateUpdate, @IsSewingActualFinishDateUpdate, @IsSewingActualStartDateAutoUpdate, @IsSewingActualFinishDateAutoUpdate, @IsSewingBalanceUpdate, @IsCutAStartDateUpdate, @IsCutAFinishDateUpdate, @IsCutAQuotaUpdate, @IsCutAActualStartDateUpdate, @IsCutAActualFinishDateUpdate, @IsCutABalanceUpdate, @IsPrintingBalanceUpdate, @IsH_FBalanceUpdate, @IsEmbroideryBalanceUpdate, @IsCutBActualStartDateUpdate, @IsCutBBalanceUpdate, @IsAutoCutUpdate, @IsLaserCutUpdate, @IsHuasenCutUpdate, @IsCutBStartDateUpdate, @IsAtomCutAUpdate, @IsAtomCutBUpdate, @IsLaserCutAUpdate, @IsLaserCutBUpdate, @IsHuasenCutAUpdate, @IsHuasenCutBUpdate, @IsComelzCutAUpdate, @IsComelzCutBUpdate, @Reviser",
-                                                                            @ProductNo, @Sequence, @SewingLine, @SewingStartDate, @SewingFinishDate, @SewingQuota, @SewingPrep, @SewingActualStartDate, @SewingActualFinishDate, @SewingActualStartDateAuto, @SewingActualFinishDateAuto, @SewingBalance, @CutAStartDate, @CutAFinishDate, @CutAQuota, @CutAActualStartDate, @CutAActualFinishDate, @CutABalance, @PrintingBalance, @H_FBalance, @EmbroideryBalance, @CutBActualStartDate, @CutBBalance, @AutoCut, @LaserCut, @HuasenCut, @CutBStartDate, @AtomCutA, @AtomCutB, @LaserCutA, @LaserCutB, @HuasenCutA, @HuasenCutB, @ComelzCutA, @ComelzCutB, @IsSequenceUpdate, @IsSewingLineUpdate, @IsSewingStartDateUpdate, @IsSewingFinishDateUpdate, @IsSewingQuotaUpdate, @IsSewingPrepUpdate, @IsSewingActualStartDateUpdate, @IsSewingActualFinishDateUpdate, @IsSewingActualStartDateAutoUpdate, @IsSewingActualFinishDateAutoUpdate, @IsSewingBalanceUpdate, @IsCutAStartDateUpdate, @IsCutAFinishDateUpdate, @IsCutAQuotaUpdate, @IsCutAActualStartDateUpdate, @IsCutAActualFinishDateUpdate, @IsCutABalanceUpdate, @IsPrintingBalanceUpdate, @IsH_FBalanceUpdate, @IsEmbroideryBalanceUpdate, @IsCutBActualStartDateUpdate, @IsCutBBalanceUpdate, @IsAutoCutUpdate, @IsLaserCutUpdate, @IsHuasenCutUpdate, @IsCutBStartDateUpdate, @IsAtomCutAUpdate, @IsAtomCutBUpdate, @IsLaserCutAUpdate, @IsLaserCutBUpdate, @IsHuasenCutAUpdate, @IsHuasenCutBUpdate, @IsComelzCutAUpdate, @IsComelzCutBUpdate, @Reviser) > 0)
+                if (db.ExecuteStoreCommand(@"EXEC spm_InsertSewingMaster_9  @ProductNo, @Sequence, @SewingLine, @SewingStartDate, @SewingFinishDate, @SewingQuota, @SewingPrep, @SewingActualStartDate, @SewingActualFinishDate, @SewingActualStartDateAuto, @SewingActualFinishDateAuto, @SewingBalance, @CutAStartDate, @CutAFinishDate, @CutAQuota, @CutAActualStartDate, @CutAActualFinishDate, @CutABalance, @PrintingBalance, @H_FBalance, @EmbroideryBalance, @CutBActualStartDate, @CutBBalance, @AutoCut, @LaserCut, @HuasenCut, @CutBStartDate, @AtomCutA, @AtomCutB, @LaserCutA, @LaserCutB, @HuasenCutA, @HuasenCutB, @ComelzCutA, @ComelzCutB, @IsSequenceUpdate, @IsSewingLineUpdate, @IsSewingStartDateUpdate, @IsSewingFinishDateUpdate, @IsSewingQuotaUpdate, @IsSewingPrepUpdate, @IsSewingActualStartDateUpdate, @IsSewingActualFinishDateUpdate, @IsSewingActualStartDateAutoUpdate, @IsSewingActualFinishDateAutoUpdate, @IsSewingBalanceUpdate, @IsCutAStartDateUpdate, @IsCutAFinishDateUpdate, @IsCutAQuotaUpdate, @IsCutAActualStartDateUpdate, @IsCutAActualFinishDateUpdate, @IsCutABalanceUpdate, @IsPrintingBalanceUpdate, @IsH_FBalanceUpdate, @IsEmbroideryBalanceUpdate, @IsCutBActualStartDateUpdate, @IsCutBBalanceUpdate, @IsAutoCutUpdate, @IsLaserCutUpdate, @IsHuasenCutUpdate, @IsCutBStartDateUpdate, @IsAtomCutAUpdate, @IsAtomCutBUpdate, @IsLaserCutAUpdate, @IsLaserCutBUpdate, @IsHuasenCutAUpdate, @IsHuasenCutBUpdate, @IsComelzCutAUpdate, @IsComelzCutBUpdate, @Reviser, @SewingActualStartDate_Date, @SewingActualFinishDate_Date, @CutAActualStartDate_Date, @CutAActualFinishDate_Date",
+                                                                            @ProductNo, @Sequence, @SewingLine, @SewingStartDate, @SewingFinishDate, @SewingQuota, @SewingPrep, @SewingActualStartDate, @SewingActualFinishDate, @SewingActualStartDateAuto, @SewingActualFinishDateAuto, @SewingBalance, @CutAStartDate, @CutAFinishDate, @CutAQuota, @CutAActualStartDate, @CutAActualFinishDate, @CutABalance, @PrintingBalance, @H_FBalance, @EmbroideryBalance, @CutBActualStartDate, @CutBBalance, @AutoCut, @LaserCut, @HuasenCut, @CutBStartDate, @AtomCutA, @AtomCutB, @LaserCutA, @LaserCutB, @HuasenCutA, @HuasenCutB, @ComelzCutA, @ComelzCutB, @IsSequenceUpdate, @IsSewingLineUpdate, @IsSewingStartDateUpdate, @IsSewingFinishDateUpdate, @IsSewingQuotaUpdate, @IsSewingPrepUpdate, @IsSewingActualStartDateUpdate, @IsSewingActualFinishDateUpdate, @IsSewingActualStartDateAutoUpdate, @IsSewingActualFinishDateAutoUpdate, @IsSewingBalanceUpdate, @IsCutAStartDateUpdate, @IsCutAFinishDateUpdate, @IsCutAQuotaUpdate, @IsCutAActualStartDateUpdate, @IsCutAActualFinishDateUpdate, @IsCutABalanceUpdate, @IsPrintingBalanceUpdate, @IsH_FBalanceUpdate, @IsEmbroideryBalanceUpdate, @IsCutBActualStartDateUpdate, @IsCutBBalanceUpdate, @IsAutoCutUpdate, @IsLaserCutUpdate, @IsHuasenCutUpdate, @IsCutBStartDateUpdate, @IsAtomCutAUpdate, @IsAtomCutBUpdate, @IsLaserCutAUpdate, @IsLaserCutBUpdate, @IsHuasenCutAUpdate, @IsHuasenCutBUpdate, @IsComelzCutAUpdate, @IsComelzCutBUpdate, @Reviser, @SewingActualStartDate_Date, @SewingActualFinishDate_Date, @CutAActualStartDate_Date, @CutAActualFinishDate_Date) > 0)
                 {
                     return true;
                 }

@@ -14,10 +14,13 @@ namespace MasterSchedule.Models
         public DateTime OutsoleFinishDate { get; set; }
         public int OutsoleQuota { get; set; }
         public string OutsoleActualStartDate { get; set; }
+        public DateTime OutsoleActualStartDate_Date { get; set; } = new DateTime(2000, 01, 01);
         public string OutsoleActualFinishDate { get; set; }
+        public DateTime OutsoleActualFinishDate_Date { get; set; } = new DateTime(2000, 01, 01);
         public string OutsoleActualStartDateAuto { get; set; }
         public string OutsoleActualFinishDateAuto { get; set; }
         public string OutsoleBalance { get; set; }
+        public DateTime OutsoleBalance_Date { get; set; } = new DateTime(2000, 01, 01);
         public string Remarks { get; set; }
         public int WHCurrentCheck { get; set; }
         public DateTime WHLastDateCheck { get; set; }

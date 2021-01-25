@@ -355,7 +355,13 @@ namespace MasterSchedule.Views
                     assemblyMasterView.SewingStartDate = sewingMaster.SewingStartDate;
                     assemblyMasterView.SewingFinishDate = sewingMaster.SewingFinishDate;
                     assemblyMasterView.SewingQuota = sewingMaster.SewingQuota;
-                    assemblyMasterView.SewingBalance = sewingMaster.SewingBalance;
+                    //assemblyMasterView.SewingBalance = sewingMaster.SewingBalance;
+                    if (sewingMaster.SewingBalance.Contains("/"))
+                    {
+                        assemblyMasterView.SewingBalance = String.Format("{0:M/d}", TimeHelper.Convert(sewingMaster.SewingBalance));
+                    }
+                    else
+                        assemblyMasterView.SewingBalance = sewingMaster.SewingBalance;
                 }
                 else
                 {
@@ -370,7 +376,14 @@ namespace MasterSchedule.Views
                 if (outsoleMaster != null)
                 {
                     assemblyMasterView.OutsoleFinishDate = outsoleMaster.OutsoleFinishDate;
-                    assemblyMasterView.OutsoleBalance = outsoleMaster.OutsoleBalance;
+                    
+                    if (outsoleMaster.OutsoleBalance.Contains("/"))
+                    {
+                        assemblyMasterView.OutsoleBalance = String.Format("{0:M/d}", TimeHelper.Convert(outsoleMaster.OutsoleBalance));
+                    }
+                    else
+                        assemblyMasterView.OutsoleBalance = outsoleMaster.OutsoleBalance;
+
 
                     assemblyMasterView.OutsoleLine = outsoleMaster.OutsoleLine;
                 }

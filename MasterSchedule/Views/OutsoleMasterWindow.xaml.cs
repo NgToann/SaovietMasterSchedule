@@ -213,12 +213,6 @@ namespace MasterSchedule.Views
                 outsoleMasterView.OSMatsArrivalForeground = Brushes.Blue;
                 outsoleMasterView.OSMatsArrivalBackground = Brushes.Transparent;
 
-                // Testing
-                if (outsoleMasterView.ProductNo == "109-6765")
-                {
-                    var x = "TTTTTTTTTTTTTT";
-                }
-
                 // Deliveried
                 if (String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_Remarks) &&
                     !String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_ActualDate))
@@ -255,11 +249,36 @@ namespace MasterSchedule.Views
                     outsoleMasterView.OutsoleStartDate = outsoleMaster.OutsoleStartDate;
                     outsoleMasterView.OutsoleFinishDate = outsoleMaster.OutsoleFinishDate;
                     outsoleMasterView.OutsoleQuota = outsoleMaster.OutsoleQuota;
-                    outsoleMasterView.OutsoleActualStartDate = outsoleMaster.OutsoleActualStartDate;
-                    outsoleMasterView.OutsoleActualFinishDate = outsoleMaster.OutsoleActualFinishDate;
+
+                    //outsoleMasterView.OutsoleActualStartDate = outsoleMaster.OutsoleActualStartDate;
+                    outsoleMasterView.OutsoleActualStartDate = "";
+                    if (outsoleMaster.OutsoleActualStartDate_Date != dtDefault)
+                    {
+                        outsoleMasterView.OutsoleActualStartDate = String.Format("{0:M/d}", outsoleMaster.OutsoleActualStartDate_Date);
+                        outsoleMasterView.OutsoleActualStartDate_Date = outsoleMaster.OutsoleActualStartDate_Date;
+                    }
+
+                    //outsoleMasterView.OutsoleActualFinishDate = outsoleMaster.OutsoleActualFinishDate;
+                    outsoleMasterView.OutsoleActualFinishDate = "";
+                    if (outsoleMaster.OutsoleActualFinishDate_Date != dtDefault)
+                    {
+                        outsoleMasterView.OutsoleActualFinishDate = String.Format("{0:M/d}", outsoleMaster.OutsoleActualFinishDate_Date);
+                        outsoleMasterView.OutsoleActualStartDate_Date = outsoleMaster.OutsoleActualFinishDate_Date;
+                    }
+
                     outsoleMasterView.OutsoleActualStartDateAuto = TimeHelper.ConvertDateToView(outsoleMaster.OutsoleActualStartDateAuto);
                     outsoleMasterView.OutsoleActualFinishDateAuto = TimeHelper.ConvertDateToView(outsoleMaster.OutsoleActualFinishDateAuto);
-                    outsoleMasterView.OutsoleBalance = outsoleMaster.OutsoleBalance;
+
+                    //outsoleMasterView.OutsoleBalance = outsoleMaster.OutsoleBalance;
+                    if (outsoleMaster.OutsoleBalance.Contains("/"))
+                    {
+                        outsoleMasterView.OutsoleBalance_Date   = TimeHelper.Convert(outsoleMaster.OutsoleBalance);
+                        outsoleMasterView.OutsoleBalance        = String.Format("{0:M/d}", outsoleMasterView.OutsoleBalance_Date);
+                    }
+                    else
+                        outsoleMasterView.OutsoleBalance = outsoleMaster.OutsoleBalance;
+
+
                     outsoleMasterView.Remarks = outsoleMaster.Remarks;
 
                     double perCent = (double)outsoleMaster.WHCurrentCheck / (double)order.Quantity * 100;
@@ -297,11 +316,17 @@ namespace MasterSchedule.Views
                 SewingMasterModel sewingMaster = sewingMasterList.FirstOrDefault(f => f.ProductNo == order.ProductNo);
                 if (sewingMaster != null)
                 {
-                    outsoleMasterView.SewingLine = sewingMaster.SewingLine;
-                    outsoleMasterView.SewingStartDate = sewingMaster.SewingStartDate;
-                    outsoleMasterView.SewingFinishDate = sewingMaster.SewingFinishDate;
-                    outsoleMasterView.SewingQuota = sewingMaster.SewingQuota;
-                    outsoleMasterView.SewingBalance = sewingMaster.SewingBalance;
+                    outsoleMasterView.SewingLine        = sewingMaster.SewingLine;
+                    outsoleMasterView.SewingStartDate   = sewingMaster.SewingStartDate;
+                    outsoleMasterView.SewingFinishDate  = sewingMaster.SewingFinishDate;
+                    outsoleMasterView.SewingQuota       = sewingMaster.SewingQuota;
+                    
+                    if (sewingMaster.SewingBalance.Contains("/"))
+                    {
+                        outsoleMasterView.SewingBalance = String.Format("{0:M/d}", TimeHelper.Convert(sewingMaster.SewingBalance));
+                    }
+                    else
+                        outsoleMasterView.SewingBalance = sewingMaster.SewingBalance;
                 }
                 else
                 {
@@ -443,11 +468,23 @@ namespace MasterSchedule.Views
                     }
                     if (outsoleActualStartDateUpdateList.Contains(productNo) == false)
                     {
-                        outsoleMasterView.OutsoleActualStartDate = outsoleMaster.OutsoleActualStartDate;
+                        //outsoleMasterView.OutsoleActualStartDate = outsoleMaster.OutsoleActualStartDate;
+                        outsoleMasterView.OutsoleActualStartDate = "";
+                        if (outsoleMaster.OutsoleActualStartDate_Date != dtDefault)
+                        {
+                            outsoleMasterView.OutsoleActualStartDate = String.Format("{0:M/d}", outsoleMaster.OutsoleActualStartDate_Date);
+                            outsoleMasterView.OutsoleActualStartDate_Date = outsoleMaster.OutsoleActualStartDate_Date;
+                        }
                     }
                     if (outsoleActualFinishDateUpdateList.Contains(productNo) == false)
                     {
-                        outsoleMasterView.OutsoleActualFinishDate = outsoleMaster.OutsoleActualFinishDate;
+                        //outsoleMasterView.OutsoleActualFinishDate = outsoleMaster.OutsoleActualFinishDate;
+                        outsoleMasterView.OutsoleActualFinishDate = "";
+                        if (outsoleMaster.OutsoleActualFinishDate_Date != dtDefault)
+                        {
+                            outsoleMasterView.OutsoleActualFinishDate = String.Format("{0:M/d}", outsoleMaster.OutsoleActualFinishDate_Date);
+                            outsoleMasterView.OutsoleActualStartDate_Date = outsoleMaster.OutsoleActualFinishDate_Date;
+                        }
                     }
 
                     if (outsoleActualStartDateAutoUpdateList.Contains(productNo) == false)
@@ -460,7 +497,14 @@ namespace MasterSchedule.Views
                     }
                     if (outsoleBalanceUpdateList.Contains(productNo) == false)
                     {
-                        outsoleMasterView.OutsoleBalance = outsoleMaster.OutsoleBalance;
+                        //outsoleMasterView.OutsoleBalance = outsoleMaster.OutsoleBalance;
+                        if (outsoleMaster.OutsoleBalance.Contains("/"))
+                        {
+                            outsoleMasterView.OutsoleBalance_Date = TimeHelper.Convert(outsoleMaster.OutsoleBalance);
+                            outsoleMasterView.OutsoleBalance = String.Format("{0:M/d}", outsoleMasterView.OutsoleBalance_Date);
+                        }
+                        else
+                            outsoleMasterView.OutsoleBalance = outsoleMaster.OutsoleBalance;
                     }
                     if (outsoleRemarksUpdateList.Contains(productNo) == false)
                     {
@@ -496,16 +540,18 @@ namespace MasterSchedule.Views
                             
                             #region Caculate for Outsole
                             OutsoleMasterViewModel outsoleMasterView = outsoleMasterViewLineList[i];
-                            // Test
-                            if (outsoleMasterView.ProductNo == "109-7108")
-                            {
-                                var x = outsoleMasterView.ProductNo;
-                            }
+                            
                             int qtyOutsoleQuota = outsoleMasterView.OutsoleQuota;
                             int optOutsole = 0;
                             if (qtyOutsoleQuota > 0)
                             {
                                 DateTime dtOutsoleStartDateTemp = TimeHelper.Convert(outsoleMasterView.OutsoleActualStartDate);
+
+                                var startNow = TimeHelper.Convert(outsoleMasterView.OutsoleActualStartDate);
+                                var startOld = outsoleMasterView.OutsoleActualStartDate_Date;
+                                if (startNow.Month == startOld.Month && startNow.Day == startOld.Day && startNow.Year != startOld.Year)
+                                    dtOutsoleStartDateTemp = startNow < startOld ? startNow : startOld;
+
                                 if ((String.IsNullOrEmpty(outsoleMasterView.OutsoleActualStartDate) == false && dtOutsoleStartDateTemp != dtNothing)
                                     || outsoleMasterView == outsoleMasterViewLineList.First())
                                 {
@@ -518,6 +564,11 @@ namespace MasterSchedule.Views
                                 //sewingMasterView.SewingStartDate = dtSewingStartDate;
                                 dayOutsoleAddition = 0;
                                 DateTime dtOutsoleFinishDateTemp = TimeHelper.Convert(outsoleMasterView.OutsoleActualFinishDate);
+                                var finishNow = TimeHelper.Convert(outsoleMasterView.OutsoleActualFinishDate);
+                                var finishOld = outsoleMasterView.OutsoleActualStartDate_Date;
+                                if (finishNow.Month == finishOld.Month && finishNow.Day == finishOld.Day && finishNow.Year != finishOld.Year)
+                                    dtOutsoleFinishDateTemp = finishNow < finishOld ? finishNow : finishOld;
+
                                 if (String.IsNullOrEmpty(outsoleMasterView.OutsoleActualFinishDate) == false && dtOutsoleFinishDateTemp != dtNothing)
                                 {
                                     dtOutsoleFinishDate = dtOutsoleFinishDateTemp;
@@ -534,7 +585,8 @@ namespace MasterSchedule.Views
                                     }
                                     else
                                     {
-                                        DateTime dtOutsoleBalance = TimeHelper.Convert(outsoleMasterView.OutsoleBalance);
+                                        //DateTime dtOutsoleBalance = TimeHelper.Convert(outsoleMasterView.OutsoleBalance);
+                                        DateTime dtOutsoleBalance = outsoleMasterView.OutsoleBalance_Date;
                                         if (String.IsNullOrEmpty(outsoleMasterView.OutsoleBalance) == true)
                                         {
                                             dtOutsoleFinishDate = dtOutsoleStartDate.AddDays((double)outsoleMasterView.Quantity / (double)qtyOutsoleQuota);
@@ -573,10 +625,14 @@ namespace MasterSchedule.Views
                                         dtOutsoleFinishDate.Hour, dtOutsoleFinishDate.Minute, dtOutsoleFinishDate.Second);
                                 }
 
+                                // Highlight OutsoleStartDate
+                                outsoleMasterView.OutsoleStartDateForeground = Brushes.Black;
                                 if (outsoleMasterView.OutsoleStartDate < outsoleMasterView.OSMatsArrivalOrginal || outsoleMasterView.OutsoleStartDate > outsoleMasterView.SewingStartDate)
                                 {
                                     outsoleMasterView.OutsoleStartDateForeground = Brushes.Red;
                                 }
+                                
+                                // Highlight OutsoleFinishDate
                                 outsoleMasterView.OutsoleFinishDateForeground = Brushes.Black;
                                 if (outsoleMasterView.OutsoleFinishDate > outsoleMasterView.ETD)
                                 {
@@ -584,6 +640,9 @@ namespace MasterSchedule.Views
                                 }
 
                                 dtOutsoleFinishDate = outsoleMasterView.OutsoleFinishDate;
+
+                                outsoleMasterView.OutsoleActualStartDate_Date   = dtOutsoleStartDateTemp;
+                                outsoleMasterView.OutsoleActualFinishDate_Date  = dtOutsoleFinishDateTemp;
                             }
                             #endregion
                         }
@@ -804,7 +863,13 @@ namespace MasterSchedule.Views
                 {
                     string productNo = outsoleMasterView.ProductNo;
                     string sewingLine = outsoleMasterView.SewingLine;
-                    outsoleMasterView.OutsoleBalance = window.resultString;
+                    outsoleMasterView.OutsoleBalance_Date   = TimeHelper.Convert(window.resultString);
+                    if (outsoleMasterView.OutsoleBalance_Date == dtNothing)
+                        outsoleMasterView.OutsoleBalance_Date = dtDefault;
+                    outsoleMasterView.OutsoleBalance        = window.resultString;
+                    if (outsoleMasterView.OutsoleBalance_Date != dtDefault)
+                        outsoleMasterView.OutsoleBalance = String.Format("{0:M/d}", outsoleMasterView.OutsoleBalance_Date);
+
                     outsoleMasterView.OutsoleActualStartDateAuto = window.outsoleActualStartDateAuto;
                     outsoleMasterView.OutsoleActualFinishDateAuto = window.outsoleActualFinishDateAuto;
                     if (String.IsNullOrEmpty(window.resultString) == true)
@@ -844,25 +909,27 @@ namespace MasterSchedule.Views
 
         private void bwInsert_DoWork(object sender, DoWorkEventArgs e)
         {
-            foreach (OutsoleMasterViewModel outsoleMaster in outsoleMasterViewToInsertList)
+            foreach (OutsoleMasterViewModel outsoleMasterView in outsoleMasterViewToInsertList)
             {
-                string productNo = outsoleMaster.ProductNo;
-                string outsoleLine = outsoleMaster.OutsoleLine;
+                string productNo = outsoleMasterView.ProductNo;
+                string outsoleLine = outsoleMasterView.OutsoleLine;
                 OutsoleMasterModel model = new OutsoleMasterModel
                 {
-                    ProductNo = outsoleMaster.ProductNo,
-                    Sequence = outsoleMaster.Sequence,
-                    OutsoleLine = outsoleMaster.OutsoleLine,
-                    OutsoleStartDate = outsoleMaster.OutsoleStartDate,
-                    OutsoleFinishDate = outsoleMaster.OutsoleFinishDate,
-                    OutsoleQuota = outsoleMaster.OutsoleQuota,
-                    OutsoleActualStartDate = outsoleMaster.OutsoleActualStartDate,
-                    OutsoleActualFinishDate = outsoleMaster.OutsoleActualFinishDate,
+                    ProductNo = outsoleMasterView.ProductNo,
+                    Sequence = outsoleMasterView.Sequence,
+                    OutsoleLine     = outsoleMasterView.OutsoleLine,
+                    OutsoleStartDate = outsoleMasterView.OutsoleStartDate,
+                    OutsoleFinishDate   = outsoleMasterView.OutsoleFinishDate,
+                    OutsoleQuota        = outsoleMasterView.OutsoleQuota,
+                    OutsoleActualStartDate  = outsoleMasterView.OutsoleActualStartDate,
+                    OutsoleActualFinishDate = outsoleMasterView.OutsoleActualFinishDate,
+                    OutsoleActualStartDate_Date     = outsoleMasterView.OutsoleActualStartDate_Date,
+                    OutsoleActualFinishDate_Date    = outsoleMasterView.OutsoleActualFinishDate_Date,
 
-                    OutsoleActualStartDateAuto = outsoleMaster.OutsoleActualStartDateAuto,
-                    OutsoleActualFinishDateAuto = outsoleMaster.OutsoleActualFinishDateAuto,
-                    OutsoleBalance = outsoleMaster.OutsoleBalance,
-                    Remarks = outsoleMaster.Remarks,
+                    OutsoleActualStartDateAuto = outsoleMasterView.OutsoleActualStartDateAuto,
+                    OutsoleActualFinishDateAuto = outsoleMasterView.OutsoleActualFinishDateAuto,
+                    OutsoleBalance = outsoleMasterView.OutsoleBalance,
+                    Remarks = outsoleMasterView.Remarks,
 
                     IsSequenceUpdate = false,
                     IsOutsoleLineUpdate = false,

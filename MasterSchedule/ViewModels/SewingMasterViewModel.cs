@@ -375,6 +375,13 @@ namespace MasterSchedule.ViewModels
             }
         }
 
+        public DateTime SewingActualStartDate_Date { get; set; } = new DateTime(2000, 01, 01); // default = dtDefault
+
+        public DateTime SewingActualFinishDate_Date { get; set; } = new DateTime(2000, 01, 01);
+
+        public DateTime CutAActualStartDate_Date { get; set; } = new DateTime(2000, 01, 01);
+        public DateTime CutAActualFinishDate_Date { get; set; } = new DateTime(2000, 01, 01);
+
         public string SewingActualStartDateForSaving { get; set; }
 
         private string _SewingActualFinishDate; //Input Manual
@@ -420,6 +427,8 @@ namespace MasterSchedule.ViewModels
                 OnPropertyChanged("SewingBalance");
             }
         }
+
+        public DateTime SewingBalance_Date { get; set; } = new DateTime(2000, 01, 01);
 
         private DateTime _CutAStartDate; //Auto
         public DateTime CutAStartDate
@@ -497,6 +506,8 @@ namespace MasterSchedule.ViewModels
                 OnPropertyChanged("CutABalance");
             }
         }
+
+        public DateTime CutABalance_Date { get; set; } = new DateTime(2000, 01, 01);
 
         private string _PrintingBalance;//Input Manual
         public string PrintingBalance

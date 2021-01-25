@@ -95,9 +95,14 @@ namespace MasterSchedule.Controllers
             var @OutsoleActualStartDateAuto = new SqlParameter("@OutsoleActualStartDateAuto", outsoleActualStartDateAutoString);
             var @OutsoleActualFinishDateAuto = new SqlParameter("@OutsoleActualFinishDateAuto", outsoleActualFinishDateAutoString);
 
-            var @OutsoleBalance = new SqlParameter("@OutsoleBalance", model.OutsoleBalance);
+            var outsoleBalanceInsert = model.OutsoleBalance;
+            if (model.OutsoleBalance_Date != dtDefault)
+            {
+                outsoleBalanceInsert = model.OutsoleBalance_Date.ToShortDateString();
+            }
+            var @OutsoleBalance     = new SqlParameter("@OutsoleBalance", outsoleBalanceInsert);
 
-            var @IsSequenceUpdate = new SqlParameter("@IsSequenceUpdate", model.IsSequenceUpdate);
+            var @IsSequenceUpdate   = new SqlParameter("@IsSequenceUpdate", model.IsSequenceUpdate);
             var @IsOutsoleLineUpdate = new SqlParameter("@IsOutsoleLineUpdate", model.IsOutsoleLineUpdate);
             var @IsOutsoleStartDateUpdate = new SqlParameter("@IsOutsoleStartDateUpdate", model.IsOutsoleStartDateUpdate);
             var @IsOutsoleFinishDateUpdate = new SqlParameter("@IsOutsoleFinishDateUpdate", model.IsOutsoleFinishDateUpdate);
@@ -109,11 +114,14 @@ namespace MasterSchedule.Controllers
             var @IsOutsoleActualFinishDateAutoUpdate = new SqlParameter("@IsOutsoleActualFinishDateAutoUpdate", model.IsOutsoleActualFinishDateAutoUpdate);
 
             var @IsOutsoleBalanceUpdate = new SqlParameter("@IsOutsoleBalanceUpdate", model.IsOutsoleBalanceUpdate);
-            var @IsRemarksUpdate = new SqlParameter("@IsRemarksUpdate", model.IsRemarksUpdate);
+            var @IsRemarksUpdate        = new SqlParameter("@IsRemarksUpdate", model.IsRemarksUpdate);
+
+            var @OutsoleActualStartDate_Date    = new SqlParameter("@OutsoleActualStartDate_Date", model.OutsoleActualStartDate_Date);
+            var @OutsoleActualFinishDate_Date   = new SqlParameter("@OutsoleActualFinishDate_Date", model.OutsoleActualFinishDate_Date);
 
             SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand(@"EXEC spm_InsertOutsoleMaster_4 @ProductNo, @Sequence, @OutsoleLine, @OutsoleStartDate, @OutsoleFinishDate, @OutsoleQuota, @OutsoleActualStartDate, @OutsoleActualFinishDate, @OutsoleActualStartDateAuto, @OutsoleActualFinishDateAuto, @OutsoleBalance, @Remarks, @IsSequenceUpdate, @IsOutsoleLineUpdate, @IsOutsoleStartDateUpdate, @IsOutsoleFinishDateUpdate, @IsOutsoleQuotaUpdate, @IsOutsoleActualStartDateUpdate, @IsOutsoleActualFinishDateUpdate, @IsOutsoleActualStartDateAutoUpdate, @IsOutsoleActualFinishDateAutoUpdate, @IsOutsoleBalanceUpdate, @IsRemarksUpdate",
-                                                                        @ProductNo, @Sequence, @OutsoleLine, @OutsoleStartDate, @OutsoleFinishDate, @OutsoleQuota, @OutsoleActualStartDate, @OutsoleActualFinishDate, @OutsoleActualStartDateAuto, @OutsoleActualFinishDateAuto, @OutsoleBalance, @Remarks, @IsSequenceUpdate, @IsOutsoleLineUpdate, @IsOutsoleStartDateUpdate, @IsOutsoleFinishDateUpdate, @IsOutsoleQuotaUpdate, @IsOutsoleActualStartDateUpdate, @IsOutsoleActualFinishDateUpdate, @IsOutsoleActualStartDateAutoUpdate, @IsOutsoleActualFinishDateAutoUpdate, @IsOutsoleBalanceUpdate, @IsRemarksUpdate) > 0)
+            if (db.ExecuteStoreCommand(@"EXEC spm_InsertOutsoleMaster_5 @ProductNo, @Sequence, @OutsoleLine, @OutsoleStartDate, @OutsoleFinishDate, @OutsoleQuota, @OutsoleActualStartDate, @OutsoleActualFinishDate, @OutsoleActualStartDateAuto, @OutsoleActualFinishDateAuto, @OutsoleBalance, @Remarks, @IsSequenceUpdate, @IsOutsoleLineUpdate, @IsOutsoleStartDateUpdate, @IsOutsoleFinishDateUpdate, @IsOutsoleQuotaUpdate, @IsOutsoleActualStartDateUpdate, @IsOutsoleActualFinishDateUpdate, @IsOutsoleActualStartDateAutoUpdate, @IsOutsoleActualFinishDateAutoUpdate, @IsOutsoleBalanceUpdate, @IsRemarksUpdate, @OutsoleActualStartDate_Date, @OutsoleActualFinishDate_Date",
+                                                                        @ProductNo, @Sequence, @OutsoleLine, @OutsoleStartDate, @OutsoleFinishDate, @OutsoleQuota, @OutsoleActualStartDate, @OutsoleActualFinishDate, @OutsoleActualStartDateAuto, @OutsoleActualFinishDateAuto, @OutsoleBalance, @Remarks, @IsSequenceUpdate, @IsOutsoleLineUpdate, @IsOutsoleStartDateUpdate, @IsOutsoleFinishDateUpdate, @IsOutsoleQuotaUpdate, @IsOutsoleActualStartDateUpdate, @IsOutsoleActualFinishDateUpdate, @IsOutsoleActualStartDateAutoUpdate, @IsOutsoleActualFinishDateAutoUpdate, @IsOutsoleBalanceUpdate, @IsRemarksUpdate, @OutsoleActualStartDate_Date, @OutsoleActualFinishDate_Date) > 0)
             {
                 return true;
             }

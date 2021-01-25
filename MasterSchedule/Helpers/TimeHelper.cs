@@ -30,6 +30,7 @@ namespace MasterSchedule.Helpers
             {
                 if (String.IsNullOrEmpty(input) == false)
                 {
+                    //output = new DateTime(2000, 1, 1);
                     output = new DateTime(1999, 12, 31);
                 }
             }

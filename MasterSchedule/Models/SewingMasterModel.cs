@@ -17,18 +17,24 @@ namespace MasterSchedule.Models
         public string SewingPrep { get; set; }
 
         public string SewingActualStartDate { get; set; }
+        public DateTime SewingActualStartDate_Date { get; set; }
         public string SewingActualFinishDate { get; set; }
+        public DateTime SewingActualFinishDate_Date { get; set; }
 
         public string SewingActualStartDateAuto { get; set; }
         public string SewingActualFinishDateAuto { get; set; }
 
         public string SewingBalance { get; set; }
+        public DateTime SewingBalance_Date { get; set; } = new DateTime(2000, 01, 01);
         public DateTime CutAStartDate { get; set; }
         public DateTime CutAFinishDate { get; set; }
         public int CutAQuota { get; set; }
         public string CutAActualStartDate { get; set; }
+        public DateTime CutAActualStartDate_Date { get; set; }
         public string CutAActualFinishDate { get; set; }
+        public DateTime CutAActualFinishDate_Date { get; set; }
         public string CutABalance { get; set; }
+        public DateTime CutABalance_Date { get; set; }
         public string PrintingBalance { get; set; }
         public string H_FBalance { get; set; }
         public string EmbroideryBalance { get; set; }

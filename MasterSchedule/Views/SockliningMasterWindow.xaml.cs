@@ -204,7 +204,13 @@ namespace MasterSchedule.Views
                 if (outsoleMaster != null)
                 {
                     sockliningMasterView.OutsoleStartDate = outsoleMaster.OutsoleStartDate;
-                    sockliningMasterView.OutsoleBalance = outsoleMaster.OutsoleBalance;
+                    //sockliningMasterView.OutsoleBalance = outsoleMaster.OutsoleBalance;
+                    if (outsoleMaster.OutsoleBalance.Contains("/"))
+                    {
+                        sockliningMasterView.OutsoleBalance = String.Format("{0:M/d}", TimeHelper.Convert(outsoleMaster.OutsoleBalance));
+                    }
+                    else
+                        sockliningMasterView.OutsoleBalance = outsoleMaster.OutsoleBalance;
                 }
                 else
                 {
@@ -216,7 +222,14 @@ namespace MasterSchedule.Views
                 if (sewingMaster != null)
                 {
                     sockliningMasterView.SewingStartDate = sewingMaster.SewingStartDate;
-                    sockliningMasterView.SewingBalance = sewingMaster.SewingBalance;
+                    //sockliningMasterView.SewingBalance = sewingMaster.SewingBalance;
+                    if (sewingMaster.SewingBalance.Contains("/"))
+                    {
+                        sockliningMasterView.SewingBalance = String.Format("{0:M/d}", TimeHelper.Convert(sewingMaster.SewingBalance));
+                    }
+                    else
+                        sockliningMasterView.SewingBalance = sewingMaster.SewingBalance;
+
                     sockliningMasterView.SewingLine = sewingMaster.SewingLine;
                 }
                 else

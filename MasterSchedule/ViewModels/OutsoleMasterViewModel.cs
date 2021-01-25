@@ -306,7 +306,9 @@ namespace MasterSchedule.ViewModels
                 _OutsoleActualStartDate = value;
                 OnPropertyChanged("OutsoleActualStartDate");
             }
-        }        
+        }
+
+        public DateTime OutsoleActualStartDate_Date { get; set; } = new DateTime(2000, 01, 01);
 
         private string _OutsoleActualFinishDate; //Input Manual
         public string OutsoleActualFinishDate
@@ -318,6 +320,7 @@ namespace MasterSchedule.ViewModels
                 OnPropertyChanged("OutsoleActualFinishDate");
             }
         }
+        public DateTime OutsoleActualFinishDate_Date { get; set; } = new DateTime(2000, 01, 01);
 
         private string _OutsoleActualStartDateAuto; //Auto base on balance
         public string OutsoleActualStartDateAuto
@@ -351,6 +354,8 @@ namespace MasterSchedule.ViewModels
                 OnPropertyChanged("OutsoleBalance");
             }
         }
+
+        public DateTime OutsoleBalance_Date { get; set; } = new DateTime(2000, 01, 01);
 
         private string _ReleasedQuantity; //Input Manual -> SizeRun
         public string ReleasedQuantity

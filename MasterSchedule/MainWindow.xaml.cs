@@ -1037,7 +1037,8 @@ namespace MasterSchedule
                 "1.2.8.3: " + "Update: Add Input Inspect Upper Accessories, Import Excel Data, Revise Supplier, Create Report, Report Detail 'SV.'\n" +
                 "1.2.8.4: " + "Update: Import WHLamination Material, Report(OSWHMaterialCheckDetail) 'SV'.\n" +
                 "1.2.8.5: " + "Update: Input Upper Accessories Delivery 'SV'.\n" +
-                "1.2.8.6: " + "Update: Upper Accessories Reports 'SV'";
+                "1.2.8.6: " + "Update: Upper Accessories Reports 'SV'\n" +
+                "1.2.8.8: " + "Update: Display OS/Size OSDeliveryReport 'SV'";
             //MessageBox.Show(version, string.Format("Current Version: {0}", AssemblyHelper.Version()), MessageBoxButton.OK, MessageBoxImage.Information);
             UpdateHistoryWindow window = new UpdateHistoryWindow(version, AssemblyHelper.Version());
             window.Show();

@@ -181,7 +181,8 @@ namespace MasterSchedule.Views
             }
             else
             {
-                resultString = String.Format("{0:M/d}", nowDate);
+                //resultString = String.Format("{0:M/d}", nowDate);
+                resultString = nowDate.ToShortDateString();
             }
             this.DialogResult = true;
         }
