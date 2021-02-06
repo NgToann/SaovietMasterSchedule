@@ -64,13 +64,13 @@ namespace MasterSchedule.Views
             {
                 completionStatusViewList = new List<CompletionStatusViewModel>();
 
-                etdStart = dpETDStart.SelectedDate.Value;
-                etdEnd = dpETDEnd.SelectedDate.Value;
+                etdStart    = dpETDStart.SelectedDate.Value;
+                etdEnd      = dpETDEnd.SelectedDate.Value;
 
-                this.Cursor = Cursors.Wait;
-                btnLoad.IsEnabled = false;
-                btnView.IsEnabled = false;
-                dgMain.ItemsSource = null;
+                this.Cursor         = Cursors.Wait;
+                btnLoad.IsEnabled   = false;
+                btnView.IsEnabled   = false;
+                dgMain.ItemsSource  = null;
 
                 threadLoad.RunWorkerAsync();
             }
@@ -91,20 +91,20 @@ namespace MasterSchedule.Views
 
                 //var order1 = orderList.Where(w => w.ProductNo == productNo).FirstOrDefault();
 
-                var sewingMaster = sewingMasterList.FirstOrDefault(f => f.ProductNo == productNo);
-                var outsoleMaster = outsoleMasterList.FirstOrDefault(f => f.ProductNo == productNo);
-                var assemblyMaster = assemblyMasterList.FirstOrDefault(f => f.ProductNo == productNo);
-                var orderExtra = orderExtraList.FirstOrDefault(f => f.ProductNo == productNo);
+                var sewingMaster    = sewingMasterList.FirstOrDefault(f => f.ProductNo == productNo);
+                var outsoleMaster   = outsoleMasterList.FirstOrDefault(f => f.ProductNo == productNo);
+                var assemblyMaster  = assemblyMasterList.FirstOrDefault(f => f.ProductNo == productNo);
+                var orderExtra      = orderExtraList.FirstOrDefault(f => f.ProductNo == productNo);
 
                 CompletionStatusViewModel completionStatusView = new CompletionStatusViewModel
                 {
-                    ProductNo = order.ProductNo,
-                    Country = order.Country,
-                    ShoeName = order.ShoeName,
-                    ArticleNo = order.ArticleNo,
+                    ProductNo   = order.ProductNo,
+                    Country     = order.Country,
+                    ShoeName    = order.ShoeName,
+                    ArticleNo   = order.ArticleNo,
                     OutsoleCode = order.OutsoleCode,
-                    ETD = order.ETD,
-                    Quantity = order.Quantity,
+                    ETD         = order.ETD,
+                    Quantity    = order.Quantity,
                 };
 
                 if (orderExtra != null)
@@ -122,10 +122,10 @@ namespace MasterSchedule.Views
 
                 if (sewingMaster != null)
                 {
-                    completionStatusView.SewingLine = sewingMaster.SewingLine;
-                    completionStatusView.CutAFinishDate = sewingMaster.CutBBalance;
-                    completionStatusView.CutAActualFinishDate = TimeHelper.ConvertDateToView(sewingMaster.CutAActualFinishDate);
-                    completionStatusView.SewingFinishDate = sewingMaster.SewingActualFinishDate;
+                    completionStatusView.SewingLine             = sewingMaster.SewingLine;
+                    completionStatusView.CutAFinishDate         = sewingMaster.CutBBalance;
+                    completionStatusView.CutAActualFinishDate   = TimeHelper.ConvertDateToView(sewingMaster.CutAActualFinishDate);
+                    completionStatusView.SewingFinishDate       = sewingMaster.SewingActualFinishDate;
 
                     if (string.IsNullOrEmpty(sewingMaster.SewingActualFinishDate.Trim()) == true)
                     {

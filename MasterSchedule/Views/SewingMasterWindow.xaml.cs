@@ -1817,8 +1817,8 @@ namespace MasterSchedule.Views
                 SewingInputOutputWindow window = new SewingInputOutputWindow(sewingMasterView.ProductNo, sewingMasterView.SewingActualStartDateAuto, sewingMasterView.SewingActualFinishDateAuto);
                 if (window.ShowDialog() == true)
                 {
-                    string productNo = sewingMasterView.ProductNo;
-                    string sewingLine = sewingMasterView.SewingLine;
+                    string productNo    = sewingMasterView.ProductNo;
+                    string sewingLine   = sewingMasterView.SewingLine;
 
                     sewingMasterView.SewingBalance_Date = TimeHelper.Convert(window.resultString);
                     if (sewingMasterView.SewingBalance_Date == dtNothing)
@@ -1873,47 +1873,47 @@ namespace MasterSchedule.Views
                 var sewingLine = sewingMasterViewToInsert.SewingLine;
                 var model = new SewingMasterModel
                 {
-                    ProductNo = productNo,
-                    Sequence = sewingMasterViewToInsert.Sequence,
-                    SewingLine = sewingLine,
-                    SewingStartDate = sewingMasterViewToInsert.SewingStartDate,
-                    SewingFinishDate = sewingMasterViewToInsert.SewingFinishDate,
-                    SewingPrep = sewingMasterViewToInsert.SewingPrep,
-                    SewingQuota = sewingMasterViewToInsert.SewingQuota,
+                    ProductNo           = productNo,
+                    Sequence            = sewingMasterViewToInsert.Sequence,
+                    SewingLine          = sewingLine,
+                    SewingStartDate     = sewingMasterViewToInsert.SewingStartDate,
+                    SewingFinishDate    = sewingMasterViewToInsert.SewingFinishDate,
+                    SewingPrep          = sewingMasterViewToInsert.SewingPrep,
+                    SewingQuota         = sewingMasterViewToInsert.SewingQuota,
 
-                    SewingActualStartDate = sewingMasterViewToInsert.SewingActualStartDate,
-                    SewingActualStartDate_Date = sewingMasterViewToInsert.SewingActualStartDate_Date,
+                    SewingActualStartDate       = sewingMasterViewToInsert.SewingActualStartDate,
+                    SewingActualStartDate_Date  = sewingMasterViewToInsert.SewingActualStartDate_Date,
 
-                    SewingActualFinishDate = sewingMasterViewToInsert.SewingActualFinishDate,
+                    SewingActualFinishDate      = sewingMasterViewToInsert.SewingActualFinishDate,
                     SewingActualFinishDate_Date = sewingMasterViewToInsert.SewingActualFinishDate_Date,
 
-                    SewingActualStartDateAuto = sewingMasterViewToInsert.SewingActualStartDateAuto,
-                    SewingActualFinishDateAuto = sewingMasterViewToInsert.SewingActualFinishDateAuto,
+                    SewingActualStartDateAuto   = sewingMasterViewToInsert.SewingActualStartDateAuto,
+                    SewingActualFinishDateAuto  = sewingMasterViewToInsert.SewingActualFinishDateAuto,
 
-                    SewingBalance = sewingMasterViewToInsert.SewingBalance,
+                    SewingBalance   = sewingMasterViewToInsert.SewingBalance,
 
-                    CutAStartDate = sewingMasterViewToInsert.CutAStartDate,
-                    CutAFinishDate = sewingMasterViewToInsert.CutAFinishDate,
-                    CutAQuota = sewingMasterViewToInsert.CutAQuota,
+                    CutAStartDate   = sewingMasterViewToInsert.CutAStartDate,
+                    CutAFinishDate  = sewingMasterViewToInsert.CutAFinishDate,
+                    CutAQuota       = sewingMasterViewToInsert.CutAQuota,
 
-                    CutAActualStartDate = sewingMasterViewToInsert.CutAActualStartDate,
-                    CutAActualStartDate_Date = sewingMasterViewToInsert.CutAActualStartDate_Date,
+                    CutAActualStartDate         = sewingMasterViewToInsert.CutAActualStartDate,
+                    CutAActualStartDate_Date    = sewingMasterViewToInsert.CutAActualStartDate_Date,
 
-                    CutAActualFinishDate = sewingMasterViewToInsert.CutAActualFinishDate,
-                    CutAActualFinishDate_Date = sewingMasterViewToInsert.CutAActualFinishDate_Date,
+                    CutAActualFinishDate        = sewingMasterViewToInsert.CutAActualFinishDate,
+                    CutAActualFinishDate_Date   = sewingMasterViewToInsert.CutAActualFinishDate_Date,
 
-                    CutABalance = sewingMasterViewToInsert.CutABalance,
-                    CutABalance_Date = sewingMasterViewToInsert.CutABalance_Date,
+                    CutABalance         = sewingMasterViewToInsert.CutABalance,
+                    CutABalance_Date    = sewingMasterViewToInsert.CutABalance_Date,
 
-                    PrintingBalance = sewingMasterViewToInsert.PrintingBalance,
-                    H_FBalance = sewingMasterViewToInsert.H_FBalance,
-                    EmbroideryBalance = sewingMasterViewToInsert.EmbroideryBalance,
+                    PrintingBalance     = sewingMasterViewToInsert.PrintingBalance,
+                    H_FBalance          = sewingMasterViewToInsert.H_FBalance,
+                    EmbroideryBalance   = sewingMasterViewToInsert.EmbroideryBalance,
 
                     CutBActualStartDate = sewingMasterViewToInsert.CutBActualStartDate,
-                    CutBBalance = sewingMasterViewToInsert.CutBBalance,
-                    AutoCut = sewingMasterViewToInsert.AutoCut,
-                    LaserCut = sewingMasterViewToInsert.LaserCut,
-                    HuasenCut = sewingMasterViewToInsert.HuasenCut,
+                    CutBBalance     = sewingMasterViewToInsert.CutBBalance,
+                    AutoCut         = sewingMasterViewToInsert.AutoCut,
+                    LaserCut        = sewingMasterViewToInsert.LaserCut,
+                    HuasenCut       = sewingMasterViewToInsert.HuasenCut,
 
                     CutBStartDate = sewingMasterViewToInsert.CutBStartDate,
                     AtomCutA = sewingMasterViewToInsert.AtomCutA,
