@@ -57,8 +57,8 @@ namespace MasterSchedule.Views
                     dr["Quantity"] = psrBySize.Quantity;
                     dr["TotalQuantity"] = printSizeListByPO.Sum(s => s.Quantity);
 
-                    if (productNo == productNoList.LastOrDefault())
-                        dr["TotalQuantityPrint"] = String.Format("Total Quantity: {0}", printSizeRunList.Sum(s => s.Quantity));
+                    //if (productNo == productNoList.LastOrDefault())
+                    //    dr["TotalQuantityPrint"] = String.Format("Total Quantity: {0}", printSizeRunList.Sum(s => s.Quantity));
 
                     dt.Rows.Add(dr);
                 }
@@ -67,9 +67,10 @@ namespace MasterSchedule.Views
             ReportDataSource rds = new ReportDataSource();
             rds.Name = "PrintSizeRunDataSource";
             rds.Value = dt;
+            ReportParameter rp = new ReportParameter("TotalQuantity", String.Format("Total Quantity: {0}", printSizeRunList.Sum(s => s.Quantity)));
             //ReportParameter rp = new ReportParameter("ShowOSSize", privateDef.ShowOSSizeValue == true ? "1" : "0");
             reportViewer.LocalReport.ReportPath = @"Reports\PrinSizeRunReport.rdlc";
-            //reportViewer.LocalReport.SetParameters(new ReportParameter[] { rp });
+            reportViewer.LocalReport.SetParameters(new ReportParameter[] { rp });
             reportViewer.LocalReport.DataSources.Add(rds);
             reportViewer.RefreshReport();
             this.Cursor = null;
