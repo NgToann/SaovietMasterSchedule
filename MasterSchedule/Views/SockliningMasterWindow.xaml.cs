@@ -57,6 +57,8 @@ namespace MasterSchedule.Views
         RawMaterialSearchBoxWindow searchBox;
         List<String> productNoPrintList;
 
+        List<POSequenceModel> poSequenceSourceList;
+        List<String> linesNeedSaving;
         public SockliningMasterWindow(AccountModel account)
         {
             InitializeComponent();
@@ -101,6 +103,8 @@ namespace MasterSchedule.Views
             productNoPrintList = new List<string>();
             searchBox = new RawMaterialSearchBoxWindow();
 
+            poSequenceSourceList = new List<POSequenceModel>();
+            linesNeedSaving = new List<string>();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -122,11 +126,6 @@ namespace MasterSchedule.Views
                 colETD.CanUserSort = true;
             }
 
-            //if (account.Simulation == true)
-            //{
-            //    btnEnableSimulation.Visibility = Visibility.Visible;
-            //}
-
             if (bwLoad.IsBusy == false)
             {
                 this.Cursor = Cursors.Wait;
@@ -134,15 +133,31 @@ namespace MasterSchedule.Views
             }
         }
 
+        private void btnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            if (bwLoad.IsBusy == false)
+            {
+                sockliningMasterViewList.Clear();
+                this.Cursor = Cursors.Wait;
+                btnCaculate.IsEnabled = false;
+                btnRefresh.IsEnabled = false;
+                prgStatus.Value = 0;
+                lblStatus.Text = "Re-loading ...";
+                prgStatus.Visibility = Visibility.Visible;
+                bwLoad.RunWorkerAsync();
+            }
+        }
+
         private void bwLoad_DoWork(object sender, DoWorkEventArgs e)
         {
             offDayList = OffDayController.Select();
-            orderList = OrdersController.Select();
-            sockliningMasterList = SockliningMasterController.Select();
-            sewingMasterList = SewingMasterController.Select();
-            assemblyMasterList = AssemblyMasterController.Select();
-            outsoleMasterList = OutsoleMasterController.Select();
-            rawMaterialList = RawMaterialController.Select();
+            orderList = OrdersController.Select().Where(w => account.TypeOfShoes != -1 ? w.TypeOfShoes == account.TypeOfShoes : w.TypeOfShoes != -16111992).ToList();
+            var productNoListWithAccount = orderList.Select(s => s.ProductNo).ToList();
+            sockliningMasterList    = SockliningMasterController.Select().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
+            sewingMasterList        = SewingMasterController.Select().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
+            assemblyMasterList      = AssemblyMasterController.Select().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
+            outsoleMasterList       = OutsoleMasterController.Select().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
+            rawMaterialList         = RawMaterialController.Select().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
 
             int[] materialIdUpperArray = { 1, 2, 3, 4, 10 };
             int[] materialIdSewingArray = { 5, 7 };
@@ -150,8 +165,29 @@ namespace MasterSchedule.Views
             int[] materialIdAssemblyArray = { 8 };
             int[] materialIdSockliningArray = { 9 };
 
+            foreach (var so in sockliningMasterList)
+            {
+                poSequenceSourceList.Add(new POSequenceModel
+                {
+                    ProductNo = so.ProductNo,
+                    Sequence = so.Sequence,
+                    Id = string.Format("{0}-{1}", so.ProductNo, so.Sequence)
+                });
+            }
+
+            Dispatcher.Invoke(new Action(() =>
+            {
+                lblStatus.Text = "Loading PO ...";
+                prgStatus.Maximum = orderList.Count();
+            }));
+            int index = 1;
             for (int i = 0; i <= orderList.Count - 1; i++)
             {
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    lblStatus.Text = String.Format("Loading {0} / {1} PO", index, orderList.Count());
+                    prgStatus.Value = index;
+                }));
                 OrdersModel order = orderList[i];
                 SockliningMasterViewModel sockliningMasterView = new SockliningMasterViewModel
                 {
@@ -262,6 +298,7 @@ namespace MasterSchedule.Views
                     sockliningMasterView.SockliningFinishDateForeground = Brushes.Red;
                 }
 
+                index++;
                 sockliningMasterViewList.Add(sockliningMasterView);
             }
             sockliningMasterViewList = sockliningMasterViewList.OrderBy(s => s.SockliningLine).ThenBy(s => s.Sequence).ToList();
@@ -312,6 +349,9 @@ namespace MasterSchedule.Views
             btnCaculate.IsEnabled = true;
             btnSave.IsEnabled = true;
 
+            prgStatus.Visibility = Visibility.Collapsed;
+            lblStatus.Text = "";
+            btnRefresh.IsEnabled = true;
             //btnEnableSimulation.IsEnabled = true;
             this.Cursor = null;
         }
@@ -354,11 +394,13 @@ namespace MasterSchedule.Views
                     }
                     if (sockliningActualStartDateUpdateList.Contains(productNo) == false)
                     {
-                        sockliningMasterView.SockliningActualStartDate = sockliningMaster.SockliningActualStartDate;
+                        sockliningMasterView.SockliningActualStartDate = TimeHelper.ConvertDateToView(sockliningMaster.SockliningActualStartDate);
+                        //sockliningMasterView.SockliningActualStartDate = sockliningMaster.SockliningActualStartDate;
                     }
                     if (sockliningActualFinishDateUpdateList.Contains(productNo) == false)
                     {
-                        sockliningMasterView.SockliningActualFinishDate = sockliningMaster.SockliningActualFinishDate;
+                        //sockliningMasterView.SockliningActualFinishDate = sockliningMaster.SockliningActualFinishDate;
+                        sockliningMasterView.SockliningActualFinishDate = TimeHelper.ConvertDateToView(sockliningMaster.SockliningActualFinishDate);
                     }
                     if (insoleBalanceUpdateList.Contains(productNo) == false)
                     {
@@ -603,7 +645,8 @@ namespace MasterSchedule.Views
             {
                 return;
             }
-
+            if (!linesNeedSaving.Contains(sockliningMasterView.SockliningLine))
+                linesNeedSaving.Add(sockliningMasterView.SockliningLine);
             string productNo = sockliningMasterView.ProductNo;
             if (e.Column == colSockliningLine || e.Column == colSockliningQuota || e.Column == colSockliningActualStartDate ||
                 e.Column == colSockliningActualFinishDate || e.Column == colInsoleBalance || e.Column == colInsockBalance)
@@ -745,7 +788,12 @@ namespace MasterSchedule.Views
                         sockliningMasterViewClicked.SockliningActualFinishDate = TimeHelper.ConvertDateToView(sockliningFinishDate.ToString("MM/dd/yyyy"));
                     else
                         sockliningMasterViewClicked.SockliningActualFinishDate = "";
+
                 }
+
+
+                if (!linesNeedSaving.Contains(sockliningMasterViewClicked.SockliningLine))
+                    linesNeedSaving.Add(sockliningMasterViewClicked.SockliningLine);
             }
         }
 
@@ -772,6 +820,183 @@ namespace MasterSchedule.Views
         }
 
         private void bwInsert_DoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                e.Result = true;
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    prgStatus.Visibility = Visibility.Visible;
+                    prgStatus.Value = 0;
+                }));
+                var sourceList = sockliningMasterViewFindList.ToList();
+
+                var productNoSourceList = sockliningMasterList.Select(s => s.ProductNo).ToList();
+
+                // Insert NewPO
+                var insertNewPOList = sourceList.Where(w => !productNoSourceList.Contains(w.ProductNo)).ToList();
+                if (insertNewPOList.Count() > 0 )
+                {
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        prgStatus.Value = 0;
+                        prgStatus.Maximum = insertNewPOList.Count();
+                        lblStatus.Text = "Inserting New PO ...";
+                    }));
+                    int index = 1;
+                    foreach (var item in insertNewPOList)
+                    {
+                        InsertAModel(item, true);
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            lblStatus.Text = String.Format("Saving {0} / {1} PO", index, insertNewPOList.Count());
+                            prgStatus.Value = index;
+                        }));
+                        index++;
+                    }
+                }
+
+                // Update SockliningMaster Info
+                var updateList = sourceList.Where(w => linesNeedSaving.Contains(w.SockliningLine)).ToList();
+                if (updateList.Count() > 0)
+                {
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        lblStatus.Text = "Saving PO ...";
+                        prgStatus.Value = 0;
+                        prgStatus.Maximum = updateList.Count();
+                    }));
+                    int index_1 = 1;
+
+                    foreach (var item in updateList)
+                    {
+                        InsertAModel(item, false);
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            lblStatus.Text = String.Format("Saving {0} / {1} PO", index_1, updateList.Count());
+                            prgStatus.Value = index_1;
+                        }));
+                        index_1++;
+                    }
+                    linesNeedSaving.Clear();
+                }
+
+                // Update Sequence
+                if (sourceList.Count() == sockliningMasterViewList.Count() && account.SockliningMaster == true)
+                {
+                    // Get the sequence list
+                    int sqNo = 0;
+                    var productNoList = sourceList.Select(s => s.ProductNo).ToList();
+                    var sequenceCurrentList = new List<POSequenceModel>();
+                    foreach (var po in productNoList)
+                    {
+                        sequenceCurrentList.Add(new POSequenceModel
+                        {
+                            ProductNo = po,
+                            Sequence = sqNo,
+                            Id = po + "-" + sqNo.ToString()
+                        });
+                        sqNo++;
+                    }
+
+                    var sqNeedUpdateList = new List<POSequenceModel>();
+                    foreach (var item in sequenceCurrentList)
+                    {
+                        var checkSqChange = poSequenceSourceList.FirstOrDefault(f => f.Id == item.Id);
+                        if (checkSqChange == null)
+                            sqNeedUpdateList.Add(item);
+                    }
+                    poSequenceSourceList.Clear();
+                    poSequenceSourceList = sequenceCurrentList.ToList();
+                    if (sqNeedUpdateList.Count() > 0)
+                    {
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            lblStatus.Text = "Saving Sequence PO ...";
+                            prgStatus.Value = 0;
+                            prgStatus.Maximum = sqNeedUpdateList.Count();
+                        }));
+                        int index = 1;
+                        foreach (var item in sqNeedUpdateList)
+                        {
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                lblStatus.Text = String.Format("Saving {0} / {1} Sq", index, sqNeedUpdateList.Count());
+                                prgStatus.Value = index;
+                            }));
+                            CommonController.UpdateSequenceByPO(item.ProductNo, item.Sequence, "Socklining");
+                            index++;
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    MessageBox.Show(ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                    e.Result = false;
+                    return;
+                }));
+            }
+        }
+        
+        private void InsertAModel(SockliningMasterViewModel sockliningInsert, bool isNewPO)
+        {
+            string productNo = sockliningInsert.ProductNo;
+            string sockliningLine = sockliningInsert.SockliningLine;
+            SockliningMasterModel model = new SockliningMasterModel
+            {
+                ProductNo = sockliningInsert.ProductNo,
+                Sequence = sockliningInsert.Sequence,
+                SockliningLine = sockliningInsert.SockliningLine,
+                SockliningStartDate = sockliningInsert.SockliningStartDate,
+                SockliningFinishDate = sockliningInsert.SockliningFinishDate,
+                SockliningQuota = sockliningInsert.SockliningQuota,
+                SockliningActualStartDate = sockliningInsert.SockliningActualStartDate,
+                SockliningActualFinishDate = sockliningInsert.SockliningActualFinishDate,
+                InsoleBalance = sockliningInsert.InsoleBalance,
+                InsockBalance = sockliningInsert.InsockBalance,
+
+                IsSequenceUpdate = false,
+                IsSockliningLineUpdate = false,
+                IsSockliningStartDateUpdate = false,
+                IsSockliningFinishDateUpdate = false,
+                IsSockliningQuotaUpdate = false,
+                IsSockliningActualStartDateUpdate = false,
+                IsSockliningActualFinishDateUpdate = false,
+                IsInsoleBalanceUpdate = false,
+                IsInsockBalanceUpdate = false,
+            };
+
+            model.IsSequenceUpdate = isSequenceEditing;
+
+            model.IsSockliningLineUpdate = sockliningLineUpdateList.Contains(productNo);
+            model.IsSockliningStartDateUpdate = lineSockliningEditingList.Contains(sockliningLine);
+            model.IsSockliningFinishDateUpdate = lineSockliningEditingList.Contains(sockliningLine);
+            model.IsSockliningQuotaUpdate = sockliningQuotaUpdateList.Contains(productNo);
+            model.IsSockliningActualStartDateUpdate = sockliningActualStartDateUpdateList.Contains(productNo);
+            model.IsSockliningActualFinishDateUpdate = sockliningActualFinishDateUpdateList.Contains(productNo);
+            model.IsInsoleBalanceUpdate = insoleBalanceUpdateList.Contains(productNo);
+            model.IsInsockBalanceUpdate = insockBalanceUpdateList.Contains(productNo);
+            // && sequenceUpdateList.Contains(model.Sequence)
+            if ((model.IsSequenceUpdate == true) ||
+                model.IsSockliningLineUpdate == true ||
+                model.IsSockliningStartDateUpdate == true ||
+                model.IsSockliningFinishDateUpdate == true ||
+                model.IsSockliningQuotaUpdate == true ||
+                model.IsSockliningActualStartDateUpdate == true ||
+                model.IsSockliningActualFinishDateUpdate == true ||
+                model.IsInsoleBalanceUpdate == true ||
+                model.IsInsockBalanceUpdate ||
+                isNewPO == true)
+            {
+                SockliningMasterController.Insert_2(model);
+            }
+        }
+
+        private void bwInsert_DoWork_Before(object sender, DoWorkEventArgs e)
         {
             foreach (SockliningMasterViewModel sockliningMaster in sockliningMasterViewToInsertList)
             {
@@ -846,6 +1071,8 @@ namespace MasterSchedule.Views
         {
             btnSave.IsEnabled = true;
             this.Cursor = null;
+            if (e.Result != null && (bool)e.Result == false)
+                return;
             if (e.Error != null)
             {
                 MessageBox.Show(e.Error.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -864,6 +1091,9 @@ namespace MasterSchedule.Views
             insockBalanceUpdateList.Clear();
             
             MessageBox.Show("Saved!", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+
+            lblStatus.Text = "";
+            prgStatus.Visibility = Visibility.Collapsed;
         }
 
         private void dgSewingMaster_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
@@ -1145,5 +1375,7 @@ namespace MasterSchedule.Views
             PrintSizeRunWindow window = new PrintSizeRunWindow(String.Join("; ", productNoPrintList));
             window.Show();
         }
+
+        
     }
 }

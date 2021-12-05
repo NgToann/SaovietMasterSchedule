@@ -59,6 +59,12 @@
     </StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LiveCharts, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.0.9.7\lib\net40\LiveCharts.dll</HintPath>
+    </Reference>
+    <Reference Include="LiveCharts.Wpf, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.Wpf.0.9.7\lib\net40\LiveCharts.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -97,6 +103,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\ChartController.cs" />
+    <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\InsockMaterialController.cs" />
     <Compile Include="Controllers\InsockRawMaterialController.cs" />
@@ -146,6 +154,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>OSMatWHCheckDetailBySize.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="DataSets\OSMPaintShopDataset.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>OSMPaintShopDataset.xsd</DependentUpon>
     </Compile>
     <Compile Include="DataSets\OSMWHCheckingDataSet.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -199,6 +212,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>PrintSizeRunDataSet.xsd</DependentUpon>
     </Compile>
+    <Compile Include="DataSets\SewingMasterFileDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SewingMasterFileDataSet.xsd</DependentUpon>
+    </Compile>
     <Compile Include="DataSets\SewingSummaryDataset.cs">
       <DependentUpon>SewingSummaryDataset.xsd</DependentUpon>
     </Compile>
@@ -217,6 +235,9 @@
     </Compile>
     <Compile Include="Helpers\AppSettingHelper.cs" />
     <Compile Include="Helpers\ExcelHelper.cs" />
+    <Compile Include="Helpers\SizeHelper.cs" />
+    <Compile Include="Models\AssemblyMasterSourceModel.cs" />
+    <Compile Include="Models\ChartRawMaterialModel.cs" />
     <Compile Include="Models\EExcute.cs" />
     <Compile Include="Models\EPrintSchedule.cs" />
     <Compile Include="Models\ERelease.cs" />
@@ -231,8 +252,10 @@
     <Compile Include="Models\MaterialInspectModel.cs" />
     <Compile Include="Models\MaterialPlanModel.cs" />
     <Compile Include="Models\OSWHWorkingTimeModel.cs" />
+    <Compile Include="Models\OutsoleMasterSourceModel.cs" />
     <Compile Include="Models\OutsoleMaterialBalanceReportModel.cs" />
     <Compile Include="Models\OutsoleMaterialCheckingModel.cs" />
+    <Compile Include="Models\OutsoleMaterialConfirmWorkingCartModel.cs" />
     <Compile Include="Models\OutsoleMaterialDeliveryDetailModel.cs" />
     <Compile Include="Models\OutsoleMaterialDetailModel.cs" />
     <Compile Include="Models\OutsoleMaterialRackPositionModel.cs" />
@@ -242,13 +265,16 @@
     <Compile Include="Models\OutsoleWHDeliveryReportModel.cs" />
     <Compile Include="Models\OutsoleWHFGModel.cs" />
     <Compile Include="Models\PhaseModel.cs" />
+    <Compile Include="Models\POSequenceModel.cs" />
     <Compile Include="Models\PrintSizeRunModel.cs" />
     <Compile Include="Models\PrivateDefineModel.cs" />
     <Compile Include="Models\ProductNoReviseModel.cs" />
     <Compile Include="Models\OutsoleMaterialReleasePaintingModel.cs" />
+    <Compile Include="Models\RawMaterialSummarizeModel.cs" />
     <Compile Include="Models\RejectModel.cs" />
     <Compile Include="Models\ReportOSMaterialCheckDetailModel.cs" />
     <Compile Include="Models\ReportOSMaterialCheckWHInventoryModel.cs" />
+    <Compile Include="Models\ReportOSMPaintShopModel.cs" />
     <Compile Include="Models\ReportOSMWHCheckingModel.cs" />
     <Compile Include="Models\ReportOutsoleInventoryModel.cs" />
     <Compile Include="Models\ReportOutsoleMaterialDeliveryFromToModel.cs" />
@@ -257,6 +283,8 @@
     <Compile Include="Models\ReportUpperAccessoriesDetailBySupplierModel.cs" />
     <Compile Include="Models\ReportUpperAccessoriesModel.cs" />
     <Compile Include="Models\ReportUpperAccessoriesSummaryModel.cs" />
+    <Compile Include="Models\ReportMaterialArrivalModel.cs" />
+    <Compile Include="Models\SewingMasterSourceModel.cs" />
     <Compile Include="Models\SockliningInputModel.cs" />
     <Compile Include="Models\SupplierModel.cs" />
     <Compile Include="Models\UpperComponentMaterialModel.cs" />
@@ -321,6 +349,9 @@
     <Compile Include="Views\ConfirmColumnPrintWindow.xaml.cs">
       <DependentUpon>ConfirmColumnPrintWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ConfirmOutsoleMaterialWorkingCartWindow.xaml.cs">
+      <DependentUpon>ConfirmOutsoleMaterialWorkingCartWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\CutprepMasterFilterWindow.xaml.cs">
       <DependentUpon>CutprepMasterFilterWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -380,8 +411,14 @@
     <Compile Include="Views\LeadTimePerStyleWindow.xaml.cs">
       <DependentUpon>LeadTimePerStyleWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\MasterStatisticsWindow.xaml.cs">
+      <DependentUpon>MasterStatisticsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\OSMaterialWHCheckViewDetailWindow.xaml.cs">
       <DependentUpon>OSMaterialWHCheckViewDetailWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\OSMPaintShopWindow.xaml.cs">
+      <DependentUpon>OSMPaintShopWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\OutsoleMaterialWHCheckingAddQuantitySizeWindow.xaml.cs">
       <DependentUpon>OutsoleMaterialWHCheckingAddQuantitySizeWindow.xaml</DependentUpon>
@@ -442,6 +479,9 @@
     </Compile>
     <Compile Include="Views\PrintSizeRunWindow.xaml.cs">
       <DependentUpon>PrintSizeRunWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SewingMasterReportWindow_New.xaml.cs">
+      <DependentUpon>SewingMasterReportWindow_New.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SockliningInputWindow.xaml.cs">
       <DependentUpon>SockliningInputWindow.xaml</DependentUpon>
@@ -927,6 +967,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ConfirmOutsoleMaterialWorkingCartWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\CutprepMasterFilterWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -1003,7 +1047,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\MasterStatisticsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\OSMaterialWHCheckViewDetailWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\OSMPaintShopWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1086,6 +1138,10 @@
     <Page Include="Views\PrintSizeRunWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SewingMasterReportWindow_New.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\SockliningInputWindow.xaml">
       <SubType>Designer</SubType>
@@ -1352,6 +1408,7 @@
     <EmbeddedResource Include="Reports\LeadTimeSectionReport.rdlc" />
     <EmbeddedResource Include="Reports\OSMatWHCheckDetailByCartReport.rdlc" />
     <EmbeddedResource Include="Reports\OSMatWHCheckDetailBySizeReport.rdlc" />
+    <EmbeddedResource Include="Reports\OSMPaintShopReport.rdlc" />
     <EmbeddedResource Include="Reports\OSMWHCheckingDetailReport.rdlc" />
     <EmbeddedResource Include="Reports\OSWHReviserIncentiveReport.rdlc" />
     <EmbeddedResource Include="Reports\OutsoleDelayReport.rdlc" />
@@ -1367,6 +1424,8 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Reports\OutsoleWHInventoryDetailReport.rdlc" />
     <EmbeddedResource Include="Reports\PrinSizeRunReport.rdlc" />
+    <EmbeddedResource Include="Reports\SewingMasterFileReport.rdlc" />
+    <EmbeddedResource Include="Reports\SewingMasterReport_1.rdlc" />
     <EmbeddedResource Include="Reports\SewingScheduleDelayReport.rdlc" />
     <EmbeddedResource Include="Reports\SockliningMasterReport.rdlc">
       <SubType>Designer</SubType>
@@ -1481,6 +1540,17 @@
     <None Include="DataSets\OSMatWHCheckDetailBySize.xss">
       <DependentUpon>OSMatWHCheckDetailBySize.xsd</DependentUpon>
     </None>
+    <None Include="DataSets\OSMPaintShopDataset.xsc">
+      <DependentUpon>OSMPaintShopDataset.xsd</DependentUpon>
+    </None>
+    <None Include="DataSets\OSMPaintShopDataset.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>OSMPaintShopDataset.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="DataSets\OSMPaintShopDataset.xss">
+      <DependentUpon>OSMPaintShopDataset.xsd</DependentUpon>
+    </None>
     <None Include="DataSets\OSMWHCheckingDataSet.xsc">
       <DependentUpon>OSMWHCheckingDataSet.xsd</DependentUpon>
     </None>
@@ -1590,6 +1660,17 @@
     </None>
     <None Include="DataSets\PrintSizeRunDataSet.xss">
       <DependentUpon>PrintSizeRunDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="DataSets\SewingMasterFileDataSet.xsc">
+      <DependentUpon>SewingMasterFileDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="DataSets\SewingMasterFileDataSet.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>SewingMasterFileDataSet.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="DataSets\SewingMasterFileDataSet.xss">
+      <DependentUpon>SewingMasterFileDataSet.xsd</DependentUpon>
     </None>
     <None Include="DataSets\SewingSummaryDataset.xsc">
       <DependentUpon>SewingSummaryDataset.xsd</DependentUpon>
@@ -1821,6 +1902,7 @@
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMatWHCheckDetailBySize+OSMatWHCheckDetailBySizeTableRowChangeEvent.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMatWHCheckDetailBySize+OSMatWHCheckDetailBySizeTableRowChangeEventHandler.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMatWHCheckDetailBySize.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMPaintShopDataset.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMWHCheckingDataSet+OSMWHCheckingTableDataTable.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMWHCheckingDataSet+OSMWHCheckingTableRow.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.OSMWHCheckingDataSet+OSMWHCheckingTableRowChangeEvent.datasource" />
@@ -1897,6 +1979,7 @@
     <None Include="Properties\DataSources\MasterSchedule.DataSets.SewingMasterDataSet+SewingMasterTableRowChangeEvent.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.SewingMasterDataSet+SewingMasterTableRowChangeEventHandler.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.SewingMasterDataSet.datasource" />
+    <None Include="Properties\DataSources\MasterSchedule.DataSets.SewingMasterFileDataSet.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.SewingScheduleDelayDataSet+SewingScheduleDelayTableDataTable.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.SewingScheduleDelayDataSet+SewingScheduleDelayTableRow.datasource" />
     <None Include="Properties\DataSources\MasterSchedule.DataSets.SewingScheduleDelayDataSet+SewingScheduleDelayTableRowChangeEvent.datasource" />

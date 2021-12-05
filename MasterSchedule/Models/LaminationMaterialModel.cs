@@ -7,6 +7,7 @@ namespace MasterSchedule.Models
 {
     class LaminationMaterialModel
     {
+        public int Id { get; set; }
         public string OrderNoId { get; set; }
         public string OrderNo { get; set; }
         public string ArticleNo { get; set; }

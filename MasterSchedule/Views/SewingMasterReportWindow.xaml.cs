@@ -14,10 +14,14 @@ namespace MasterSchedule.Views
     {
         List<SewingMasterExportViewModel> sewingMasterExportViewList;
         string line;
-        public SewingMasterReportWindow(List<SewingMasterExportViewModel> sewingMasterExportViewList, string line)
+        int typeOfReport;
+        public SewingMasterReportWindow(List<SewingMasterExportViewModel> sewingMasterExportViewList, string line, int typeOfReport)
         {
             this.sewingMasterExportViewList = sewingMasterExportViewList;
             this.line = line;
+            // 0 Report to print ( for planning office ) ...
+            // 1 Report to create schedule ( for purchasing ) ...
+            this.typeOfReport = typeOfReport;
             InitializeComponent();
         }
 
@@ -39,6 +43,7 @@ namespace MasterSchedule.Views
                 dr["SewingLine"] = sewingMasterExportView.SewingLine;
                 dr["UpperMatsArrival"] = sewingMasterExportView.UpperMatsArrival;
                 dr["CutAStartDate"] = sewingMasterExportView.CutAStartDate;
+                dr["CutBStartDate"] = sewingMasterExportView.CutBStartDate;
                 dr["SewingMatsArrival"] = sewingMasterExportView.SewingMatsArrival;
                 dr["SewingStartDate"] = sewingMasterExportView.SewingStartDate;
                 dr["SewingFinishDate"] = sewingMasterExportView.SewingFinishDate;
@@ -59,10 +64,22 @@ namespace MasterSchedule.Views
 
             ReportParameter rp = new ReportParameter("Line", line);
             ReportDataSource rds = new ReportDataSource();
-            rds.Name = "SewingMaster";
-            rds.Value = dt;
             //reportViewer.LocalReport.ReportPath = @"C:\Users\IT02\Documents\Visual Studio 2010\Projects\Saoviet Master Schedule Solution\MasterSchedule\Reports\SewingMasterReport.rdlc";
-            reportViewer.LocalReport.ReportPath = @"Reports\SewingMasterReport.rdlc";
+
+            if (typeOfReport == 1)
+            {
+                //rds.Name = "SewingMasterDataSet_1";
+                rds.Name = "SewingMaster";
+                rds.Value = dt;
+                reportViewer.LocalReport.ReportPath = @"Reports\SewingMasterReport_2.rdlc";
+            }
+            else
+            {
+                rds.Name = "SewingMaster";
+                rds.Value = dt;
+                reportViewer.LocalReport.ReportPath = @"Reports\SewingMasterReport.rdlc";
+            }
+
             reportViewer.LocalReport.SetParameters(new ReportParameter[] { rp });
             reportViewer.LocalReport.DataSources.Add(rds);
             reportViewer.RefreshReport();

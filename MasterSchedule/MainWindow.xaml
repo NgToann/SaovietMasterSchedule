@@ -18,8 +18,10 @@
                     <MenuItem x:Name="miImportInsockRawMaterial" Header="Insock Raw Material" Click="miImportInsockRawMaterial_Click"/>
                     <!--<MenuItem x:Name="miImportMachineRequirement" Header="Machine Requirement" Click="miImportMachineRequirement_Click"/>-->
                     <!--<MenuItem x:Name="miImportAvailableMachine" Header="Available Machine" Click="miImportAvailableMachine_Click"/>-->
+                    <!--Visibility="Collapsed"-->
                     <MenuItem x:Name="miImportMachine" Header="Machine" Click="miImportMachine_Click" Visibility="Collapsed"/>
                     <MenuItem x:Name="miImportMachineRequest" Header="Machine Request" Click="miImportMachineRequest_Click" Visibility="Collapsed"/>
+                    
                     <MenuItem x:Name="miUpperMaterialSchedule" IsEnabled="False" Header="Upper Material Schedule" Click="miUpperMaterialSchedule_Click"/>
                     <MenuItem x:Name="miImportUpperAccessoriesPlan" IsEnabled="False" Header="Accessories Material Plan" Click="miImportUpperAccessoriesPlan_Click"/>
                     <MenuItem x:Name="miImportLaminationMaterial" Header="Lamination Material" Click="miImportLaminationMaterial_Click"/>
@@ -63,6 +65,7 @@
                     <!--<MenuItem Visibility="Collapsed" x:Name="miInputOutsoleMaterialDetail" Header="Input Outsole Material Detail" Click="miInputOutsoleMaterialDetail_Click"/>
                     <MenuItem Visibility="Collapsed" IsEnabled="False" x:Name="miInputOutsoleWHFG" Header="Input Outsole WH F.G" Click="miInputOutsoleWHFG_Click"/>-->
                 </MenuItem>
+                <MenuItem x:Name="miConfirmOSWorkingCart" Header="Confirm O/S WorkingCart" Click="miConfirmOSWorkingCart_Click"></MenuItem>
             </MenuItem>
             <MenuItem Header="Report">
                 <MenuItem Header="List of Delay">
@@ -83,6 +86,7 @@
                     <MenuItem x:Name="miOutsoleOutputBalance" Header="Outsole Output Balance" Click="miOutsoleOutputBalance_Click"/>
                     
                     <MenuItem x:Name="miOutsoleMaterialWHChecking" Header="Outsole Material WH Check" Click="miOutsoleMaterialWHChecking_Click"/>
+                    <MenuItem x:Name="miOSPaintShop" Header="Outsole Material Paint Shop" Click="miOSPaintShop_Click"/>
                     <!--<MenuItem x:Name="miOutsoleMaterialWHCheckingDetail" Visibility="Collapsed" Header="Outsole Material WH Check Detail" Click="miOutsoleMaterialWHCheckingDetail_Click"/>-->
                 </MenuItem>
                 <MenuItem Header="Upper">
@@ -128,6 +132,7 @@
                         <MenuItem x:Name="miPerArticleNo" Header="Article No" Click="miPerArticleNo_Click"/>
                     </MenuItem>
                 </MenuItem>
+                <MenuItem x:Name="miMasterChart" Header="Master Chart" Click="miMasterChart_Click"/>
             </MenuItem>
             <MenuItem Header="Help">
                 <MenuItem x:Name="miAbout" Header="About me" Click="miAbout_Click"/>

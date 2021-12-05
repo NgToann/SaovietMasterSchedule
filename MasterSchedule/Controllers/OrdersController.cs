@@ -212,12 +212,13 @@ namespace MasterSchedule.Controllers
             var @LastCode       = new SqlParameter("@LastCode", model.LastCode);
             var @Country        = new SqlParameter("@Country", model.Country);
             var @IsEnable       = new SqlParameter("@IsEnable", model.IsEnable);
+            var @TypeOfShoes    = new SqlParameter("@TypeOfShoes", model.TypeOfShoes);
             var @Reviser        = new SqlParameter("@Reviser", String.Format("{0}-{1}", model.Reviser, computerName));
-
+            var @ShipDate = new SqlParameter("@ShipDate", model.ShipDate);
             using (var db = new SaovietMasterScheduleEntities())
             {
-                if (db.ExecuteStoreCommand("EXEC spm_UpdateOrders_2 @ProductNo, @GTNPONo, @UCustomerCode, @ETD, @ArticleNo, @ShoeName, @Quantity, @PatternNo, @MidsoleCode, @OutsoleCode, @LastCode, @Country, @IsEnable, @Reviser",
-                                                                @ProductNo, @GTNPONo, @UCustomerCode, @ETD, @ArticleNo, @ShoeName, @Quantity, @PatternNo, @MidsoleCode, @OutsoleCode, @LastCode, @Country, @IsEnable, @Reviser) > 0)
+                if (db.ExecuteStoreCommand("EXEC spm_UpdateOrders_4 @ProductNo, @GTNPONo, @UCustomerCode, @ETD, @ArticleNo, @ShoeName, @Quantity, @PatternNo, @MidsoleCode, @OutsoleCode, @LastCode, @Country, @IsEnable, @Reviser, @TypeOfShoes, @ShipDate",
+                                                                    @ProductNo, @GTNPONo, @UCustomerCode, @ETD, @ArticleNo, @ShoeName, @Quantity, @PatternNo, @MidsoleCode, @OutsoleCode, @LastCode, @Country, @IsEnable, @Reviser, @TypeOfShoes, @ShipDate) > 0)
                 {
                     return true;
                 }
@@ -239,6 +240,11 @@ namespace MasterSchedule.Controllers
             var @ETD = new SqlParameter("@ETD", model.ETD);
             bool isUpdateETD = updateWhatList.Contains("ETD");
             var @IsUpdateETD = new SqlParameter("@IsUpdateETD", isUpdateETD);
+
+            // ShipDate
+            var @ShipDate = new SqlParameter("@ShipDate", model.ShipDate);
+            var isUpdateShipDate = updateWhatList.Contains("ShipDate");
+            var @IsUpDateShipDate = new SqlParameter("@IsUpDateShipDate", isUpdateShipDate);
 
             // Article
             var @ArticleNo = new SqlParameter("@ArticleNo", model.ArticleNo);
@@ -294,8 +300,8 @@ namespace MasterSchedule.Controllers
 
             using (var db = new SaovietMasterScheduleEntities())
             {
-                if (db.ExecuteStoreCommand("EXEC spm_UpdateOrdersSpecify_1 @ProductNo, @GTNPONo, @IsUpdateGTNPONo, @UCustomerCode, @IsUpdateUCustomerCode, @ETD, @IsUpdateETD, @ArticleNo, @IsUpdateArticleNo, @ShoeName, @IsUpdateShoeName, @Quantity, @IsUpdateQuantity, @PatternNo, @IsUpdatePatternNo, @MidsoleCode, @IsUpdateMidsoleCode, @OutsoleCode, @IsUpdateOutsoleCode, @LastCode ,@IsUpdateLastCode, @Country, @IsUpdateCountry, @Reviser",
-                                                                           @ProductNo, @GTNPONo, @IsUpdateGTNPONo, @UCustomerCode, @IsUpdateUCustomerCode, @ETD, @IsUpdateETD, @ArticleNo, @IsUpdateArticleNo, @ShoeName, @IsUpdateShoeName, @Quantity, @IsUpdateQuantity, @PatternNo, @IsUpdatePatternNo, @MidsoleCode, @IsUpdateMidsoleCode, @OutsoleCode, @IsUpdateOutsoleCode, @LastCode, @IsUpdateLastCode, @Country, @IsUpdateCountry, @Reviser) > 0)
+                if (db.ExecuteStoreCommand("EXEC spm_UpdateOrdersSpecify_2 @ProductNo, @GTNPONo, @IsUpdateGTNPONo, @UCustomerCode, @IsUpdateUCustomerCode, @ETD, @IsUpdateETD, @ArticleNo, @IsUpdateArticleNo, @ShoeName, @IsUpdateShoeName, @Quantity, @IsUpdateQuantity, @PatternNo, @IsUpdatePatternNo, @MidsoleCode, @IsUpdateMidsoleCode, @OutsoleCode, @IsUpdateOutsoleCode, @LastCode ,@IsUpdateLastCode, @Country, @IsUpdateCountry, @Reviser, @ShipDate, @IsUpDateShipDate",
+                                                                           @ProductNo, @GTNPONo, @IsUpdateGTNPONo, @UCustomerCode, @IsUpdateUCustomerCode, @ETD, @IsUpdateETD, @ArticleNo, @IsUpdateArticleNo, @ShoeName, @IsUpdateShoeName, @Quantity, @IsUpdateQuantity, @PatternNo, @IsUpdatePatternNo, @MidsoleCode, @IsUpdateMidsoleCode, @OutsoleCode, @IsUpdateOutsoleCode, @LastCode, @IsUpdateLastCode, @Country, @IsUpdateCountry, @Reviser, @ShipDate, @IsUpDateShipDate) > 0)
                 {
                     return true;
                 }

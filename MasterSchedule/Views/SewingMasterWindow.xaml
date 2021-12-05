@@ -20,6 +20,7 @@
             <Menu.Items>
                 <MenuItem Header="File">
                     <MenuItem x:Name="btnSave" Header="_Save" IsEnabled="False" InputGestureText="Ctrl+S" Command="Save" Click="btnSave_Click"/>
+                    <MenuItem x:Name="miReport" Header="_Report" Click="miReport_Click"></MenuItem>
                     <MenuItem Header="_Exit"/>
                 </MenuItem>
                 <!--<MenuItem x:Name="btnEnableSimulation" Header="Enable Simulation" IsEnabled="False"  Visibility="Hidden" Click="btnEnableSimulation_Click"/>
@@ -43,14 +44,14 @@
         </Popup>
         <!---->
         <local:CustomDataGrid x:Name="dgSewingMaster" Grid.Row="1" AutoGenerateColumns="False"
-                  CanUserAddRows="False" CanUserResizeRows="False" FrozenColumnCount="14" AlternationCount="2"
+                  CanUserAddRows="False" CanUserResizeRows="False" FrozenColumnCount="15" AlternationCount="2"
                   AlternatingRowBackground="LightCyan"
                   CanUserReorderColumns="False" SelectionUnit="CellOrRowHeader"
                   KeyDown="dgSewingMaster_KeyDown" CellEditEnding="dgSewingMaster_CellEditEnding" Sorting="dgSewingMaster_Sorting"
                   MouseLeftButtonDown="dgSewingMaster_MouseLeftButtonDown"
-                  HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" BeginningEdit="dgSewingMaster_BeginningEdit" 
-                  PreviewMouseLeftButtonDown="dgSewingMaster_PreviewMouseLeftButtonDown" 
-                  MouseMove="dgSewingMaster_MouseMove" DragLeave="dgSewingMaster_DragLeave" 
+                  HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" BeginningEdit="dgSewingMaster_BeginningEdit"
+                  PreviewMouseLeftButtonDown="dgSewingMaster_PreviewMouseLeftButtonDown"
+                  MouseMove="dgSewingMaster_MouseMove" DragLeave="dgSewingMaster_DragLeave"
                   Drop="dgSewingMaster_Drop" AllowDrop="True" DragOver="dgSewingMaster_DragOver" SelectedCellsChanged="dgSewingMaster_SelectedCellsChanged">
             <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridCell}">
@@ -83,6 +84,7 @@
                 <DataGridTextColumn Binding="{Binding PatternNo}" Header="PATT.&#10;NO." IsReadOnly="True" CanUserSort="False"/>
                 <DataGridTextColumn Binding="{Binding Quantity}" Header="QUANTITY" IsReadOnly="True" CanUserSort="False"/>
                 <DataGridTextColumn x:Name="colETD" Binding="{Binding ETD, StringFormat = 'dd-MMM'}" Header="EFD" IsReadOnly="True" CanUserSort="False"/>
+                <DataGridTextColumn x:Name="colShipDate" Binding="{Binding ShipDateDisplay}" Header="ShipDate" IsReadOnly="True" CanUserSort="False"/>
                 <DataGridTextColumn Header="Memo No." Width="Auto" Binding="{Binding MemoId}" IsReadOnly="True"/>
                 <DataGridTextColumn Binding="{Binding UpperMatsArrival}" Header="Upper&#10;Mat's&#10;Arrival" IsReadOnly="True" CanUserSort="False">
                     <DataGridTextColumn.CellStyle>
@@ -135,7 +137,8 @@
                 <DataGridTextColumn x:Name="colSewingQuota" Binding="{Binding SewingQuota}" Header="Sewing&#10;Quota" IsReadOnly="True" CanUserSort="False"/>
                 <DataGridTextColumn x:Name="colSewingActualStartDate" Binding="{Binding SewingActualStartDate}" Header="Sewing&#10;Planned&#10;Start&#10;Date" IsReadOnly="True" CanUserSort="False"/>
                 <DataGridTextColumn x:Name="colSewingActualFinishDate" Binding="{Binding SewingActualFinishDate}" Header="Sewing&#10;Planned&#10;Finish&#10;Date" IsReadOnly="True" CanUserSort="False"/>
-                <DataGridTextColumn x:Name="colSewingActualStartDateAuto" Binding="{Binding SewingActualStartDateAuto}" Header="Sewing&#10;Actual&#10;Start&#10;Date" IsReadOnly="True" CanUserSort="False"/>
+                <DataGridTextColumn x:Name="colSewingActualStartDateAuto" Binding="{Binding SewingActualStartDateAuto}" Header="Sewing&#10;Actual&#10;Start&#10;Date" IsReadOnly="True" CanUserSort="False">
+                </DataGridTextColumn>
                 <DataGridTextColumn x:Name="colSewingActualFinishDateAuto" Binding="{Binding SewingActualFinishDateAuto}" Header="Sewing&#10;Actual&#10;Finish&#10;Date" IsReadOnly="True" CanUserSort="False"/>
                 <DataGridTextColumn x:Name="colSewingBalance" Binding="{Binding SewingBalance}" Header="Sewing&#10;Balance" IsReadOnly="True" CanUserSort="False"/>
                 <DataGridTextColumn Binding="{Binding OSFinishDate, StringFormat = 'M/d'}" Header="Stockfit&#10;Finish&#10;Date" IsReadOnly="True" CanUserSort="False"/>
@@ -177,9 +180,20 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="btnCaculate" MinWidth="150" HorizontalAlignment="Left" Content="Calculate" IsEnabled="False" Click="btnCaculate_Click" />
-            <TextBlock x:Name="lblStatus" Grid.Column="1" Margin="5,0,0,0" FontSize="11" VerticalAlignment="Center" Foreground="Blue" FontStyle="Italic"/>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="btnCaculate" MinWidth="150" HorizontalAlignment="Left" Content="Calculate" IsEnabled="False" Click="btnCaculate_Click" />
+                <Button x:Name="btnRefresh" Margin="10,0,0,0" Grid.Column="4" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" ToolTip="Refresh" Cursor="Hand" Click="btnRefresh_Click">
+                    <Button.Content>
+                        <Image Width="16" Height="16" Source="/Images/mini_refresh.png"/>
+                    </Button.Content>
+                </Button>
+            </StackPanel>
+            <Grid Grid.Column="2" HorizontalAlignment="Right" Margin="0,0,2,0">
+                <ProgressBar x:Name="prgStatus" Width="140" Height="15"/>
+                <TextBlock x:Name="lblStatus" Width="140" Height="15" Padding="2,0,0,0" FontSize="11" VerticalAlignment="Center" Foreground="Blue" FontStyle="Italic"/>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

@@ -35,7 +35,6 @@ namespace MasterSchedule.Views
             bwUpload.DoWork += BwUpload_DoWork;
             bwUpload.RunWorkerCompleted += BwUpload_RunWorkerCompleted;
 
-
             bwLoad = new BackgroundWorker();
             bwLoad.DoWork += BwLoad_DoWork; 
             bwLoad.RunWorkerCompleted += BwLoad_RunWorkerCompleted;
@@ -351,100 +350,248 @@ namespace MasterSchedule.Views
                     //    deliveryDate = cellSplit[1].Trim().ToString();
                     //}
 
-
                     int prodQty = 0, sendQty = 0;
-                    string position = "", part = "", materialName = "", unit = "", prodQtyString = "", sendQtyString = "";
-                    for (int r = rowNumberOfMaterial; r < excelRange.Rows.Count; r++)
+                    string position = "", part = "", materialName = "", unit = "";//, prodQtyString = "", sendQtyString = "";
+                    
+                    // check by part
+                    int colPart = 2;
+                    var cellPartCheck = excelRange[rowNumberOfMaterial, colPart].Value2;
+                    while (cellPartCheck == null || (cellPartCheck == null && cellPartCheck.ToString().ToUpper() != "PART"))
                     {
-                        int rowHeader = rowNumberOfMaterial - 1;
-                        var cellCheck = excelRange[r, 1].Value2;
-                        string orderId = "";
-                        if (cellCheck != null)
+                        colPart++;
+                        cellPartCheck = excelRange[rowNumberOfMaterial, colPart].Value2;
+                    }
+                    if (cellPartCheck != null)
+                    {
+                        int colPosition = 0, colMaterial = 0, colUnit = 0, colProdQty = 0, colSendQty = 0;
+                        for (int col = 1; col < 100; col++)
                         {
-                            string noOfMaterial = cellCheck.ToString();
-                            int checkNumber = 0;
-                            Int32.TryParse(noOfMaterial, out checkNumber);
-                            if (checkNumber == 0)
-                                break;
-                            orderId = String.Format("{0}-{1}", orderNo, checkNumber);
-                            for (int colHeader = 2; colHeader < 100; colHeader++)
-                            {
-                                var headerCell = excelRange[rowHeader, colHeader].Value2;
-                                if (headerCell != null)
-                                {
-                                    string header = headerCell.ToString();
-                                    header = header.ToUpper();
-                                    if (header.Equals("POSITION"))
-                                    {
-                                        var positionCell = excelRange[r, colHeader].Value2;
-                                        position = positionCell != null ? positionCell.ToString() : "";
-                                    }
-                                    else if (header.Equals("MATERIAL DESCRIPTION"))
-                                    {
-                                        for (int colHeaderDetail = colHeader; colHeaderDetail < 100; colHeaderDetail++)
-                                        {
-                                            var headerDetailCell = excelRange[rowHeader + 1, colHeaderDetail].Value2;
-                                            if (headerDetailCell != null)
-                                            {
-                                                string headerDetail = headerDetailCell.ToString();
-                                                headerDetail = headerDetail.ToUpper();
-                                                if (headerDetail.Equals("PART"))
-                                                {
-                                                    var partCell = excelRange[r, colHeaderDetail].Value2;
-                                                    part = partCell != null ? partCell.ToString() : "";
-                                                }
-                                                else if (headerDetail.Equals("MATERIAL"))
-                                                {
-                                                    var materialNameCell = excelRange[r, colHeaderDetail].Value2;
-                                                    materialName = materialNameCell != null ? materialNameCell.ToString() : "";
-                                                }
-                                                else if (headerDetail.Equals("UNIT"))
-                                                {
-                                                    var unitCell = excelRange[r, colHeaderDetail].Value2;
-                                                    unit = unitCell != null ? unitCell.ToString() : "";
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    else if (header.Equals("PROD. QTY"))
-                                    {
-                                        var prodQtyCell = excelRange[r, colHeader].Value2;
-                                        prodQtyString = prodQtyCell != null ? prodQtyCell.ToString() : "";
-                                        Int32.TryParse(prodQtyString, out prodQty);
-                                    }
-                                    else if (header.Equals("SEND QTY"))
-                                    {
-                                        var sendQtyCell = excelRange[r, colHeader].Value2;
-                                        sendQtyString = sendQtyCell != null ? sendQtyCell.ToString() : "";
-                                        Int32.TryParse(sendQtyString, out sendQty);
-                                        break;
-                                    }
-                                }
-                            }
+                            // row position, prodQty, sendQty
+                            var cellHeaderCheck = excelRange[rowNumberOfMaterial - 1, col].Value2;
+                            // the same row with part cell
+                            var cellHeader_1Check = excelRange[rowNumberOfMaterial, col].Value2;
                             
-                            var laminationModel = new LaminationMaterialModel
+                            // Position
+                            if (cellHeaderCheck != null
+                                && cellHeaderCheck.ToString().ToUpper() == "POSITION"
+                                && colPosition == 0)
                             {
-                                OrderNoId = orderId,
-                                OrderNo = orderNo,
-                                ProductNoList = String.Join("; ", productNoList),
-                                ArticleNo = articleNo,
-                                ShoeName = shoeName,
-                                PatternNo = patternNo,
-                                MaterialName = materialName,
-                                MaterialPart = part,
-                                Position = position,
-                                Unit = unit,
-                                POQuantity = prodQty,
-                                SendQuantity = sendQty,
-                                DeliveryDate = deliveryDate,
-                                PurchaseDate = purchaseDate,
-                                SupplierName = "",
-                                Remarks = "",
-                            };
-                            laminationMatsList.Add(laminationModel);
+                                colPosition = col;
+                            }
+
+                            if (cellHeader_1Check != null
+                                && cellHeader_1Check.ToString().ToUpper() == "MATERIAL"
+                                && colMaterial == 0)
+                            {
+                                colMaterial = col;
+                            }
+
+                            if (cellHeader_1Check != null
+                                && cellHeader_1Check.ToString().ToUpper() == "UNIT"
+                                && colUnit == 0)
+                            {
+                                colUnit = col;
+                            }
+
+                            if (cellHeaderCheck != null
+                                && cellHeaderCheck.ToString().ToUpper() == "PROD. QTY"
+                                && colProdQty == 0)
+                            {
+                                colProdQty = col;
+                            }
+
+                            if (cellHeaderCheck != null
+                                && cellHeaderCheck.ToString().ToUpper() == "SEND QTY"
+                                && colSendQty == 0)
+                            {
+                                colSendQty = col;
+                                break;
+                            }
+                        }
+                        int id = 1;
+                        for (int r = rowNumberOfMaterial + 1; r < excelRange.Rows.Count; r++)
+                        {
+                            string orderId = "";
+                            var cellPart = excelRange[r, colPart].Value2;
+                            if (cellPart != null && !String.IsNullOrEmpty(cellPart.ToString()))
+                            {
+                                part = cellPart.ToString();
+                                orderId = string.Format("{0}-{1}", orderNo, id);
+                                var latestModel = laminationMatsList.OrderBy(o => o.Id).LastOrDefault();
+                                
+                                // POSITION
+                                var cellPosition = excelRange[r, colPosition].Value2;
+                                if (cellPosition != null)
+                                {
+                                    position = cellPosition.ToString();
+                                }
+                                else if (latestModel != null)
+                                {
+                                    position = latestModel.Position;
+                                }
+
+                                // Material
+                                var cellMaterial = excelRange[r, colMaterial].Value2;
+                                if (cellMaterial != null)
+                                {
+                                    materialName = cellMaterial.ToString();
+                                }
+                                else if (latestModel != null)
+                                {
+                                    materialName = latestModel.MaterialName;
+                                }
+
+                                // UNIT
+                                var cellUnit = excelRange[r, colUnit].Value2;
+                                if (cellUnit != null)
+                                {
+                                    unit = cellUnit.ToString();
+                                }
+                                else if (latestModel != null)
+                                {
+                                    unit = latestModel.Unit;
+                                }
+
+                                // PROD.QTY
+                                var cellProdQty = excelRange[r, colProdQty].Value2;
+                                if ( cellProdQty != null)
+                                {
+                                    Int32.TryParse(cellProdQty.ToString(), out prodQty);
+                                }
+                                else if (latestModel != null)
+                                {
+                                    prodQty = latestModel.POQuantity;
+                                }
+
+                                // SEND QTY
+                                var cellSendQty = excelRange[r, colSendQty].Value2;
+                                if (cellProdQty != null)
+                                {
+                                    Int32.TryParse(cellSendQty.ToString(), out sendQty);
+                                }
+                                else if (latestModel != null)
+                                {
+                                    sendQty = latestModel.SendQuantity;
+                                }
+                                var laminationModel = new LaminationMaterialModel
+                                {
+                                    Id = id,
+                                    OrderNoId = orderId,
+                                    OrderNo = orderNo,
+                                    ProductNoList = String.Join("; ", productNoList),
+                                    ArticleNo = articleNo,
+                                    ShoeName = shoeName,
+                                    PatternNo = patternNo,
+                                    MaterialName = materialName,
+                                    MaterialPart = part,
+                                    Position = position,
+                                    Unit = unit,
+                                    POQuantity = prodQty,
+                                    SendQuantity = sendQty,
+                                    DeliveryDate = deliveryDate,
+                                    PurchaseDate = purchaseDate,
+                                    SupplierName = "",
+                                    Remarks = "",
+                                };
+                                laminationMatsList.Add(laminationModel);
+                                
+                                id++;
+                            }
                         }
                     }
+                    //for (int r = rowNumberOfMaterial; r < excelRange.Rows.Count; r++)
+                    //{
+                    //    int rowHeader = rowNumberOfMaterial - 1;
+                    //    var cellCheck = excelRange[r, 1].Value2;
+                    //    string orderId = "";
+                        
+                        
+                    //    if (cellCheck != null)
+                    //    {
+                    //        string noOfMaterial = cellCheck.ToString();
+                    //        int checkNumber = 0;
+                    //        Int32.TryParse(noOfMaterial, out checkNumber);
+                    //        if (checkNumber == 0)
+                    //            break;
+                    //        orderId = String.Format("{0}-{1}", orderNo, checkNumber);
+                    //        for (int colHeader = 2; colHeader < 100; colHeader++)
+                    //        {
+                    //            var headerCell = excelRange[rowHeader, colHeader].Value2;
+                    //            if (headerCell != null)
+                    //            {
+                    //                string header = headerCell.ToString();
+                    //                header = header.ToUpper();
+                    //                if (header.Equals("POSITION"))
+                    //                {
+                    //                    var positionCell = excelRange[r, colHeader].Value2;
+                    //                    position = positionCell != null ? positionCell.ToString() : "";
+                    //                }
+                    //                else if (header.Equals("MATERIAL DESCRIPTION"))
+                    //                {
+                    //                    for (int colHeaderDetail = colHeader; colHeaderDetail < 100; colHeaderDetail++)
+                    //                    {
+                    //                        var headerDetailCell = excelRange[rowHeader + 1, colHeaderDetail].Value2;
+                    //                        if (headerDetailCell != null)
+                    //                        {
+                    //                            string headerDetail = headerDetailCell.ToString();
+                    //                            headerDetail = headerDetail.ToUpper();
+                    //                            if (headerDetail.Equals("PART"))
+                    //                            {
+                    //                                var partCell = excelRange[r, colHeaderDetail].Value2;
+                    //                                part = partCell != null ? partCell.ToString() : "";
+                    //                            }
+                    //                            else if (headerDetail.Equals("MATERIAL"))
+                    //                            {
+                    //                                var materialNameCell = excelRange[r, colHeaderDetail].Value2;
+                    //                                materialName = materialNameCell != null ? materialNameCell.ToString() : "";
+                    //                            }
+                    //                            else if (headerDetail.Equals("UNIT"))
+                    //                            {
+                    //                                var unitCell = excelRange[r, colHeaderDetail].Value2;
+                    //                                unit = unitCell != null ? unitCell.ToString() : "";
+                    //                                break;
+                    //                            }
+                    //                        }
+                    //                    }
+                    //                }
+                    //                else if (header.Equals("PROD. QTY"))
+                    //                {
+                    //                    var prodQtyCell = excelRange[r, colHeader].Value2;
+                    //                    prodQtyString = prodQtyCell != null ? prodQtyCell.ToString() : "";
+                    //                    Int32.TryParse(prodQtyString, out prodQty);
+                    //                }
+                    //                else if (header.Equals("SEND QTY"))
+                    //                {
+                    //                    var sendQtyCell = excelRange[r, colHeader].Value2;
+                    //                    sendQtyString = sendQtyCell != null ? sendQtyCell.ToString() : "";
+                    //                    Int32.TryParse(sendQtyString, out sendQty);
+                    //                    break;
+                    //                }
+                    //            }
+                    //        }
+                            
+                    //        var laminationModel = new LaminationMaterialModel
+                    //        {
+                    //            OrderNoId = orderId,
+                    //            OrderNo = orderNo,
+                    //            ProductNoList = String.Join("; ", productNoList),
+                    //            ArticleNo = articleNo,
+                    //            ShoeName = shoeName,
+                    //            PatternNo = patternNo,
+                    //            MaterialName = materialName,
+                    //            MaterialPart = part,
+                    //            Position = position,
+                    //            Unit = unit,
+                    //            POQuantity = prodQty,
+                    //            SendQuantity = sendQty,
+                    //            DeliveryDate = deliveryDate,
+                    //            PurchaseDate = purchaseDate,
+                    //            SupplierName = "",
+                    //            Remarks = "",
+                    //        };
+                    //        laminationMatsList.Add(laminationModel);
+                    //    }
+                    //}
                     Dispatcher.Invoke(new Action(() =>
                     {
                         txtStatus.Text = String.Format("Reading OrderNo: {0}  total file: {1}/{2}", orderNo, filePathIndex, filePathArray.Count());

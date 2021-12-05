@@ -16,6 +16,7 @@ namespace MasterSchedule.Models
         public int Quantity { get; set; }
         public int Reject { get; set; }
         public int ReturnReject { get; set; }
+        public int ReturnRemark { get; set; }
         public int ErrorId { get; set; }
         public int Excess { get; set; }
         public int WorkingCard { get; set; }

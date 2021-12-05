@@ -17,7 +17,12 @@ namespace MasterSchedule.Controllers
             SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
             return db.ExecuteStoreQuery<AssemblyMasterModel>("EXEC spm_SelectAssemblyMaster").ToList();
         }
-
+        //
+        public static List<AssemblyMasterSourceModel> SelectAssemblySource()
+        {
+            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
+            return db.ExecuteStoreQuery<AssemblyMasterSourceModel>("EXEC spm_SelectAssemblyMasterSource").ToList();
+        }
         public static List<AssemblyMasterModel> SelectFull(DateTime etdStart, DateTime etdEnd)
         {
             SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
@@ -104,7 +109,7 @@ namespace MasterSchedule.Controllers
             var @IsAssemblyBalanceUpdate = new SqlParameter("@IsAssemblyBalanceUpdate", model.IsAssemblyBalanceUpdate);
 
             SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand("EXEC spm_InsertAssemblyMaster_2 @ProductNo, @Sequence, @AssemblyLine, @AssemblyStartDate, @AssemblyFinishDate, @AssemblyQuota, @AssemblyActualStartDate, @AssemblyActualFinishDate, @AssemblyBalance, @IsSequenceUpdate, @IsAssemblyLineUpdate, @IsAssemblyStartDateUpdate, @IsAssemblyFinishDateUpdate, @IsAssemblyQuotaUpdate, @IsAssemblyActualStartDateUpdate, @IsAssemblyActualFinishDateUpdate, @IsAssemblyBalanceUpdate",
+            if (db.ExecuteStoreCommand("EXEC spm_InsertAssemblyMaster_3 @ProductNo, @Sequence, @AssemblyLine, @AssemblyStartDate, @AssemblyFinishDate, @AssemblyQuota, @AssemblyActualStartDate, @AssemblyActualFinishDate, @AssemblyBalance, @IsSequenceUpdate, @IsAssemblyLineUpdate, @IsAssemblyStartDateUpdate, @IsAssemblyFinishDateUpdate, @IsAssemblyQuotaUpdate, @IsAssemblyActualStartDateUpdate, @IsAssemblyActualFinishDateUpdate, @IsAssemblyBalanceUpdate",
                                                                         @ProductNo, @Sequence, @AssemblyLine, @AssemblyStartDate, @AssemblyFinishDate, @AssemblyQuota, @AssemblyActualStartDate, @AssemblyActualFinishDate, @AssemblyBalance, @IsSequenceUpdate, @IsAssemblyLineUpdate, @IsAssemblyStartDateUpdate, @IsAssemblyFinishDateUpdate, @IsAssemblyQuotaUpdate, @IsAssemblyActualStartDateUpdate, @IsAssemblyActualFinishDateUpdate, @IsAssemblyBalanceUpdate) > 0)
             {
                 return true;

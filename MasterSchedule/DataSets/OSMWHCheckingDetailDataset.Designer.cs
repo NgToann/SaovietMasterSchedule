@@ -309,6 +309,8 @@ namespace MasterSchedule.DataSets {
             
             private global::System.Data.DataColumn columnQuantityReturn;
             
+            private global::System.Data.DataColumn columnQuantityRemark;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public OSMWHCheckingDetailTableDataTable() {
@@ -464,6 +466,14 @@ namespace MasterSchedule.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn QuantityRemarkColumn {
+                get {
+                    return this.columnQuantityRemark;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -499,7 +509,23 @@ namespace MasterSchedule.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public OSMWHCheckingDetailTableRow AddOSMWHCheckingDetailTableRow(string OutsoleCode, string ProductNo, string ArticleNo, string EFD, string QuantityDelivery, string QuantityCheck, string ErrorId, string ErrorName, string ErrorView, string SupplierName, string SupplierAndOutsoleCode, string FromTo, string WorkerId, string Detail, string QuantityReturn) {
+            public OSMWHCheckingDetailTableRow AddOSMWHCheckingDetailTableRow(
+                        string OutsoleCode, 
+                        string ProductNo, 
+                        string ArticleNo, 
+                        string EFD, 
+                        string QuantityDelivery, 
+                        string QuantityCheck, 
+                        string ErrorId, 
+                        string ErrorName, 
+                        string ErrorView, 
+                        string SupplierName, 
+                        string SupplierAndOutsoleCode, 
+                        string FromTo, 
+                        string WorkerId, 
+                        string Detail, 
+                        string QuantityReturn, 
+                        string QuantityRemark) {
                 OSMWHCheckingDetailTableRow rowOSMWHCheckingDetailTableRow = ((OSMWHCheckingDetailTableRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         OutsoleCode,
@@ -516,7 +542,8 @@ namespace MasterSchedule.DataSets {
                         FromTo,
                         WorkerId,
                         Detail,
-                        QuantityReturn};
+                        QuantityReturn,
+                        QuantityRemark};
                 rowOSMWHCheckingDetailTableRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowOSMWHCheckingDetailTableRow);
                 return rowOSMWHCheckingDetailTableRow;
@@ -554,6 +581,7 @@ namespace MasterSchedule.DataSets {
                 this.columnWorkerId = base.Columns["WorkerId"];
                 this.columnDetail = base.Columns["Detail"];
                 this.columnQuantityReturn = base.Columns["QuantityReturn"];
+                this.columnQuantityRemark = base.Columns["QuantityRemark"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -589,6 +617,8 @@ namespace MasterSchedule.DataSets {
                 base.Columns.Add(this.columnDetail);
                 this.columnQuantityReturn = new global::System.Data.DataColumn("QuantityReturn", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnQuantityReturn);
+                this.columnQuantityRemark = new global::System.Data.DataColumn("QuantityRemark", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnQuantityRemark);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -977,6 +1007,23 @@ namespace MasterSchedule.DataSets {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public string QuantityRemark {
+                get {
+                    try {
+                        return ((string)(this[this.tableOSMWHCheckingDetailTable.QuantityRemarkColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'QuantityRemark\' in table \'OSMWHCheckingDetailTable\' is DBNu" +
+                                "ll.", e);
+                    }
+                }
+                set {
+                    this[this.tableOSMWHCheckingDetailTable.QuantityRemarkColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public bool IsOutsoleCodeNull() {
                 return this.IsNull(this.tableOSMWHCheckingDetailTable.OutsoleCodeColumn);
             }
@@ -1153,6 +1200,18 @@ namespace MasterSchedule.DataSets {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetQuantityReturnNull() {
                 this[this.tableOSMWHCheckingDetailTable.QuantityReturnColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsQuantityRemarkNull() {
+                return this.IsNull(this.tableOSMWHCheckingDetailTable.QuantityRemarkColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetQuantityRemarkNull() {
+                this[this.tableOSMWHCheckingDetailTable.QuantityRemarkColumn] = global::System.Convert.DBNull;
             }
         }
         

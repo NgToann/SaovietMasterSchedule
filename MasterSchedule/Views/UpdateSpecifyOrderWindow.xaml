@@ -78,6 +78,13 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="ShipDate" SortMemberPath="ShipDate">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding ShipDate, StringFormat=MM/dd/yyyy}"  Margin="3,2,3,2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="Article No" SortMemberPath="ArticleNo">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

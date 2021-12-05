@@ -16,6 +16,7 @@ using MasterSchedule.Helpers;
 using MasterSchedule.Models;
 using MasterSchedule.ViewModels;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace MasterSchedule.Views
 {
@@ -99,20 +100,25 @@ namespace MasterSchedule.Views
         List<SewingMasterViewModelNew> sewingMasterViewModelNewList;
         List<RawMaterialViewModelNew> rawMaterialViewModelNewList;
 
-        private PrivateDefineModel privateDefine;
+        List<SewingMasterSourceModel> sewingMasterSourceList;
+
         private int _SEW_VS_CUTA = 0;
 
         private int _SEW_VS_OTHERS_CUT_A = 0;
         private int _SEW_VS_OTHERS_CUT_B = 0;
 
         List<String> productNoPrintList;
+        List<String> linesNeedSaving;
+        List<POSequenceModel> poSequenceSourceList;
+        private PrivateDefineModel def;
+
         public SewingMasterWindow(AccountModel account)
         {
             InitializeComponent();
             this.account = account;
             bwLoad = new BackgroundWorker();
             bwLoad.WorkerSupportsCancellation = true;
-            bwLoad.DoWork += new DoWorkEventHandler(bwLoad_DoWork);
+            bwLoad.DoWork += new DoWorkEventHandler(bwLoad_DoWork_2);
             bwLoad.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwLoad_RunWorkerCompleted);
             offDayList = new List<OffDayModel>();
             orderList = new List<OrdersModel>();
@@ -191,10 +197,16 @@ namespace MasterSchedule.Views
 
             sewingMasterViewModelNewList = new List<SewingMasterViewModelNew>();
             rawMaterialViewModelNewList = new List<RawMaterialViewModelNew>();
-            privateDefine = new PrivateDefineModel();
             productNoPrintList = new List<string>();
-        }
+            
+            sewingMasterSourceList = new List<SewingMasterSourceModel>();
 
+            linesNeedSaving = new List<string>();
+            poSequenceSourceList = new List<POSequenceModel>();
+
+            def = new PrivateDefineModel();
+        }
+        
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             if (account.SewingMaster == true)
@@ -244,6 +256,23 @@ namespace MasterSchedule.Views
             if (bwLoad.IsBusy == false)
             {
                 this.Cursor = Cursors.Wait;
+                prgStatus.Visibility = Visibility.Visible;
+                lblStatus.Text = "Loading PO ...";
+                bwLoad.RunWorkerAsync();
+            }
+        }
+        
+        private void btnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            if (bwLoad.IsBusy == false)
+            {
+                sewingMasterViewList.Clear();
+                this.Cursor = Cursors.Wait;
+                btnCaculate.IsEnabled = false;
+                btnRefresh.IsEnabled = false;
+                prgStatus.Value = 0;
+                lblStatus.Text = "Re-loading ...";
+                prgStatus.Visibility = Visibility.Visible;
                 bwLoad.RunWorkerAsync();
             }
         }
@@ -262,368 +291,380 @@ namespace MasterSchedule.Views
 
                 outsoleRawMaterialList = OutsoleRawMaterialController.Select();
                 outsoleMaterialList = OutsoleMaterialController.Select();
-                privateDefine = PrivateDefineController.GetDefine();
+                def = PrivateDefineController.GetDefine();
+
+
+                _SEW_VS_CUTA = def.SewingVsCutAStartDate;
+                _SEW_VS_OTHERS_CUT_A = def.SewingVsOthersCutTypeA;
+                _SEW_VS_OTHERS_CUT_B = def.SewingVsOthersCutTypeB;
+
+                int[] materialIdUpperArray = { 1, 2, 3, 4, 10 };
+                int[] materialIdSewingArray = { 5, 7 };
+                int[] materialIdOutsoleArray = { 6 };
+                int[] materialIdAssemblyArray = { 8, 9 };
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    lblStatus.Text = "Loading PO ...";
+                    prgStatus.Maximum = orderList.Count();
+                }));
+                for (int i = 0; i <= orderList.Count - 1; i++)
+                {
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        lblStatus.Text = String.Format("Loading {0} / {1} PO", i + 1, orderList.Count());
+                        prgStatus.Value = i + 1;
+                    }));
+                    OrdersModel order = orderList[i];
+
+                    SewingMasterViewModel sewingMasterView = new SewingMasterViewModel
+                    {
+                        ProductNo = order.ProductNo,
+                        ProductNoBackground = Brushes.Transparent,
+                        Country = order.Country,
+                        ShoeName = order.ShoeName,
+                        ArticleNo = order.ArticleNo,
+                        PatternNo = order.PatternNo,
+                        Quantity = order.Quantity,
+                        ETD = order.ETD,
+                    };
+
+                    string memoId = "";
+                    List<ProductionMemoModel> productionMemoByProductionNumberList = productionMemoList.Where(p => p.ProductionNumbers.Contains(order.ProductNo) == true).ToList();
+                    for (int p = 0; p <= productionMemoByProductionNumberList.Count - 1; p++)
+                    {
+                        ProductionMemoModel productionMemo = productionMemoByProductionNumberList[p];
+                        memoId += productionMemo.MemoId;
+                        if (p < productionMemoByProductionNumberList.Count - 1)
+                            memoId += "\n";
+                    }
+                    sewingMasterView.MemoId = memoId;
+
+                    MaterialArrivalViewModel materialArrivalUpper = MaterialArrival(order.ProductNo, materialIdUpperArray);
+                    sewingMasterView.UpperMatsArrivalOrginal = dtDefault;
+                    if (materialArrivalUpper != null)
+                    {
+                        sewingMasterView.UpperMatsArrival = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", materialArrivalUpper.Date);
+                        sewingMasterView.UpperMatsArrivalOrginal = materialArrivalUpper.Date;
+                        sewingMasterView.UpperMatsArrivalForeground = materialArrivalUpper.Foreground;
+                        sewingMasterView.UpperMatsArrivalBackground = materialArrivalUpper.Background;
+                    }
+
+                    MaterialArrivalViewModel materialArrivalSewing = MaterialArrival(order.ProductNo, materialIdSewingArray);
+                    sewingMasterView.SewingMatsArrivalOrginal = dtDefault;
+                    if (materialArrivalSewing != null)
+                    {
+                        sewingMasterView.SewingMatsArrival = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", materialArrivalSewing.Date);
+                        sewingMasterView.SewingMatsArrivalOrginal = materialArrivalSewing.Date;
+                        sewingMasterView.SewingMatsArrivalForeground = materialArrivalSewing.Foreground;
+                        sewingMasterView.SewingMatsArrivalBackground = materialArrivalSewing.Background;
+                    }
+
+                    // Outsole Material Follow Material Input
+                    var rawMaterialViewModelNew = rawMaterialViewModelNewList.FirstOrDefault(f => f.ProductNo == order.ProductNo);
+                    sewingMasterView.OSMatsArrivalForeground = Brushes.Blue;
+                    sewingMasterView.OSMatsArrivalBackground = Brushes.Transparent;
+                    // Deliveried
+                    if (String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_Remarks) &&
+                        !String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_ActualDate))
+                        sewingMasterView.OSMatsArrival = rawMaterialViewModelNew.OUTSOLE_ActualDate;
+                    else
+                    {
+                        sewingMasterView.OSMatsArrivalForeground = Brushes.Black;
+                        sewingMasterView.OSMatsArrival = rawMaterialViewModelNew.OUTSOLE_ETD;
+
+                        // ETD Late
+                        if (rawMaterialViewModelNew.OUTSOLE_ETD_DATE < DateTime.Now.Date &&
+                            rawMaterialViewModelNew.OUTSOLE_ETD_DATE != dtDefault)
+                            sewingMasterView.OSMatsArrivalBackground = Brushes.Red;
+
+                        // Still Have Balance
+                        if (!String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_Remarks))
+                        {
+                            sewingMasterView.OSMatsArrivalBackground = Brushes.Yellow;
+                            if (rawMaterialViewModelNew.OUTSOLE_ETD_DATE < DateTime.Now.Date &&
+                                rawMaterialViewModelNew.OUTSOLE_ETD_DATE != dtDefault)
+                                sewingMasterView.OSMatsArrivalForeground = Brushes.Red;
+                        }
+                    }
+
+                    MaterialArrivalViewModel materialArrivalAssembly = MaterialArrival(order.ProductNo, materialIdAssemblyArray);
+                    if (materialArrivalAssembly != null)
+                    {
+                        sewingMasterView.AssemblyMatsArrival = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", materialArrivalAssembly.Date);
+                        sewingMasterView.AssemblyMatsArrivalForeground = materialArrivalAssembly.Foreground;
+                        sewingMasterView.AssemblyMatsArrivalBackground = materialArrivalAssembly.Background;
+                    }
+
+                    SewingMasterModel sewingMaster = sewingMasterList.Where(s => s.ProductNo == order.ProductNo).FirstOrDefault();
+                    if (sewingMaster != null)
+                    {
+                        sewingMasterView.Sequence = sewingMaster.Sequence;
+                        sewingMasterView.SewingLine = sewingMaster.SewingLine;
+                        sewingMasterView.SewingStartDate = sewingMaster.SewingStartDate;
+                        sewingMasterView.SewingFinishDate = sewingMaster.SewingFinishDate;
+                        sewingMasterView.SewingQuota = sewingMaster.SewingQuota;
+
+                        sewingMasterView.SewingPrep = sewingMaster.SewingPrep;
+
+                        //sewingMasterView.SewingActualStartDate = sewingMaster.SewingActualStartDate;
+                        sewingMasterView.SewingActualStartDate = "";
+                        if (sewingMaster.SewingActualStartDate_Date != dtDefault)
+                        {
+                            sewingMasterView.SewingActualStartDate = String.Format("{0:M/d}", sewingMaster.SewingActualStartDate_Date);
+                            sewingMasterView.SewingActualStartDate_Date = sewingMaster.SewingActualStartDate_Date;
+                        }
+
+                        //sewingMasterView.SewingActualFinishDate = sewingMaster.SewingActualFinishDate;
+                        sewingMasterView.SewingActualFinishDate = "";
+                        if (sewingMaster.SewingActualFinishDate_Date != dtDefault)
+                        {
+                            sewingMasterView.SewingActualFinishDate = String.Format("{0:M/d}", sewingMaster.SewingActualFinishDate_Date);
+                            sewingMasterView.SewingActualFinishDate_Date = sewingMaster.SewingActualFinishDate_Date;
+                        }
+
+                        sewingMasterView.SewingActualStartDateAuto = TimeHelper.ConvertDateToView(sewingMaster.SewingActualStartDateAuto);
+                        sewingMasterView.SewingActualFinishDateAuto = TimeHelper.ConvertDateToView(sewingMaster.SewingActualFinishDateAuto);
+
+                        //sewingMasterView.SewingBalance = sewingMaster.SewingBalance;
+                        if (sewingMaster.SewingBalance.Contains("/"))
+                        {
+                            sewingMasterView.SewingBalance_Date = TimeHelper.Convert(sewingMaster.SewingBalance);
+                            sewingMasterView.SewingBalance = String.Format("{0:M/d}", sewingMasterView.SewingBalance_Date);
+                        }
+                        else
+                            sewingMasterView.SewingBalance = sewingMaster.SewingBalance;
+
+
+                        sewingMasterView.CutAStartDate = sewingMaster.CutAStartDate;
+                        sewingMasterView.CutAFinishDate = sewingMaster.CutAFinishDate;
+                        sewingMasterView.CutAQuota = sewingMaster.CutAQuota;
+                        //sewingMasterView.CutAActualStartDate = TimeHelper.ConvertDateToView(sewingMaster.CutAActualStartDate);
+                        //sewingMasterView.CutAActualFinishDate = TimeHelper.ConvertDateToView(sewingMaster.CutAActualFinishDate);
+
+                        //sewingMasterView.CutAActualStartDate = sewingMaster.CutAActualStartDate;
+                        sewingMasterView.CutAActualStartDate = "";
+                        if (sewingMaster.CutAActualStartDate_Date != dtDefault)
+                        {
+                            sewingMasterView.CutAActualStartDate = String.Format("{0:M/d}", sewingMaster.CutAActualStartDate_Date);
+                            sewingMasterView.CutAActualStartDate_Date = sewingMaster.CutAActualStartDate_Date;
+                        }
+
+                        //sewingMasterView.CutAActualFinishDate = sewingMaster.CutAActualFinishDate;
+                        sewingMasterView.CutAActualFinishDate = "";
+                        if (sewingMaster.CutAActualFinishDate_Date != dtDefault)
+                        {
+                            sewingMasterView.CutAActualFinishDate = String.Format("{0:M/d}", sewingMaster.CutAActualFinishDate_Date);
+                            sewingMasterView.CutAActualFinishDate_Date = sewingMaster.CutAActualFinishDate_Date;
+                        }
+
+                        //sewingMasterView.CutBActualStartDate = TimeHelper.ConvertDateToView(sewingMaster.CutBActualStartDate);
+                        sewingMasterView.CutBActualStartDate = sewingMaster.CutBActualStartDate;
+
+                        //sewingMasterView.CutABalance = sewingMaster.CutABalance;
+                        if (sewingMaster.CutABalance.Contains("/"))
+                        {
+                            sewingMasterView.CutABalance_Date = TimeHelper.Convert(sewingMaster.CutABalance);
+                            sewingMasterView.CutABalance = String.Format("{0:M/d}", sewingMasterView.CutABalance_Date);
+                        }
+                        else
+                            sewingMasterView.CutABalance = sewingMaster.CutABalance;
+
+                        sewingMasterView.PrintingBalance = sewingMaster.PrintingBalance;
+                        sewingMasterView.H_FBalance = sewingMaster.H_FBalance;
+                        sewingMasterView.EmbroideryBalance = sewingMaster.EmbroideryBalance;
+                        sewingMasterView.CutBBalance = sewingMaster.CutBBalance;
+
+                        sewingMasterView.AutoCut = sewingMaster.AutoCut;
+                        sewingMasterView.LaserCut = sewingMaster.LaserCut;
+                        sewingMasterView.HuasenCut = sewingMaster.HuasenCut;
+
+                        //var beforeSewingX1Days = sewingMaster.SewingStartDate.AddDays(-15);
+                        var beforeSewingOfCutTypeADays = sewingMaster.SewingStartDate.AddDays(-_SEW_VS_OTHERS_CUT_A);
+                        var dtCheckOffDateCutTypeAList = CheckOffDay(beforeSewingOfCutTypeADays, sewingMaster.SewingStartDate);
+
+                        //var beforeSewingXDays = sewingMaster.SewingStartDate.AddDays(-10);
+                        var beforeSewingOfCutTypeB = sewingMaster.SewingStartDate.AddDays(-_SEW_VS_OTHERS_CUT_B);
+                        var dtCheckOffDateCutTypeBList = CheckOffDay(beforeSewingOfCutTypeB, sewingMaster.SewingStartDate);
+
+                        var firstCheckOffDateCutTypeA = String.Format("{0:M/d}", dtCheckOffDateCutTypeAList.First());
+                        var firstCheckOffDateCutTypeB = String.Format("{0:M/d}", dtCheckOffDateCutTypeBList.First());
+
+                        // Cut B
+                        if (!String.IsNullOrEmpty(sewingMaster.CutBStartDate))
+                            sewingMasterView.CutBStartDate = sewingMaster.CutBStartDate;
+                        else if (sewingMaster.SewingStartDate != dtDefault)
+                            sewingMasterView.CutBStartDate = firstCheckOffDateCutTypeB;
+                        else
+                            sewingMasterView.CutBStartDate = "";
+
+                        // Atom CutAB
+                        if (!String.IsNullOrEmpty(sewingMaster.AtomCutA))
+                            sewingMasterView.AtomCutA = sewingMaster.AtomCutA;
+                        else if (sewingMaster.SewingStartDate != dtDefault)
+                            sewingMasterView.AtomCutA = firstCheckOffDateCutTypeA;
+                        else
+                            sewingMasterView.AtomCutA = "";
+
+                        if (!String.IsNullOrEmpty(sewingMaster.AtomCutB))
+                            sewingMasterView.AtomCutB = sewingMaster.AtomCutB;
+                        else if (sewingMaster.SewingStartDate != dtDefault)
+                            sewingMasterView.AtomCutB = firstCheckOffDateCutTypeB;
+                        else
+                            sewingMasterView.AtomCutB = "";
+
+                        // Laser CutAB
+                        if (!String.IsNullOrEmpty(sewingMaster.LaserCutA))
+                            sewingMasterView.LaserCutA = sewingMaster.LaserCutA;
+                        else if (sewingMaster.SewingStartDate != dtDefault)
+                            sewingMasterView.LaserCutA = firstCheckOffDateCutTypeA;
+                        else
+                            sewingMasterView.LaserCutA = "";
+
+                        if (!String.IsNullOrEmpty(sewingMaster.LaserCutB))
+                            sewingMasterView.LaserCutB = sewingMaster.LaserCutB;
+                        else if (sewingMaster.SewingStartDate != dtDefault)
+                            sewingMasterView.LaserCutB = firstCheckOffDateCutTypeB;
+                        else
+                            sewingMasterView.LaserCutB = "";
+
+                        // Huasen CutAB
+                        if (!String.IsNullOrEmpty(sewingMaster.HuasenCutA))
+                            sewingMasterView.HuasenCutA = sewingMaster.HuasenCutA;
+                        else if (sewingMaster.SewingStartDate != dtDefault)
+                            sewingMasterView.HuasenCutA = firstCheckOffDateCutTypeA;
+                        else
+                            sewingMasterView.HuasenCutA = "";
+
+                        if (!String.IsNullOrEmpty(sewingMaster.HuasenCutB))
+                            sewingMasterView.HuasenCutB = sewingMaster.HuasenCutB;
+                        else if (sewingMaster.SewingStartDate != dtDefault)
+                            sewingMasterView.HuasenCutB = firstCheckOffDateCutTypeB;
+                        else
+                            sewingMasterView.HuasenCutB = "";
+
+                        // Comelz CutAB
+                        if (!String.IsNullOrEmpty(sewingMaster.ComelzCutA))
+                            sewingMasterView.ComelzCutA = sewingMaster.ComelzCutA;
+                        else if (sewingMaster.SewingStartDate != dtDefault)
+                            sewingMasterView.ComelzCutA = firstCheckOffDateCutTypeA;
+                        else
+                            sewingMasterView.ComelzCutA = "";
+
+                        if (!String.IsNullOrEmpty(sewingMaster.ComelzCutB))
+                            sewingMasterView.ComelzCutB = sewingMaster.ComelzCutB;
+                        else if (sewingMaster.SewingStartDate != dtDefault)
+                            sewingMasterView.ComelzCutB = firstCheckOffDateCutTypeB;
+                        else
+                            sewingMasterView.ComelzCutB = "";
+                    }
+                    else
+                    {
+                        sewingMasterView.Sequence = 0;
+                        sewingMasterView.SewingLine = "";
+                        sewingMasterView.SewingStartDate = dtDefault;
+                        sewingMasterView.SewingFinishDate = dtDefault;
+                        sewingMasterView.SewingQuota = 0;
+
+                        sewingMasterView.SewingPrep = "";
+
+                        sewingMasterView.SewingActualStartDate = "";
+                        sewingMasterView.SewingActualFinishDate = "";
+
+                        sewingMasterView.SewingActualStartDateAuto = "";
+                        sewingMasterView.SewingActualFinishDateAuto = "";
+
+                        sewingMasterView.SewingBalance = "";
+                        sewingMasterView.CutAStartDate = dtDefault;
+                        sewingMasterView.CutAFinishDate = dtDefault;
+                        sewingMasterView.CutAQuota = 0;
+                        sewingMasterView.CutAActualStartDate = "";
+                        sewingMasterView.CutAActualFinishDate = "";
+                        sewingMasterView.CutABalance = "";
+                        sewingMasterView.PrintingBalance = "";
+                        sewingMasterView.H_FBalance = "";
+                        sewingMasterView.EmbroideryBalance = "";
+                        sewingMasterView.CutBActualStartDate = "";
+                        sewingMasterView.CutBBalance = "";
+                        sewingMasterView.AutoCut = "";
+                        sewingMasterView.LaserCut = "";
+                        sewingMasterView.HuasenCut = "";
+
+                        sewingMasterView.CutBStartDate = "";
+                        sewingMasterView.AtomCutA = "";
+                        sewingMasterView.AtomCutB = "";
+                        sewingMasterView.LaserCutA = "";
+                        sewingMasterView.LaserCutB = "";
+                        sewingMasterView.HuasenCutA = "";
+                        sewingMasterView.HuasenCutB = "";
+                        sewingMasterView.ComelzCutA = "";
+                        sewingMasterView.ComelzCutB = "";
+                    }
+
+                    OutsoleMasterModel outsoleMaster = outsoleMasterList.Where(o => o.ProductNo == order.ProductNo).FirstOrDefault();
+                    if (outsoleMaster != null)
+                    {
+                        sewingMasterView.OSFinishDate = outsoleMaster.OutsoleFinishDate;
+                        if (outsoleMaster.OutsoleBalance.Contains("/"))
+                        {
+                            sewingMasterView.OSBalance = String.Format("{0:M/d}", TimeHelper.Convert(outsoleMaster.OutsoleBalance));
+                        }
+                        else
+                            sewingMasterView.OSBalance = outsoleMaster.OutsoleBalance;
+                    }
+                    else
+                    {
+                        sewingMasterView.OSFinishDate = dtDefault;
+                        sewingMasterView.OSBalance = "";
+                    }
+
+                    sewingMasterView.SewingStartDateForeground = Brushes.Black;
+                    sewingMasterView.SewingFinishDateForeground = Brushes.Black;
+                    sewingMasterView.CutAStartDateForeground = Brushes.Black;
+
+                    // addition code: Orange is: sewing startdate start after uppermaterial come in 5 days
+                    //int rangeSewing = TimeHelper.CalculateDate(sewingMasterView.UpperMatsArrivalOrginal, sewingMasterView.SewingStartDate);
+                    int rangeSewing = (Int32)((sewingMasterView.SewingStartDate - sewingMasterView.UpperMatsArrivalOrginal).TotalDays);
+                    //if (0 <= rangeSewing && rangeSewing <= 5)
+                    if (sewingMasterView.UpperMatsArrivalOrginal <= sewingMasterView.SewingStartDate && sewingMasterView.SewingStartDate <= sewingMasterView.UpperMatsArrivalOrginal.AddDays(5))
+                        sewingMasterView.SewingStartDateForeground = Brushes.Orange;
+
+                    if (sewingMasterView.SewingStartDate < new DateTime(Math.Max(sewingMasterView.UpperMatsArrivalOrginal.Ticks, sewingMasterView.SewingMatsArrivalOrginal.Ticks)))
+                        sewingMasterView.SewingStartDateForeground = Brushes.Red;
+
+                    if (sewingMasterView.SewingFinishDate > sewingMasterView.ETD)
+                        sewingMasterView.SewingFinishDateForeground = Brushes.Red;
+
+                    if (sewingMasterView.CutAStartDate < sewingMasterView.UpperMatsArrivalOrginal)
+                        sewingMasterView.CutAStartDateForeground = Brushes.Red;
+                    else
+                    {
+                        if (materialArrivalUpper != null)
+                        {
+                            if (sewingMasterView.CutAStartDateForeground == Brushes.Orange)
+                                sewingMasterView.CutAStartDateForeground = Brushes.Orange;
+                            else
+                                sewingMasterView.CutAStartDateForeground = materialArrivalUpper.Foreground;
+                        }
+                        // addtion code : Orange is: cut a startdate start after uppermaterial come in 3 days
+                        //if (0 <= rangeCutA && rangeCutA <= 3)
+                        //int rangeCutA = TimeHelper.CalculateDate(sewingMasterView.UpperMatsArrivalOrginal, sewingMasterView.CutAStartDate);
+                        int rangeCutA = (Int32)((sewingMasterView.CutAStartDate - sewingMasterView.UpperMatsArrivalOrginal).TotalDays);
+                        //if (sewingMasterView.UpperMatsArrivalOrginal <= sewingMasterView.CutAStartDate && sewingMasterView.CutAStartDate <= sewingMasterView.UpperMatsArrivalOrginal.AddDays(3))
+                        if (0 <= rangeCutA && rangeCutA <= 3)
+                            sewingMasterView.CutAStartDateForeground = Brushes.Orange;
+                    }
+                    sewingMasterViewList.Add(sewingMasterView);
+                }
+                sewingMasterViewList = sewingMasterViewList.OrderBy(s => s.SewingLine).ThenBy(s => s.Sequence).ToList();
             }
             catch (Exception ex)
             {
-                Dispatcher.Invoke(new Action(() => {
+                Dispatcher.Invoke(new Action(() =>
+                {
                     MessageBox.Show(ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
                 }));
                 return;
             }
-
-            _SEW_VS_CUTA = privateDefine.SewingVsCutAStartDate;
-            _SEW_VS_OTHERS_CUT_A = privateDefine.SewingVsOthersCutTypeA;
-            _SEW_VS_OTHERS_CUT_B = privateDefine.SewingVsOthersCutTypeB;
-
-            int[] materialIdUpperArray = { 1, 2, 3, 4, 10 };
-            int[] materialIdSewingArray = { 5, 7 };
-            int[] materialIdOutsoleArray = { 6 };
-            int[] materialIdAssemblyArray = { 8, 9 };
-            for (int i = 0; i <= orderList.Count - 1; i++)
-            {
-                OrdersModel order = orderList[i];
-
-                SewingMasterViewModel sewingMasterView = new SewingMasterViewModel
-                {
-                    ProductNo = order.ProductNo,
-                    ProductNoBackground = Brushes.Transparent,
-                    Country = order.Country,
-                    ShoeName = order.ShoeName,
-                    ArticleNo = order.ArticleNo,
-                    PatternNo = order.PatternNo,
-                    Quantity = order.Quantity,
-                    ETD = order.ETD,
-                };
-
-                string memoId = "";
-                List<ProductionMemoModel> productionMemoByProductionNumberList = productionMemoList.Where(p => p.ProductionNumbers.Contains(order.ProductNo) == true).ToList();
-                for (int p = 0; p <= productionMemoByProductionNumberList.Count - 1; p++)
-                {
-                    ProductionMemoModel productionMemo = productionMemoByProductionNumberList[p];
-                    memoId += productionMemo.MemoId;
-                    if (p < productionMemoByProductionNumberList.Count - 1)
-                        memoId += "\n";
-                }
-                sewingMasterView.MemoId = memoId;
-
-                MaterialArrivalViewModel materialArrivalUpper = MaterialArrival(order.ProductNo, materialIdUpperArray);
-                sewingMasterView.UpperMatsArrivalOrginal = dtDefault;
-                if (materialArrivalUpper != null)
-                {
-                    sewingMasterView.UpperMatsArrival = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", materialArrivalUpper.Date);
-                    sewingMasterView.UpperMatsArrivalOrginal = materialArrivalUpper.Date;
-                    sewingMasterView.UpperMatsArrivalForeground = materialArrivalUpper.Foreground;
-                    sewingMasterView.UpperMatsArrivalBackground = materialArrivalUpper.Background;
-                }
-
-                MaterialArrivalViewModel materialArrivalSewing = MaterialArrival(order.ProductNo, materialIdSewingArray);
-                sewingMasterView.SewingMatsArrivalOrginal = dtDefault;
-                if (materialArrivalSewing != null)
-                {
-                    sewingMasterView.SewingMatsArrival = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", materialArrivalSewing.Date);
-                    sewingMasterView.SewingMatsArrivalOrginal = materialArrivalSewing.Date;
-                    sewingMasterView.SewingMatsArrivalForeground = materialArrivalSewing.Foreground;
-                    sewingMasterView.SewingMatsArrivalBackground = materialArrivalSewing.Background;
-                }
-
-                // Outsole Material Follow Material Input
-                var rawMaterialViewModelNew = rawMaterialViewModelNewList.FirstOrDefault(f => f.ProductNo == order.ProductNo);
-                sewingMasterView.OSMatsArrivalForeground = Brushes.Blue;
-                sewingMasterView.OSMatsArrivalBackground = Brushes.Transparent;
-                // Deliveried
-                if (String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_Remarks) &&
-                    !String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_ActualDate))
-                    sewingMasterView.OSMatsArrival = rawMaterialViewModelNew.OUTSOLE_ActualDate;
-                else
-                {
-                    sewingMasterView.OSMatsArrivalForeground = Brushes.Black;
-                    sewingMasterView.OSMatsArrival = rawMaterialViewModelNew.OUTSOLE_ETD;
-
-                    // ETD Late
-                    if (rawMaterialViewModelNew.OUTSOLE_ETD_DATE < DateTime.Now.Date &&
-                        rawMaterialViewModelNew.OUTSOLE_ETD_DATE != dtDefault)
-                        sewingMasterView.OSMatsArrivalBackground = Brushes.Red;
-
-                    // Still Have Balance
-                    if (!String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_Remarks))
-                    {
-                        sewingMasterView.OSMatsArrivalBackground = Brushes.Yellow;
-                        if (rawMaterialViewModelNew.OUTSOLE_ETD_DATE < DateTime.Now.Date &&
-                            rawMaterialViewModelNew.OUTSOLE_ETD_DATE != dtDefault)
-                            sewingMasterView.OSMatsArrivalForeground = Brushes.Red;
-                    }
-                }
-
-                MaterialArrivalViewModel materialArrivalAssembly = MaterialArrival(order.ProductNo, materialIdAssemblyArray);
-                if (materialArrivalAssembly != null)
-                {
-                    sewingMasterView.AssemblyMatsArrival = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", materialArrivalAssembly.Date);
-                    sewingMasterView.AssemblyMatsArrivalForeground = materialArrivalAssembly.Foreground;
-                    sewingMasterView.AssemblyMatsArrivalBackground = materialArrivalAssembly.Background;
-                }
-
-                SewingMasterModel sewingMaster = sewingMasterList.Where(s => s.ProductNo == order.ProductNo).FirstOrDefault();
-                if (sewingMaster != null)
-                {
-                    sewingMasterView.Sequence = sewingMaster.Sequence;
-                    sewingMasterView.SewingLine = sewingMaster.SewingLine;
-                    sewingMasterView.SewingStartDate = sewingMaster.SewingStartDate;
-                    sewingMasterView.SewingFinishDate = sewingMaster.SewingFinishDate;
-                    sewingMasterView.SewingQuota = sewingMaster.SewingQuota;
-
-                    sewingMasterView.SewingPrep = sewingMaster.SewingPrep;
-
-                    //sewingMasterView.SewingActualStartDate = sewingMaster.SewingActualStartDate;
-                    sewingMasterView.SewingActualStartDate = "";
-                    if (sewingMaster.SewingActualStartDate_Date != dtDefault)
-                    {
-                        sewingMasterView.SewingActualStartDate = String.Format("{0:M/d}", sewingMaster.SewingActualStartDate_Date);
-                        sewingMasterView.SewingActualStartDate_Date = sewingMaster.SewingActualStartDate_Date;
-                    }
-
-                    //sewingMasterView.SewingActualFinishDate = sewingMaster.SewingActualFinishDate;
-                    sewingMasterView.SewingActualFinishDate = "";
-                    if (sewingMaster.SewingActualFinishDate_Date != dtDefault)
-                    {
-                        sewingMasterView.SewingActualFinishDate = String.Format("{0:M/d}", sewingMaster.SewingActualFinishDate_Date);
-                        sewingMasterView.SewingActualFinishDate_Date = sewingMaster.SewingActualFinishDate_Date;
-                    }
-
-                    sewingMasterView.SewingActualStartDateAuto = TimeHelper.ConvertDateToView(sewingMaster.SewingActualStartDateAuto);
-                    sewingMasterView.SewingActualFinishDateAuto = TimeHelper.ConvertDateToView(sewingMaster.SewingActualFinishDateAuto);
-
-                    //sewingMasterView.SewingBalance = sewingMaster.SewingBalance;
-                    if (sewingMaster.SewingBalance.Contains("/"))
-                    {
-                        sewingMasterView.SewingBalance_Date = TimeHelper.Convert(sewingMaster.SewingBalance);
-                        sewingMasterView.SewingBalance = String.Format("{0:M/d}", sewingMasterView.SewingBalance_Date);
-                    }
-                    else
-                        sewingMasterView.SewingBalance = sewingMaster.SewingBalance;
-
-
-                    sewingMasterView.CutAStartDate = sewingMaster.CutAStartDate;
-                    sewingMasterView.CutAFinishDate = sewingMaster.CutAFinishDate;
-                    sewingMasterView.CutAQuota = sewingMaster.CutAQuota;
-                    //sewingMasterView.CutAActualStartDate = TimeHelper.ConvertDateToView(sewingMaster.CutAActualStartDate);
-                    //sewingMasterView.CutAActualFinishDate = TimeHelper.ConvertDateToView(sewingMaster.CutAActualFinishDate);
-
-                    //sewingMasterView.CutAActualStartDate = sewingMaster.CutAActualStartDate;
-                    sewingMasterView.CutAActualStartDate = "";
-                    if (sewingMaster.CutAActualStartDate_Date != dtDefault)
-                    {
-                        sewingMasterView.CutAActualStartDate = String.Format("{0:M/d}", sewingMaster.CutAActualStartDate_Date);
-                        sewingMasterView.CutAActualStartDate_Date = sewingMaster.CutAActualStartDate_Date;
-                    }
-
-                    //sewingMasterView.CutAActualFinishDate = sewingMaster.CutAActualFinishDate;
-                    sewingMasterView.CutAActualFinishDate = "";
-                    if (sewingMaster.CutAActualFinishDate_Date != dtDefault)
-                    {
-                        sewingMasterView.CutAActualFinishDate = String.Format("{0:M/d}", sewingMaster.CutAActualFinishDate_Date);
-                        sewingMasterView.CutAActualFinishDate_Date = sewingMaster.CutAActualFinishDate_Date;
-                    }
-
-                    //sewingMasterView.CutBActualStartDate = TimeHelper.ConvertDateToView(sewingMaster.CutBActualStartDate);
-                    sewingMasterView.CutBActualStartDate = sewingMaster.CutBActualStartDate;
-
-                    //sewingMasterView.CutABalance = sewingMaster.CutABalance;
-                    if (sewingMaster.CutABalance.Contains("/"))
-                    {
-                        sewingMasterView.CutABalance_Date = TimeHelper.Convert(sewingMaster.CutABalance);
-                        sewingMasterView.CutABalance = String.Format("{0:M/d}", sewingMasterView.CutABalance_Date);
-                    }
-                    else
-                        sewingMasterView.CutABalance = sewingMaster.CutABalance;
-
-                    sewingMasterView.PrintingBalance = sewingMaster.PrintingBalance;
-                    sewingMasterView.H_FBalance = sewingMaster.H_FBalance;
-                    sewingMasterView.EmbroideryBalance = sewingMaster.EmbroideryBalance;
-                    sewingMasterView.CutBBalance = sewingMaster.CutBBalance;
-
-                    sewingMasterView.AutoCut = sewingMaster.AutoCut;
-                    sewingMasterView.LaserCut = sewingMaster.LaserCut;
-                    sewingMasterView.HuasenCut = sewingMaster.HuasenCut;
-
-                    //var beforeSewingX1Days = sewingMaster.SewingStartDate.AddDays(-15);
-                    var beforeSewingOfCutTypeADays = sewingMaster.SewingStartDate.AddDays(-_SEW_VS_OTHERS_CUT_A);
-                    var dtCheckOffDateCutTypeAList = CheckOffDay(beforeSewingOfCutTypeADays, sewingMaster.SewingStartDate);
-
-                    //var beforeSewingXDays = sewingMaster.SewingStartDate.AddDays(-10);
-                    var beforeSewingOfCutTypeB = sewingMaster.SewingStartDate.AddDays(-_SEW_VS_OTHERS_CUT_B);
-                    var dtCheckOffDateCutTypeBList = CheckOffDay(beforeSewingOfCutTypeB, sewingMaster.SewingStartDate);
-
-                    var firstCheckOffDateCutTypeA = String.Format("{0:M/d}", dtCheckOffDateCutTypeAList.First());
-                    var firstCheckOffDateCutTypeB = String.Format("{0:M/d}", dtCheckOffDateCutTypeBList.First());
-
-                    // Cut B
-                    if (!String.IsNullOrEmpty(sewingMaster.CutBStartDate))
-                        sewingMasterView.CutBStartDate = sewingMaster.CutBStartDate;
-                    else if (sewingMaster.SewingStartDate != dtDefault)
-                        sewingMasterView.CutBStartDate = firstCheckOffDateCutTypeB;
-                    else
-                        sewingMasterView.CutBStartDate = "";
-
-                    // Atom CutAB
-                    if (!String.IsNullOrEmpty(sewingMaster.AtomCutA))
-                        sewingMasterView.AtomCutA = sewingMaster.AtomCutA;
-                    else if (sewingMaster.SewingStartDate != dtDefault)
-                        sewingMasterView.AtomCutA = firstCheckOffDateCutTypeA;
-                    else
-                        sewingMasterView.AtomCutA = "";
-
-                    if (!String.IsNullOrEmpty(sewingMaster.AtomCutB))
-                        sewingMasterView.AtomCutB = sewingMaster.AtomCutB;
-                    else if (sewingMaster.SewingStartDate != dtDefault)
-                        sewingMasterView.AtomCutB = firstCheckOffDateCutTypeB;
-                    else
-                        sewingMasterView.AtomCutB = "";
-
-                    // Laser CutAB
-                    if (!String.IsNullOrEmpty(sewingMaster.LaserCutA))
-                        sewingMasterView.LaserCutA = sewingMaster.LaserCutA;
-                    else if (sewingMaster.SewingStartDate != dtDefault)
-                        sewingMasterView.LaserCutA = firstCheckOffDateCutTypeA;
-                    else
-                        sewingMasterView.LaserCutA = "";
-
-                    if (!String.IsNullOrEmpty(sewingMaster.LaserCutB))
-                        sewingMasterView.LaserCutB = sewingMaster.LaserCutB;
-                    else if (sewingMaster.SewingStartDate != dtDefault)
-                        sewingMasterView.LaserCutB = firstCheckOffDateCutTypeB;
-                    else
-                        sewingMasterView.LaserCutB = "";
-
-                    // Huasen CutAB
-                    if (!String.IsNullOrEmpty(sewingMaster.HuasenCutA))
-                        sewingMasterView.HuasenCutA = sewingMaster.HuasenCutA;
-                    else if (sewingMaster.SewingStartDate != dtDefault)
-                        sewingMasterView.HuasenCutA = firstCheckOffDateCutTypeA;
-                    else
-                        sewingMasterView.HuasenCutA = "";
-
-                    if (!String.IsNullOrEmpty(sewingMaster.HuasenCutB))
-                        sewingMasterView.HuasenCutB = sewingMaster.HuasenCutB;
-                    else if (sewingMaster.SewingStartDate != dtDefault)
-                        sewingMasterView.HuasenCutB = firstCheckOffDateCutTypeB;
-                    else
-                        sewingMasterView.HuasenCutB = "";
-
-                    // Comelz CutAB
-                    if (!String.IsNullOrEmpty(sewingMaster.ComelzCutA))
-                        sewingMasterView.ComelzCutA = sewingMaster.ComelzCutA;
-                    else if (sewingMaster.SewingStartDate != dtDefault)
-                        sewingMasterView.ComelzCutA = firstCheckOffDateCutTypeA;
-                    else
-                        sewingMasterView.ComelzCutA = "";
-
-                    if (!String.IsNullOrEmpty(sewingMaster.ComelzCutB))
-                        sewingMasterView.ComelzCutB = sewingMaster.ComelzCutB;
-                    else if (sewingMaster.SewingStartDate != dtDefault)
-                        sewingMasterView.ComelzCutB = firstCheckOffDateCutTypeB;
-                    else
-                        sewingMasterView.ComelzCutB = "";
-                }
-                else
-                {
-                    sewingMasterView.Sequence = 0;
-                    sewingMasterView.SewingLine = "";
-                    sewingMasterView.SewingStartDate = dtDefault;
-                    sewingMasterView.SewingFinishDate = dtDefault;
-                    sewingMasterView.SewingQuota = 0;
-
-                    sewingMasterView.SewingPrep = "";
-
-                    sewingMasterView.SewingActualStartDate = "";
-                    sewingMasterView.SewingActualFinishDate = "";
-
-                    sewingMasterView.SewingActualStartDateAuto = "";
-                    sewingMasterView.SewingActualFinishDateAuto = "";
-
-                    sewingMasterView.SewingBalance = "";
-                    sewingMasterView.CutAStartDate = dtDefault;
-                    sewingMasterView.CutAFinishDate = dtDefault;
-                    sewingMasterView.CutAQuota = 0;
-                    sewingMasterView.CutAActualStartDate = "";
-                    sewingMasterView.CutAActualFinishDate = "";
-                    sewingMasterView.CutABalance = "";
-                    sewingMasterView.PrintingBalance = "";
-                    sewingMasterView.H_FBalance = "";
-                    sewingMasterView.EmbroideryBalance = "";
-                    sewingMasterView.CutBActualStartDate = "";
-                    sewingMasterView.CutBBalance = "";
-                    sewingMasterView.AutoCut = "";
-                    sewingMasterView.LaserCut = "";
-                    sewingMasterView.HuasenCut = "";
-
-                    sewingMasterView.CutBStartDate = "";
-                    sewingMasterView.AtomCutA = "";
-                    sewingMasterView.AtomCutB = "";
-                    sewingMasterView.LaserCutA = "";
-                    sewingMasterView.LaserCutB = "";
-                    sewingMasterView.HuasenCutA = "";
-                    sewingMasterView.HuasenCutB = "";
-                    sewingMasterView.ComelzCutA = "";
-                    sewingMasterView.ComelzCutB = "";
-                }
-
-                OutsoleMasterModel outsoleMaster = outsoleMasterList.Where(o => o.ProductNo == order.ProductNo).FirstOrDefault();
-                if (outsoleMaster != null)
-                {
-                    sewingMasterView.OSFinishDate = outsoleMaster.OutsoleFinishDate;
-                    if (outsoleMaster.OutsoleBalance.Contains("/"))
-                    {
-                        sewingMasterView.OSBalance = String.Format("{0:M/d}", TimeHelper.Convert(outsoleMaster.OutsoleBalance));
-                    }
-                    else
-                        sewingMasterView.OSBalance = outsoleMaster.OutsoleBalance;
-                }
-                else
-                {
-                    sewingMasterView.OSFinishDate = dtDefault;
-                    sewingMasterView.OSBalance = "";
-                }
-
-                sewingMasterView.SewingStartDateForeground = Brushes.Black;
-                sewingMasterView.SewingFinishDateForeground = Brushes.Black;
-                sewingMasterView.CutAStartDateForeground = Brushes.Black;
-
-                // addition code: Orange is: sewing startdate start after uppermaterial come in 5 days
-                //int rangeSewing = TimeHelper.CalculateDate(sewingMasterView.UpperMatsArrivalOrginal, sewingMasterView.SewingStartDate);
-                int rangeSewing = (Int32)((sewingMasterView.SewingStartDate - sewingMasterView.UpperMatsArrivalOrginal).TotalDays);
-                //if (0 <= rangeSewing && rangeSewing <= 5)
-                if (sewingMasterView.UpperMatsArrivalOrginal <= sewingMasterView.SewingStartDate && sewingMasterView.SewingStartDate <= sewingMasterView.UpperMatsArrivalOrginal.AddDays(5))
-                    sewingMasterView.SewingStartDateForeground = Brushes.Orange;
-
-                if (sewingMasterView.SewingStartDate < new DateTime(Math.Max(sewingMasterView.UpperMatsArrivalOrginal.Ticks, sewingMasterView.SewingMatsArrivalOrginal.Ticks)))
-                    sewingMasterView.SewingStartDateForeground = Brushes.Red;
-
-                if (sewingMasterView.SewingFinishDate > sewingMasterView.ETD)
-                    sewingMasterView.SewingFinishDateForeground = Brushes.Red;
-
-                if (sewingMasterView.CutAStartDate < sewingMasterView.UpperMatsArrivalOrginal)
-                    sewingMasterView.CutAStartDateForeground = Brushes.Red;
-                else
-                {
-                    if (materialArrivalUpper != null)
-                    {
-                        if (sewingMasterView.CutAStartDateForeground == Brushes.Orange)
-                            sewingMasterView.CutAStartDateForeground = Brushes.Orange;
-                        else
-                            sewingMasterView.CutAStartDateForeground = materialArrivalUpper.Foreground;
-                    }
-                    // addtion code : Orange is: cut a startdate start after uppermaterial come in 3 days
-                    //if (0 <= rangeCutA && rangeCutA <= 3)
-                    //int rangeCutA = TimeHelper.CalculateDate(sewingMasterView.UpperMatsArrivalOrginal, sewingMasterView.CutAStartDate);
-                    int rangeCutA = (Int32)((sewingMasterView.CutAStartDate - sewingMasterView.UpperMatsArrivalOrginal).TotalDays);
-                    //if (sewingMasterView.UpperMatsArrivalOrginal <= sewingMasterView.CutAStartDate && sewingMasterView.CutAStartDate <= sewingMasterView.UpperMatsArrivalOrginal.AddDays(3))
-                    if (0 <= rangeCutA && rangeCutA <= 3)
-                        sewingMasterView.CutAStartDateForeground = Brushes.Orange;
-                }
-                sewingMasterViewList.Add(sewingMasterView);
-            }
-            sewingMasterViewList = sewingMasterViewList.OrderBy(s => s.SewingLine).ThenBy(s => s.Sequence).ToList();
         }
 
         private void bwLoad_DoWork_1(object sender, DoWorkEventArgs e)
@@ -860,6 +901,345 @@ namespace MasterSchedule.Views
             sewingMasterViewList = sewingMasterViewList.OrderBy(s => s.SewingLine).ThenBy(s => s.Sequence).ToList();
         }
 
+        private void bwLoad_DoWork_2(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                def = PrivateDefineController.GetDefine();
+                if (!string.IsNullOrEmpty(def.Factory) && !def.Factory.Equals("THIENLOC"))
+                {
+
+                    var productNoListWithAccount = OrdersController.Select().Where(w => account.TypeOfShoes != -1 ? w.TypeOfShoes == account.TypeOfShoes : w.TypeOfShoes != -16111992).Select(s => s.ProductNo).ToList();
+                    offDayList = OffDayController.Select();
+                    sewingMasterSourceList = SewingMasterController.SelectSewingMasterSource().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
+                    productionMemoList = ProductionMemoController.Select().Where(w => productNoListWithAccount.Contains(w.ProductionNumbers)).ToList();
+                    sewingMasterList = SewingMasterController.Select().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
+                    def = PrivateDefineController.GetDefine();
+
+                    foreach (var sm in sewingMasterList)
+                    {
+                        poSequenceSourceList.Add(new POSequenceModel
+                        {
+                            ProductNo = sm.ProductNo,
+                            Sequence = sm.Sequence,
+                            Id = string.Format("{0}-{1}", sm.ProductNo, sm.Sequence)
+                        });
+                    }
+                    _SEW_VS_CUTA = def.SewingVsCutAStartDate;
+                    _SEW_VS_OTHERS_CUT_A = def.SewingVsOthersCutTypeA;
+                    _SEW_VS_OTHERS_CUT_B = def.SewingVsOthersCutTypeB;
+
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        prgStatus.Maximum = sewingMasterSourceList.Count();
+                    }));
+                    int index = 1;
+                    foreach (var sewSource in sewingMasterSourceList)
+                    {
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            lblStatus.Text = String.Format("Loading {0} / {1} PO", index, sewingMasterSourceList.Count());
+                            prgStatus.Value = index;
+                        }));
+                        string memoId = "";
+                        List<ProductionMemoModel> productionMemoByProductionNumberList = productionMemoList.Where(p => p.ProductionNumbers.Contains(sewSource.ProductNo) == true).ToList();
+                        for (int p = 0; p <= productionMemoByProductionNumberList.Count - 1; p++)
+                        {
+                            ProductionMemoModel productionMemo = productionMemoByProductionNumberList[p];
+                            memoId += productionMemo.MemoId;
+                            if (p < productionMemoByProductionNumberList.Count - 1)
+                                memoId += "\n";
+                        }
+                        var sewingMasterView = new SewingMasterViewModel
+                        {
+                            ProductNo = sewSource.ProductNo,
+                            ProductNoBackground = Brushes.Transparent,
+                            Country = sewSource.Country,
+                            ShoeName = sewSource.ShoeName,
+                            ArticleNo = sewSource.ArticleNo,
+                            PatternNo = sewSource.PatternNo,
+                            Quantity = sewSource.Quantity,
+                            ETD = sewSource.ETD,
+                            ShipDateDisplay = sewSource.ShipDate != dtDefault && sewSource.ShipDate != sewSource.ETD ? TimeHelper.DisplayDate(sewSource.ShipDate, 0) : "",
+                            MemoId = memoId,
+                            Sequence = sewSource.Sequence,
+                            SewingLine = sewSource.SewingLine,
+                            SewingStartDate = sewSource.SewingStartDate,
+                            SewingFinishDate = sewSource.SewingFinishDate,
+                            SewingQuota = sewSource.SewingQuota,
+                            SewingPrep = sewSource.SewingPrep,
+
+                            CutAStartDate = sewSource.CutAStartDate,
+                            CutAFinishDate = sewSource.CutAFinishDate,
+                            CutAQuota = sewSource.CutAQuota,
+
+                            CutBActualStartDate = sewSource.CutBActualStartDate,
+
+                            PrintingBalance = sewSource.PrintingBalance,
+                            H_FBalance = sewSource.H_FBalance,
+                            EmbroideryBalance = sewSource.EmbroideryBalance,
+                            CutBBalance = sewSource.CutBBalance,
+
+                            AutoCut = sewSource.AutoCut,
+                            LaserCut = sewSource.LaserCut,
+                            HuasenCut = sewSource.HuasenCut
+                        };
+
+                        sewingMasterView.SewingActualStartDate_Date = dtDefault;
+                        sewingMasterView.SewingActualStartDate = "";
+                        if (sewSource.SewingActualStartDate_Date != dtDefault)
+                        {
+                            sewingMasterView.SewingActualStartDate_Date = sewSource.SewingActualStartDate_Date;
+                            sewingMasterView.SewingActualStartDate = TimeHelper.DisplayDate(sewSource.SewingActualStartDate_Date, 1);
+                        }
+
+                        sewingMasterView.SewingActualFinishDate = "";
+                        sewingMasterView.SewingActualFinishDate_Date = dtDefault;
+                        if (sewSource.SewingActualFinishDate_Date != dtDefault)
+                        {
+                            sewingMasterView.SewingActualFinishDate = TimeHelper.DisplayDate(sewSource.SewingActualFinishDate_Date, 1);
+                            sewingMasterView.SewingActualFinishDate_Date = sewSource.SewingActualFinishDate_Date;
+                        }
+
+                        sewingMasterView.SewingActualStartDateAuto = TimeHelper.ConvertDateToView(sewSource.SewingActualStartDateAuto);
+                        sewingMasterView.SewingActualFinishDateAuto = TimeHelper.ConvertDateToView(sewSource.SewingActualFinishDateAuto);
+
+                        if (sewSource.SewingBalance.Contains("/"))
+                        {
+                            sewingMasterView.SewingBalance_Date = TimeHelper.Convert(sewSource.SewingBalance);
+                            sewingMasterView.SewingBalance = TimeHelper.DisplayDate(sewingMasterView.SewingBalance_Date, 1);
+                        }
+                        else
+                            sewingMasterView.SewingBalance = sewSource.SewingBalance;
+
+
+                        sewingMasterView.CutAActualStartDate_Date = dtDefault;
+                        sewingMasterView.CutAActualStartDate = "";
+                        if (sewSource.CutAActualStartDate_Date != dtDefault)
+                        {
+                            sewingMasterView.CutAActualStartDate_Date = sewSource.CutAActualStartDate_Date;
+                            sewingMasterView.CutAActualStartDate = TimeHelper.DisplayDate(sewSource.CutAActualStartDate_Date, 1);
+                        }
+
+
+                        sewingMasterView.CutAActualFinishDate_Date = dtDefault;
+                        sewingMasterView.CutAActualFinishDate = "";
+                        if (sewSource.CutAActualFinishDate_Date != dtDefault)
+                        {
+                            sewingMasterView.CutAActualFinishDate_Date = sewSource.CutAActualFinishDate_Date;
+                            sewingMasterView.CutAActualFinishDate = TimeHelper.DisplayDate(sewSource.CutAActualFinishDate_Date, 1);
+                        }
+
+                        if (sewSource.CutABalance.Contains("/"))
+                        {
+                            sewingMasterView.CutABalance_Date = TimeHelper.Convert(sewSource.CutABalance);
+                            sewingMasterView.CutABalance = TimeHelper.DisplayDate(sewingMasterView.CutABalance_Date, 1);
+                        }
+                        else
+                            sewingMasterView.CutABalance = sewSource.CutABalance;
+
+                        sewingMasterView.OSFinishDate = sewSource.OutsoleFinishDate;
+                        if (sewSource.OutsoleBalance.Contains("/"))
+                            sewingMasterView.OSBalance = TimeHelper.DisplayDate(TimeHelper.Convert(sewSource.OutsoleBalance), 1);
+                        else
+                            sewingMasterView.OSBalance = sewSource.OutsoleBalance;
+
+
+                        // UPPER
+                        if (!String.IsNullOrEmpty(sewSource.UpperMaterialStatus))
+                        {
+                            sewingMasterView.UpperMatsArrival = TimeHelper.DisplayDate(sewSource.UpperMaterialArrivalOriginal, 0);
+                            sewingMasterView.UpperMatsArrivalOrginal = sewSource.UpperMaterialArrivalOriginal;
+
+                            sewingMasterView.UpperMatsArrivalForeground = Brushes.Black;
+                            sewingMasterView.UpperMatsArrivalBackground = Brushes.Transparent;
+                            if (sewSource.UpperMaterialStatus == "OK")
+                            {
+                                sewingMasterView.UpperMatsArrivalForeground = Brushes.Blue;
+                            }
+                            else
+                            {
+                                if (sewSource.UpperMaterialArrivalOriginal < DateTime.Now)
+                                    sewingMasterView.UpperMatsArrivalBackground = Brushes.Red;
+                            }
+                            if (!String.IsNullOrEmpty(sewSource.UpperMaterialRemarks))
+                                sewingMasterView.UpperMatsArrivalBackground = Brushes.Yellow;
+                        }
+
+                        // OUTSOLE
+                        if (!String.IsNullOrEmpty(sewSource.OutsoleMaterialStatus))
+                        {
+                            sewingMasterView.OSMatsArrival = TimeHelper.DisplayDate(sewSource.OutsoleMaterialArrivalOriginal, 0);
+
+                            sewingMasterView.OSMatsArrivalForeground = Brushes.Black;
+                            sewingMasterView.OSMatsArrivalBackground = Brushes.Transparent;
+                            if (sewSource.OutsoleMaterialStatus == "OK")
+                            {
+                                sewingMasterView.OSMatsArrivalForeground = Brushes.Blue;
+                            }
+                            else
+                            {
+                                if (sewSource.OutsoleMaterialArrivalOriginal < DateTime.Now)
+                                    sewingMasterView.OSMatsArrivalBackground = Brushes.Red;
+                            }
+                            if (!String.IsNullOrEmpty(sewSource.OutsoleMaterialRemarks))
+                                sewingMasterView.OSMatsArrivalBackground = Brushes.Yellow;
+                        }
+
+                        // SEWING
+                        if (!String.IsNullOrEmpty(sewSource.SewingMaterialStatus))
+                        {
+                            sewingMasterView.SewingMatsArrival = TimeHelper.DisplayDate(sewSource.SewingMaterialArrivalOriginal, 0);
+                            sewingMasterView.SewingMatsArrivalOrginal = sewSource.SewingMaterialArrivalOriginal;
+
+                            sewingMasterView.SewingMatsArrivalForeground = Brushes.Black;
+                            sewingMasterView.SewingMatsArrivalBackground = Brushes.Transparent;
+                            if (sewSource.SewingMaterialStatus == "OK")
+                            {
+                                sewingMasterView.SewingMatsArrivalForeground = Brushes.Blue;
+                            }
+                            else
+                            {
+                                if (sewSource.SewingMaterialArrivalOriginal < DateTime.Now)
+                                    sewingMasterView.SewingMatsArrivalBackground = Brushes.Red;
+                            }
+                            if (!String.IsNullOrEmpty(sewSource.SewingMaterialRemarks))
+                                sewingMasterView.SewingMatsArrivalBackground = Brushes.Yellow;
+                        }
+
+                        // ASSY
+                        if (!String.IsNullOrEmpty(sewSource.AssemblyMaterialStatus))
+                        {
+                            sewingMasterView.AssemblyMatsArrival = TimeHelper.DisplayDate(sewSource.AssemblyMaterialArrivalOriginal, 0);
+                            sewingMasterView.AssemblyMatsArrivalForeground = Brushes.Black;
+                            sewingMasterView.AssemblyMatsArrivalBackground = Brushes.Transparent;
+                            if (sewSource.AssemblyMaterialStatus == "OK")
+                            {
+                                sewingMasterView.AssemblyMatsArrivalForeground = Brushes.Blue;
+                            }
+                            else
+                            {
+                                if (sewSource.AssemblyMaterialArrivalOriginal < DateTime.Now)
+                                    sewingMasterView.AssemblyMatsArrivalBackground = Brushes.Red;
+                            }
+                            if (!String.IsNullOrEmpty(sewSource.AssemblyMaterialRemarks))
+                                sewingMasterView.AssemblyMatsArrivalBackground = Brushes.Yellow;
+                        }
+
+                        sewingMasterView.SewingStartDateForeground = Brushes.Black;
+                        sewingMasterView.SewingFinishDateForeground = Brushes.Black;
+                        sewingMasterView.CutAStartDateForeground = Brushes.Black;
+
+                        if (sewingMasterView.UpperMatsArrivalOrginal <= sewingMasterView.SewingStartDate &&
+                            sewingMasterView.SewingStartDate <= sewingMasterView.UpperMatsArrivalOrginal.AddDays(5))
+                            sewingMasterView.SewingStartDateForeground = Brushes.Orange;
+
+                        if (sewingMasterView.SewingStartDate < new DateTime(Math.Max(sewingMasterView.UpperMatsArrivalOrginal.Ticks, sewingMasterView.SewingMatsArrivalOrginal.Ticks))
+                            && sewSource.SewingStartDate != dtDefault)
+                            sewingMasterView.SewingStartDateForeground = Brushes.Red;
+
+                        if (sewingMasterView.SewingFinishDate > sewingMasterView.ETD)
+                            sewingMasterView.SewingFinishDateForeground = Brushes.Red;
+
+                        int rangeCutA = (Int32)((sewingMasterView.CutAStartDate - sewingMasterView.UpperMatsArrivalOrginal).TotalDays);
+                        if (sewingMasterView.CutAStartDate < sewingMasterView.UpperMatsArrivalOrginal)
+                            sewingMasterView.CutAStartDateForeground = Brushes.Red;
+                        else if (0 <= rangeCutA && rangeCutA <= 3)
+                        {
+                            sewingMasterView.CutAStartDateForeground = Brushes.Orange;
+                        }
+
+                        var bfSewCutTypeB = sewSource.SewingStartDate.AddDays(-_SEW_VS_OTHERS_CUT_B);
+                        var bfSewCutTypeBHolidayList = CheckOffDay(bfSewCutTypeB, sewSource.SewingStartDate);
+
+                        var bfSewCutTypeA = sewSource.SewingStartDate.AddDays(-_SEW_VS_OTHERS_CUT_A);
+                        var bfSewCutTypeAHolidayList = CheckOffDay(bfSewCutTypeA, sewSource.SewingStartDate);
+
+                        var firstDateOfHolidayCutTypeB = TimeHelper.DisplayDate(bfSewCutTypeBHolidayList.FirstOrDefault(), 1);
+                        var firstDateOfHolidayCutTypeA = TimeHelper.DisplayDate(bfSewCutTypeAHolidayList.FirstOrDefault(), 1);
+
+                        if (!String.IsNullOrEmpty(sewSource.CutBStartDate))
+                            sewingMasterView.CutBStartDate = sewSource.CutBStartDate;
+                        else if (sewSource.SewingStartDate != dtDefault)
+                            sewingMasterView.CutBStartDate = firstDateOfHolidayCutTypeB;
+                        else
+                            sewingMasterView.CutBStartDate = "";
+
+
+                        if (!String.IsNullOrEmpty(sewSource.AtomCutA))
+                            sewingMasterView.AtomCutA = sewSource.AtomCutA;
+                        else if (sewSource.SewingStartDate != dtDefault)
+                            sewingMasterView.AtomCutA = firstDateOfHolidayCutTypeA;
+                        else
+                            sewingMasterView.AtomCutA = "";
+
+                        if (!String.IsNullOrEmpty(sewSource.AtomCutB))
+                            sewingMasterView.AtomCutB = sewSource.AtomCutB;
+                        else if (sewSource.SewingStartDate != dtDefault)
+                            sewingMasterView.AtomCutB = firstDateOfHolidayCutTypeB;
+                        else
+                            sewingMasterView.AtomCutB = "";
+
+                        if (!String.IsNullOrEmpty(sewSource.LaserCutA))
+                            sewingMasterView.LaserCutA = sewSource.LaserCutA;
+                        else if (sewSource.SewingStartDate != dtDefault)
+                            sewingMasterView.LaserCutA = firstDateOfHolidayCutTypeA;
+                        else
+                            sewingMasterView.LaserCutA = "";
+
+                        if (!String.IsNullOrEmpty(sewSource.LaserCutB))
+                            sewingMasterView.LaserCutB = sewSource.LaserCutB;
+                        else if (sewSource.SewingStartDate != dtDefault)
+                            sewingMasterView.LaserCutB = firstDateOfHolidayCutTypeB;
+                        else
+                            sewingMasterView.LaserCutB = "";
+
+                        if (!String.IsNullOrEmpty(sewSource.HuasenCutA))
+                            sewingMasterView.HuasenCutA = sewSource.HuasenCutA;
+                        else if (sewSource.SewingStartDate != dtDefault)
+                            sewingMasterView.HuasenCutA = firstDateOfHolidayCutTypeA;
+                        else
+                            sewingMasterView.HuasenCutA = "";
+
+                        if (!String.IsNullOrEmpty(sewSource.HuasenCutB))
+                            sewingMasterView.HuasenCutB = sewSource.HuasenCutB;
+                        else if (sewSource.SewingStartDate != dtDefault)
+                            sewingMasterView.HuasenCutB = firstDateOfHolidayCutTypeB;
+                        else
+                            sewingMasterView.HuasenCutB = "";
+
+                        if (!String.IsNullOrEmpty(sewSource.ComelzCutA))
+                            sewingMasterView.ComelzCutA = sewSource.ComelzCutA;
+                        else if (sewSource.SewingStartDate != dtDefault)
+                            sewingMasterView.ComelzCutA = firstDateOfHolidayCutTypeA;
+                        else sewingMasterView.ComelzCutA = "";
+
+                        if (!String.IsNullOrEmpty(sewSource.ComelzCutB))
+                            sewingMasterView.ComelzCutB = sewSource.ComelzCutB;
+                        else if (sewSource.SewingStartDate != dtDefault)
+                            sewingMasterView.ComelzCutB = firstDateOfHolidayCutTypeB;
+                        else sewingMasterView.ComelzCutB = "";
+
+                        sewingMasterViewList.Add(sewingMasterView);
+
+                        index++;
+                    }
+
+                }
+                else
+                {
+                    bwLoad_DoWork(sender, e);
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    MessageBox.Show(ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                }));
+            }
+        }
+
         private MaterialArrivalViewModel MaterialArrival(string productNo, int[] materialIdArray)
         {
             var rawMaterialTypeList = rawMaterialList.Where(r => r.ProductNo == productNo && materialIdArray.Contains(r.MaterialTypeId)).ToList();
@@ -918,6 +1298,8 @@ namespace MasterSchedule.Views
             btnCaculate.IsEnabled = true;
             btnSave.IsEnabled = true;
             lblStatus.Text = "";
+            prgStatus.Visibility = Visibility.Collapsed;
+            btnRefresh.IsEnabled = true;
             //btnEnableSimulation.IsEnabled = true;
             this.Cursor = null;
         }
@@ -939,6 +1321,7 @@ namespace MasterSchedule.Views
 
         private void bwReload_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            var currentYear = DateTime.Now.Year;
             //Load Newest Data
             foreach (SewingMasterViewModel sewingMasterView in sewingMasterViewFindList)
             {
@@ -1181,11 +1564,6 @@ namespace MasterSchedule.Views
                     List<SewingMasterViewModel> sewingMasterViewLineList = sewingMasterViewFindList.Where(s => s.SewingLine == sewingLine).ToList();
                     if (sewingMasterViewLineList.Count > 0)
                     {
-                        //DateTime dtSewingFinishDate = new DateTime();
-                        //DateTime dtSewingStartDate = new DateTime();
-                        //DateTime dtCutAFinishDate = new DateTime();
-                        //DateTime dtCutAStartDate = new DateTime();
-
                         DateTime dtSewingFinishDate = dtDefault;
                         DateTime dtSewingStartDate = dtDefault;
                         DateTime dtCutAFinishDate = dtDefault;
@@ -1200,13 +1578,29 @@ namespace MasterSchedule.Views
                             #region Calculate for Sewing
                             int qtySewingQuota = sewingMasterView.SewingQuota;
                             int optSewing = 0;
+                            // CHECK DATE ERROR
+                            //if (sewingMasterView.ProductNo== "21-3101")
+                            //{
+                            //    var t = "21-2616";
+                            //}
                             if (qtySewingQuota > 0)
                             {
                                 DateTime dtSewingStartDateTemp = TimeHelper.Convert(sewingMasterView.SewingActualStartDate);
                                 var startNow = TimeHelper.Convert(sewingMasterView.SewingActualStartDate);
                                 var startOld = sewingMasterView.SewingActualStartDate_Date;
                                 if (startNow.Month == startOld.Month && startNow.Day == startOld.Day && startNow.Year != startOld.Year)
-                                    dtSewingStartDateTemp = startNow < startOld ? startNow : startOld;
+                                {
+                                    if (currentYear < startOld.Year)
+                                        dtSewingStartDateTemp = startNow > startOld ? startNow : startOld;
+                                    else
+                                        dtSewingStartDateTemp = startNow < startOld ? startNow : startOld;
+                                }
+
+                                // For Input Directly
+                                if (sewingMasterView.SewingActualStartDate.Contains("/") && sewingMasterView.SewingActualStartDate.Split('/').Count() > 2)
+                                {
+                                    dtSewingStartDateTemp = startNow;
+                                }
 
                                 if ((String.IsNullOrEmpty(sewingMasterView.SewingActualStartDate) == false && dtSewingStartDateTemp != dtNothing)
                                     || sewingMasterView == sewingMasterViewLineList.First())
@@ -1217,14 +1611,23 @@ namespace MasterSchedule.Views
                                 {
                                     dtSewingStartDate = dtSewingFinishDate.AddDays(daySewingAddition);
                                 }
-                                //sewingMasterView.SewingStartDate = dtSewingStartDate;
-                                daySewingAddition = 0;
 
+                                daySewingAddition = 0;
                                 DateTime dtSewingFinishDateTemp = TimeHelper.Convert(sewingMasterView.SewingActualFinishDate);
                                 var finishNow = TimeHelper.Convert(sewingMasterView.SewingActualFinishDate);
                                 var finishOld = sewingMasterView.SewingActualFinishDate_Date;
                                 if (finishNow.Month == finishOld.Month && finishNow.Day == finishOld.Day && finishNow.Year != finishOld.Year)
-                                    dtSewingFinishDateTemp = finishNow < finishOld ? finishNow : finishOld;
+                                {
+                                    if (currentYear < finishOld.Year)
+                                        dtSewingFinishDateTemp = finishNow > finishOld ? finishNow : finishOld;
+                                    else
+                                        dtSewingFinishDateTemp = finishNow < finishOld ? finishNow : finishOld;
+                                }
+                                // For Input Directly
+                                if (sewingMasterView.SewingActualFinishDate.Contains("/") && sewingMasterView.SewingActualFinishDate.Split('/').Count() > 2)
+                                {
+                                    dtSewingFinishDateTemp = finishNow;
+                                }
 
                                 if (String.IsNullOrEmpty(sewingMasterView.SewingActualFinishDate) == false && dtSewingFinishDateTemp != dtNothing)
                                 {
@@ -1238,7 +1641,6 @@ namespace MasterSchedule.Views
                                     if (qtySewingBalance > 0)
                                     {
                                         dtSewingFinishDate = DateTime.Now.Date.AddDays((double)(qtySewingBalance) / (double)qtySewingQuota);
-                                        //dtSewingFinishDate = dtSewingStartDate.AddDays((double)(qtySewingBalance) / (double)qtySewingQuota);
                                         optSewing = 1;
                                     }
                                     else
@@ -1259,7 +1661,6 @@ namespace MasterSchedule.Views
                                         }
                                     }
                                 }
-                                //sewingMasterView.SewingFinishDate = dtSewingFinishDate;
                                 if (optSewing == 0)
                                 {
                                     sewingMasterView.SewingStartDate = dtSewingStartDate;
@@ -1267,10 +1668,7 @@ namespace MasterSchedule.Views
                                 }
                                 else if (optSewing == 1)
                                 {
-                                    //List<DateTime> dtCheckOffDateList1_1 = CheckOffDay(dtSewingStartDate, DateTime.Now.Date);
                                     List<DateTime> dtCheckOffDateList1 = CheckOffDay(DateTime.Now.Date.AddDays(0), dtSewingFinishDate);
-                                    //sewingMasterView.SewingStartDate = new DateTime(dtCheckOffDateList1.First().Year, dtCheckOffDateList1.First().Month, dtCheckOffDateList1.First().Day,
-                                    //dtSewingStartDate.Hour, dtSewingStartDate.Minute, dtSewingStartDate.Second);
                                     sewingMasterView.SewingStartDate = dtSewingStartDate;
                                     sewingMasterView.SewingFinishDate = new DateTime(dtCheckOffDateList1.Last().Year, dtCheckOffDateList1.Last().Month, dtCheckOffDateList1.Last().Day,
                                         dtSewingFinishDate.Hour, dtSewingFinishDate.Minute, dtSewingFinishDate.Second);
@@ -1300,6 +1698,15 @@ namespace MasterSchedule.Views
                                 sewingMasterView.SewingActualStartDate_Date     = dtSewingStartDateTemp;
                                 sewingMasterView.SewingActualFinishDate_Date    = dtSewingFinishDateTemp;
                             }
+                            else
+                            {
+                                sewingMasterView.SewingActualStartDate = "";
+                                sewingMasterView.SewingActualFinishDate = "";
+                                sewingMasterView.SewingActualStartDate_Date = dtDefault;
+                                sewingMasterView.SewingActualFinishDate_Date = dtDefault;
+                                sewingMasterView.SewingStartDate = dtDefault;
+                                sewingMasterView.SewingFinishDate = dtDefault;
+                            }
                             #endregion
 
                             // CutAStartDate should be start before sewingStartDate more than 10 days.
@@ -1312,9 +1719,21 @@ namespace MasterSchedule.Views
                                 var cutAStartNow = TimeHelper.Convert(sewingMasterView.CutAActualStartDate);
                                 var cutAStartOld = sewingMasterView.CutAActualStartDate_Date;
                                 if (cutAStartNow.Month == cutAStartOld.Month && cutAStartNow.Day == cutAStartOld.Day && cutAStartNow.Year != cutAStartOld.Year)
-                                    dtCutAStartDateTemp = cutAStartNow < cutAStartOld ? cutAStartNow : cutAStartOld;
+                                {
+                                    if (currentYear < cutAStartOld.Year)
+                                        dtCutAStartDateTemp = cutAStartNow > cutAStartOld ? cutAStartNow : cutAStartOld;
+                                    else
+                                        dtCutAStartDateTemp = cutAStartNow < cutAStartOld ? cutAStartNow : cutAStartOld;
+                                }
+                                // For Input Directly
+                                if (sewingMasterView.CutAActualStartDate.Contains("/"))
+                                {
+                                    if (sewingMasterView.CutAActualStartDate.Split('/').Count() > 2)
+                                        dtCutAStartDateTemp = cutAStartNow;
+                                }
 
-                                if ((String.IsNullOrEmpty(sewingMasterView.CutAActualStartDate) == false && dtCutAStartDateTemp != dtNothing)
+                                //if ((String.IsNullOrEmpty(sewingMasterView.CutAActualStartDate) == false && dtCutAStartDateTemp != dtNothing)
+                                if ((String.IsNullOrEmpty(sewingMasterView.CutAActualStartDate) == false && dtCutAStartDateTemp != dtDefault)
                                     || sewingMasterView == sewingMasterViewLineList.First())
                                 {
                                     dtCutAStartDate = dtCutAStartDateTemp;
@@ -1352,7 +1771,19 @@ namespace MasterSchedule.Views
                                 var cutAFinishNow = TimeHelper.Convert(sewingMasterView.CutAActualFinishDate);
                                 var cutAFinishOld = sewingMasterView.CutAActualFinishDate_Date;
                                 if (cutAFinishNow.Month == cutAFinishOld.Month && cutAFinishNow.Day == cutAFinishOld.Day && cutAFinishNow.Year != cutAFinishOld.Year)
-                                    dtCutAFinishDateTemp = cutAFinishNow < cutAFinishOld ? cutAFinishNow : cutAFinishOld;
+                                {
+                                    if (currentYear < cutAFinishOld.Year)
+                                        dtCutAFinishDateTemp = cutAFinishNow > cutAFinishOld ? cutAFinishNow : cutAFinishOld;
+                                    else
+                                        dtCutAFinishDateTemp = cutAFinishNow < cutAFinishOld ? cutAFinishNow : cutAFinishOld;
+                                }
+
+                                // For Input Directly
+                                if (sewingMasterView.CutAActualFinishDate.Contains("/"))
+                                {
+                                    if (sewingMasterView.CutAActualFinishDate.Split('/').Count() > 2)
+                                        dtCutAFinishDateTemp = cutAFinishNow;
+                                }
 
                                 if (String.IsNullOrEmpty(sewingMasterView.CutAActualFinishDate) == false && dtCutAFinishDateTemp != dtNothing)
                                 {
@@ -1374,7 +1805,19 @@ namespace MasterSchedule.Views
                                         var balanceDateNow = TimeHelper.Convert(sewingMasterView.CutABalance);
                                         var balanceDateOld = sewingMasterView.CutABalance_Date;
                                         if (balanceDateNow.Month == balanceDateOld.Month && balanceDateNow.Day == balanceDateOld.Day && balanceDateNow.Year != balanceDateOld.Year)
-                                            dtCutABalance = balanceDateNow < balanceDateOld ? balanceDateNow : balanceDateOld;
+                                        {
+                                            if (currentYear < balanceDateOld.Year)
+                                                dtCutABalance = balanceDateNow > balanceDateOld ? balanceDateNow : balanceDateOld;
+                                            else
+                                                dtCutABalance = balanceDateNow < balanceDateOld ? balanceDateNow : balanceDateOld;
+                                        }
+
+                                        // For Input Directly
+                                        if (sewingMasterView.CutABalance.Contains("/") && sewingMasterView.CutABalance.Split('/').Count() > 2)
+                                        {
+                                            dtCutABalance = balanceDateNow;
+                                        }
+
                                         sewingMasterView.CutABalance_Date = dtCutABalance;
 
                                         if (String.IsNullOrEmpty(sewingMasterView.CutABalance) == true)
@@ -1427,7 +1870,6 @@ namespace MasterSchedule.Views
                                 var bfSewingOfCutTypeA = sewingMasterView.SewingStartDate.AddDays(-_SEW_VS_OTHERS_CUT_A);
                                 var dtCheckOffDateCutTypeAList = CheckOffDay(bfSewingOfCutTypeA, sewingMasterView.SewingStartDate);
 
-                                //var beforeSewing10 = sewingMasterView.SewingStartDate.AddDays(-10);
                                 var bfSewingOfCutTypeB = sewingMasterView.SewingStartDate.AddDays(-_SEW_VS_OTHERS_CUT_B);
                                 var dtCheckOffDateCutTypeBList = CheckOffDay(bfSewingOfCutTypeB, sewingMasterView.SewingStartDate);
 
@@ -1613,6 +2055,9 @@ namespace MasterSchedule.Views
                 return;
             }
 
+            if (!linesNeedSaving.Contains(sewingMasterView.SewingLine))
+                linesNeedSaving.Add(sewingMasterView.SewingLine);
+
             string productNo = sewingMasterView.ProductNo;
 
             if (e.Column == colSewingLine || e.Column == colSewingQuota || e.Column == colSewingPrep || e.Column == colSewingActualStartDate ||
@@ -1712,7 +2157,7 @@ namespace MasterSchedule.Views
                     cutBBalanceUpdateList.Add(productNo);
                 }
             }
-            
+
             if (e.Column == colSewingLine)
             {
                 //SewingMasterViewModel sewingMasterView = (SewingMasterViewModel)e.Row.Item;
@@ -1729,6 +2174,8 @@ namespace MasterSchedule.Views
                 sewingMasterView.Sequence = sewingSequence;
                 //sequenceUpdateList.Add(sewingSequence);
                 isSequenceEditing = true;
+
+                //changingSequence = true;
             }
             if (e.Column == colSewingActualStartDate || e.Column == colSewingActualFinishDate)
             {
@@ -1840,12 +2287,15 @@ namespace MasterSchedule.Views
                     sewingActualFinishDateUpdateAutoList.Add(productNo);
                     sewingBalanceUpdateList.Add(productNo);
                 }
+
+                if (!linesNeedSaving.Contains(sewingMasterView.SewingLine))
+                    linesNeedSaving.Add(sewingMasterView.SewingLine);
             }
         }
 
         private void SaveCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (bwInsert.IsBusy == false && simulationMode == false)
+            if (bwInsert.IsBusy == false && simulationMode == false && (account.SewingMaster || account.CutPrepMaster))
             {
                 this.Cursor = Cursors.Wait;
                 sewingMasterViewToInsertList = dgSewingMaster.Items.OfType<SewingMasterViewModel>().ToList();
@@ -1856,7 +2306,7 @@ namespace MasterSchedule.Views
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            if (bwInsert.IsBusy == false && simulationMode == false)
+            if (bwInsert.IsBusy == false && simulationMode == false && (account.SewingMaster || account.CutPrepMaster))
             {
                 this.Cursor = Cursors.Wait;
                 sewingMasterViewToInsertList = dgSewingMaster.Items.OfType<SewingMasterViewModel>().ToList();
@@ -1867,24 +2317,346 @@ namespace MasterSchedule.Views
 
         private void bwInsert_DoWork(object sender, DoWorkEventArgs e)
         {
+            try
+            {
+                if (!string.IsNullOrEmpty(def.Factory) && !def.Factory.Equals("THIENLOC"))
+                {
+                    e.Result = true;
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        prgStatus.Visibility = Visibility.Visible;
+                        prgStatus.Value = 0;
+                    }));
+                    var sourceList = sewingMasterViewFindList.ToList();
+
+                    var productNoSourceList = sewingMasterList.Select(s => s.ProductNo).ToList();
+                    // Insert the PO is the first time.
+                    var insertNewPOList = sourceList.Where(w => !productNoSourceList.Contains(w.ProductNo)).ToList();
+                    if (insertNewPOList.Count() > 0)
+                    {
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            prgStatus.Value = 0;
+                            prgStatus.Maximum = insertNewPOList.Count();
+                            lblStatus.Text = "Inserting New PO ...";
+                        }));
+                        int index = 1;
+                        foreach (var item in insertNewPOList)
+                        {
+                            InsertAModel(item, true);
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                lblStatus.Text = String.Format("Saving {0} / {1} PO", index, insertNewPOList.Count());
+                                prgStatus.Value = index;
+                            }));
+                            index++;
+                        }
+                    }
+
+
+                    // Update SewingMaster Info ( Without Sequence )
+                    var updateList = sourceList.Where(w => linesNeedSaving.Contains(w.SewingLine)).ToList();
+                    if (updateList.Count() > 0)
+                    {
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            lblStatus.Text = "Saving PO ...";
+                            prgStatus.Value = 0;
+                            prgStatus.Maximum = updateList.Count();
+                        }));
+                        int index_1 = 1;
+
+                        foreach (var item in updateList)
+                        {
+                            InsertAModel(item, false);
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                lblStatus.Text = String.Format("Saving {0} / {1} PO", index_1, updateList.Count());
+                                prgStatus.Value = index_1;
+                            }));
+                            index_1++;
+                        }
+                        linesNeedSaving.Clear();
+                    }
+
+                    // Update Sequence
+                    if (sourceList.Count() == sewingMasterViewList.Count() && account.SewingMaster)
+                    {
+                        // Get the sequence list
+                        int sqNo = 0;
+                        var productNoList = sourceList.Select(s => s.ProductNo).ToList();
+                        var sequenceCurrentList = new List<POSequenceModel>();
+                        foreach (var po in productNoList)
+                        {
+                            sequenceCurrentList.Add(new POSequenceModel
+                            {
+                                ProductNo = po,
+                                Sequence = sqNo,
+                                Id = po + "-" + sqNo.ToString()
+                            });
+                            sqNo++;
+                        }
+
+                        var sqNeedUpdateList = new List<POSequenceModel>();
+                        foreach (var item in sequenceCurrentList)
+                        {
+                            var checkSqChange = poSequenceSourceList.FirstOrDefault(f => f.Id == item.Id);
+                            if (checkSqChange == null)
+                                sqNeedUpdateList.Add(item);
+                        }
+                        poSequenceSourceList.Clear();
+                        poSequenceSourceList = sequenceCurrentList.ToList();
+                        if (sqNeedUpdateList.Count() > 0)
+                        {
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                lblStatus.Text = "Saving Sequence PO ...";
+                                prgStatus.Value = 0;
+                                prgStatus.Maximum = sqNeedUpdateList.Count();
+                            }));
+                            int index = 1;
+                            foreach (var item in sqNeedUpdateList)
+                            {
+                                Dispatcher.Invoke(new Action(() =>
+                                {
+                                    lblStatus.Text = String.Format("Saving {0} / {1} Sq", index, sqNeedUpdateList.Count());
+                                    prgStatus.Value = index;
+                                }));
+                                CommonController.UpdateSequenceByPO(item.ProductNo, item.Sequence, "Sewing");
+                                index++;
+                            }
+                            //changingSequence = false;
+                        }
+                    }
+                }
+                else
+                {
+                    bwInsert_DoWork_Before(sender, e);
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    MessageBox.Show(ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                    e.Result = false;
+                    return;
+                }));
+            }
+        }
+
+        private void InsertAModel(SewingMasterViewModel sewingMasterViewToInsert, bool isNewPO)
+        {
+            var productNo = sewingMasterViewToInsert.ProductNo;
+            var sewingLine = sewingMasterViewToInsert.SewingLine;
+            var model = new SewingMasterModel
+            {
+                ProductNo = productNo,
+                Sequence = sewingMasterViewToInsert.Sequence,
+                SewingLine = sewingLine,
+                SewingStartDate = sewingMasterViewToInsert.SewingStartDate,
+                SewingFinishDate = sewingMasterViewToInsert.SewingFinishDate,
+                SewingPrep = sewingMasterViewToInsert.SewingPrep,
+                SewingQuota = sewingMasterViewToInsert.SewingQuota,
+
+                SewingActualStartDate = sewingMasterViewToInsert.SewingActualStartDate,
+                SewingActualStartDate_Date = sewingMasterViewToInsert.SewingActualStartDate_Date,
+
+                SewingActualFinishDate = sewingMasterViewToInsert.SewingActualFinishDate,
+                SewingActualFinishDate_Date = sewingMasterViewToInsert.SewingActualFinishDate_Date,
+
+                SewingActualStartDateAuto = sewingMasterViewToInsert.SewingActualStartDateAuto,
+                SewingActualFinishDateAuto = sewingMasterViewToInsert.SewingActualFinishDateAuto,
+
+                SewingBalance = sewingMasterViewToInsert.SewingBalance,
+
+                CutAStartDate = sewingMasterViewToInsert.CutAStartDate,
+                CutAFinishDate = sewingMasterViewToInsert.CutAFinishDate,
+                CutAQuota = sewingMasterViewToInsert.CutAQuota,
+
+                CutAActualStartDate = sewingMasterViewToInsert.CutAActualStartDate,
+                CutAActualStartDate_Date = sewingMasterViewToInsert.CutAActualStartDate_Date,
+
+                CutAActualFinishDate = sewingMasterViewToInsert.CutAActualFinishDate,
+                CutAActualFinishDate_Date = sewingMasterViewToInsert.CutAActualFinishDate_Date,
+
+                CutABalance = sewingMasterViewToInsert.CutABalance,
+                CutABalance_Date = sewingMasterViewToInsert.CutABalance_Date,
+
+                PrintingBalance = sewingMasterViewToInsert.PrintingBalance,
+                H_FBalance = sewingMasterViewToInsert.H_FBalance,
+                EmbroideryBalance = sewingMasterViewToInsert.EmbroideryBalance,
+
+                CutBActualStartDate = sewingMasterViewToInsert.CutBActualStartDate,
+                CutBBalance = sewingMasterViewToInsert.CutBBalance,
+                AutoCut = sewingMasterViewToInsert.AutoCut,
+                LaserCut = sewingMasterViewToInsert.LaserCut,
+                HuasenCut = sewingMasterViewToInsert.HuasenCut,
+
+                CutBStartDate = sewingMasterViewToInsert.CutBStartDate,
+                AtomCutA = sewingMasterViewToInsert.AtomCutA,
+                AtomCutB = sewingMasterViewToInsert.AtomCutB,
+                LaserCutA = sewingMasterViewToInsert.LaserCutA,
+                LaserCutB = sewingMasterViewToInsert.LaserCutB,
+                HuasenCutA = sewingMasterViewToInsert.HuasenCutA,
+                HuasenCutB = sewingMasterViewToInsert.HuasenCutB,
+                ComelzCutA = sewingMasterViewToInsert.ComelzCutA,
+                ComelzCutB = sewingMasterViewToInsert.ComelzCutB,
+
+                IsSequenceUpdate = false,
+                IsSewingLineUpdate = false,
+                IsSewingStartDateUpdate = false,
+                IsSewingFinishDateUpdate = false,
+                IsSewingQuotaUpdate = false,
+                IsSewingPrepUpdate = false,
+
+                IsSewingActualStartDateUpdate = false,
+                IsSewingActualFinishDateUpdate = false,
+
+                IsSewingActualStartDateAutoUpdate = false,
+                IsSewingActualFinishDateAutoUpdate = false,
+
+                IsSewingBalanceUpdate = false,
+                IsCutAStartDateUpdate = false,
+                IsCutAFinishDateUpdate = false,
+                IsCutAQuotaUpdate = false,
+                IsCutAActualStartDateUpdate = false,
+                IsCutAActualFinishDateUpdate = false,
+                IsCutABalanceUpdate = false,
+                IsPrintingBalanceUpdate = false,
+                IsH_FBalanceUpdate = false,
+                IsEmbroideryBalanceUpdate = false,
+
+                IsCutBActualStartDateUpdate = false,
+                IsCutBBalanceUpdate = false,
+                IsAutoCutUpdate = false,
+                IsLaserCutUpdate = false,
+                IsHuasenCutUpdate = false,
+
+                //
+                IsUpdateCutBStartDate = false,
+                IsUpdateAtomCutA = false,
+                IsUpdateAtomCutB = false,
+                IsUpdateLaserCutA = false,
+                IsUpdateLaserCutB = false,
+                IsUpdateHuasenCutA = false,
+                IsUpdateHuasenCutB = false,
+                IsUpdateComelzCutA = false,
+                IsUpdateComelzCutB = false,
+
+            };
+
+            model.IsSequenceUpdate = isSequenceEditing;
+
+            model.IsSewingLineUpdate = sewingLineUpdateList.Contains(productNo);
+            model.IsSewingStartDateUpdate = lineSewingEditingList.Contains(sewingLine);
+            model.IsSewingFinishDateUpdate = lineSewingEditingList.Contains(sewingLine);
+            model.IsSewingQuotaUpdate = sewingQuotaUpdateList.Contains(productNo);
+
+            model.IsSewingPrepUpdate = sewingPrepUpdateList.Contains(productNo);
+
+            model.IsSewingActualStartDateUpdate = sewingActualStartDateUpdateList.Contains(productNo);
+            model.IsSewingActualFinishDateUpdate = sewingActualFinishDateUpdateList.Contains(productNo);
+
+            model.IsSewingActualStartDateAutoUpdate = sewingActualStartDateUpdateAutoList.Contains(productNo);
+            model.IsSewingActualFinishDateAutoUpdate = sewingActualFinishDateUpdateAutoList.Contains(productNo);
+
+            model.IsSewingBalanceUpdate = sewingBalanceUpdateList.Contains(productNo);
+
+            model.IsCutAStartDateUpdate = lineCutPrepEditingList.Contains(sewingLine);
+            model.IsCutAFinishDateUpdate = lineCutPrepEditingList.Contains(sewingLine);
+            model.IsCutAQuotaUpdate = cutAQuotaUpdateList.Contains(productNo);
+            model.IsCutAActualStartDateUpdate = cutAActualStartDateUpdateList.Contains(productNo);
+            model.IsCutAActualFinishDateUpdate = cutAActualFinishDateUpdateList.Contains(productNo);
+            model.IsCutABalanceUpdate = cutABalanceUpdateList.Contains(productNo);
+
+            model.IsPrintingBalanceUpdate = printingBalanceUpdateList.Contains(productNo);
+            model.IsH_FBalanceUpdate = h_fBalanceUpdateList.Contains(productNo);
+            model.IsEmbroideryBalanceUpdate = embroideryBalanceUpdateList.Contains(productNo);
+            model.IsCutBActualStartDateUpdate = cutBActualStartDateUpdateList.Contains(productNo);
+            model.IsCutBBalanceUpdate = cutBBalanceUpdateList.Contains(productNo);
+            model.IsAutoCutUpdate = autoCutUpdateList.Contains(productNo);
+            model.IsLaserCutUpdate = laserCutUpdateList.Contains(productNo);
+            model.IsHuasenCutUpdate = huasenCutUpdateList.Contains(productNo);
+
+            model.IsUpdateCutBStartDate = cutBStartDateUpdateList.Contains(productNo);
+            model.IsUpdateAtomCutA = atomCutAUpdateList.Contains(productNo);
+            model.IsUpdateAtomCutB = atomCutBUpdateList.Contains(productNo);
+            model.IsUpdateLaserCutA = laserCutAUpdateList.Contains(productNo);
+            model.IsUpdateLaserCutB = laserCutBUpdateList.Contains(productNo);
+            model.IsUpdateHuasenCutA = huasenCutAUpdateList.Contains(productNo);
+            model.IsUpdateHuasenCutB = huasenCutBUpdateList.Contains(productNo);
+            model.IsUpdateComelzCutA = comelzCutAUpdateList.Contains(productNo);
+            model.IsUpdateComelzCutB = comelzCutBUpdateList.Contains(productNo);
+            //&& sequenceUpdateList.Contains(model.Sequence)
+            if ((model.IsSequenceUpdate == true) ||
+                model.IsSewingLineUpdate == true ||
+                model.IsSewingStartDateUpdate == true ||
+                model.IsSewingFinishDateUpdate == true ||
+                model.IsSewingQuotaUpdate == true ||
+
+                model.IsSewingPrepUpdate == true ||
+
+                model.IsSewingActualStartDateUpdate == true ||
+                model.IsSewingActualFinishDateUpdate == true ||
+
+                model.IsSewingActualStartDateAutoUpdate == true ||
+                model.IsSewingActualFinishDateAutoUpdate == true ||
+
+                model.IsSewingBalanceUpdate == true ||
+                model.IsCutAStartDateUpdate == true ||
+                model.IsCutAFinishDateUpdate == true ||
+                model.IsCutAQuotaUpdate == true ||
+                model.IsCutAActualStartDateUpdate == true ||
+                model.IsCutAActualFinishDateUpdate == true ||
+                model.IsCutBActualStartDateUpdate == true ||
+                model.IsCutABalanceUpdate == true ||
+                model.IsPrintingBalanceUpdate == true ||
+                model.IsH_FBalanceUpdate == true ||
+                model.IsEmbroideryBalanceUpdate == true ||
+                model.IsCutBBalanceUpdate == true ||
+                model.IsAutoCutUpdate == true ||
+                model.IsLaserCutUpdate == true ||
+                model.IsHuasenCutUpdate == true ||
+
+                //
+                model.IsUpdateCutBStartDate == true ||
+                model.IsUpdateAtomCutA == true ||
+                model.IsUpdateAtomCutB == true ||
+                model.IsUpdateLaserCutA == true ||
+                model.IsUpdateLaserCutB == true ||
+                model.IsUpdateHuasenCutA == true ||
+                model.IsUpdateHuasenCutB == true ||
+                model.IsUpdateComelzCutA == true ||
+                model.IsUpdateComelzCutB == true ||
+                isNewPO == true
+                )
+            {
+                model.Reviser = account.UserName;
+                SewingMasterController.Insert_2(model, account);
+            }
+        }
+
+        private void bwInsert_DoWork_Before(object sender, DoWorkEventArgs e)
+        {
             foreach (SewingMasterViewModel sewingMasterViewToInsert in sewingMasterViewToInsertList)
             {
                 var productNo = sewingMasterViewToInsert.ProductNo;
                 var sewingLine = sewingMasterViewToInsert.SewingLine;
                 var model = new SewingMasterModel
                 {
-                    ProductNo           = productNo,
-                    Sequence            = sewingMasterViewToInsert.Sequence,
-                    SewingLine          = sewingLine,
-                    SewingStartDate     = sewingMasterViewToInsert.SewingStartDate,
-                    SewingFinishDate    = sewingMasterViewToInsert.SewingFinishDate,
-                    SewingPrep          = sewingMasterViewToInsert.SewingPrep,
-                    SewingQuota         = sewingMasterViewToInsert.SewingQuota,
+                    ProductNo = productNo,
+                    Sequence = sewingMasterViewToInsert.Sequence,
+                    SewingLine = sewingLine,
+                    SewingStartDate = sewingMasterViewToInsert.SewingStartDate,
+                    SewingFinishDate = sewingMasterViewToInsert.SewingFinishDate,
+                    SewingPrep = sewingMasterViewToInsert.SewingPrep,
+                    SewingQuota = sewingMasterViewToInsert.SewingQuota,
 
-                    SewingActualStartDate       = sewingMasterViewToInsert.SewingActualStartDate,
+                    SewingActualStartDate = sewingMasterViewToInsert.SewingActualStartDate,
                     SewingActualStartDate_Date  = sewingMasterViewToInsert.SewingActualStartDate_Date,
 
-                    SewingActualFinishDate      = sewingMasterViewToInsert.SewingActualFinishDate,
+                    SewingActualFinishDate = sewingMasterViewToInsert.SewingActualFinishDate,
                     SewingActualFinishDate_Date = sewingMasterViewToInsert.SewingActualFinishDate_Date,
 
                     SewingActualStartDateAuto   = sewingMasterViewToInsert.SewingActualStartDateAuto,
@@ -1896,13 +2668,13 @@ namespace MasterSchedule.Views
                     CutAFinishDate  = sewingMasterViewToInsert.CutAFinishDate,
                     CutAQuota       = sewingMasterViewToInsert.CutAQuota,
 
-                    CutAActualStartDate         = sewingMasterViewToInsert.CutAActualStartDate,
+                    CutAActualStartDate = sewingMasterViewToInsert.CutAActualStartDate,
                     CutAActualStartDate_Date    = sewingMasterViewToInsert.CutAActualStartDate_Date,
 
-                    CutAActualFinishDate        = sewingMasterViewToInsert.CutAActualFinishDate,
+                    CutAActualFinishDate = sewingMasterViewToInsert.CutAActualFinishDate,
                     CutAActualFinishDate_Date   = sewingMasterViewToInsert.CutAActualFinishDate_Date,
 
-                    CutABalance         = sewingMasterViewToInsert.CutABalance,
+                    CutABalance = sewingMasterViewToInsert.CutABalance,
                     CutABalance_Date    = sewingMasterViewToInsert.CutABalance_Date,
 
                     PrintingBalance     = sewingMasterViewToInsert.PrintingBalance,
@@ -2054,7 +2826,7 @@ namespace MasterSchedule.Views
                     )
                 {
                     model.Reviser = account.UserName;
-                    SewingMasterController.Insert_2(model);
+                    SewingMasterController.Insert_2(model, account);
                 }
             }
         }
@@ -2063,6 +2835,8 @@ namespace MasterSchedule.Views
         {
             btnSave.IsEnabled = true;
             this.Cursor = null;
+            if (e.Result != null && (bool)e.Result == false)
+                return;
             if (e.Error != null)
             {
                 MessageBox.Show(e.Error.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -2117,6 +2891,9 @@ namespace MasterSchedule.Views
             comelzCutBUpdateList.Clear();
 
             MessageBox.Show("Saved!", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+
+            lblStatus.Text = "";
+            prgStatus.Visibility = Visibility.Collapsed;
         }
 
         private void dgSewingMaster_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
@@ -2212,6 +2989,7 @@ namespace MasterSchedule.Views
                         //sequenceUpdateList.Add(sewingMasterViewFindList[i].Sequence);
                     }
                     isSequenceEditing = true;
+                    //changingSequence = true;
                 }
                 else if (index > indexFirst && index > indexLast)
                 {
@@ -2228,6 +3006,7 @@ namespace MasterSchedule.Views
                         //sequenceUpdateList.Add(sewingMasterViewFindList[i].Sequence);
                     }
                     isSequenceEditing = true;
+                    //changingSequence = true;
                 }
                 dgSewingMaster.SelectedItems.Clear();
             }
@@ -2368,6 +3147,7 @@ namespace MasterSchedule.Views
             //btnEnableSimulation.IsEnabled = false;
             //btnDisableSimulation.IsEnabled = true;
             //btnDisableSimulation.Visibility = Visibility.Visible;
+            // 1400 200 300 300
 
             ctmTranfer.Visibility = Visibility.Visible;
             btnSave.IsEnabled = false;
@@ -2407,6 +3187,47 @@ namespace MasterSchedule.Views
             }
             PrintSizeRunWindow window = new PrintSizeRunWindow(String.Join("; ", productNoPrintList));
             window.Show();
+        }
+        
+        private void miReport_Click(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.Invoke(new Action(() =>
+            {
+                var sourceList = dgSewingMaster.ItemsSource.OfType<SewingMasterViewModel>().ToList();
+                var sewingMasterExportViewList = new List<SewingMasterExportViewModel>();
+                foreach (var item in sourceList)
+                {
+                    sewingMasterExportViewList.Add(new SewingMasterExportViewModel
+                    {
+                        Sequence = item.Sequence,
+                        ProductNo = item.ProductNo,
+                        Country = item.Country,
+                        ShoeName = item.ShoeName,
+                        ArticleNo = item.ArticleNo,
+                        PatternNo = item.PatternNo,
+                        Quantity = item.Quantity,
+                        ETD = item.ETD,
+                        MemoId = item.MemoId,
+                        UpperMatsArrival = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", item.UpperMatsArrivalOrginal),
+                        IsUpperMatsArrivalOk = false,
+                        SewingMatsArrival = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", item.SewingMatsArrivalOrginal),
+                        IsSewingMatsArrivalOk = false,
+                        OSMatsArrival = item.OSMatsArrival,
+                        IsOSMatsArrivalOk = false,
+                        SewingLine = item.SewingLine,
+                        CutAStartDate = item.CutAStartDate,
+                        CutBStartDate = item.CutBStartDate,
+                        SewingStartDate = item.SewingStartDate,
+                        SewingFinishDate = item.SewingFinishDate,
+                        SewingQuota = item.SewingQuota,
+                        CutABalance = item.CutABalance,
+                        CutBBalance = item.CutBBalance,
+                        OSBalance = item.OSBalance
+                    });
+                }
+                SewingMasterReportWindow window = new SewingMasterReportWindow(sewingMasterExportViewList, "Sewing Master File", 1);
+                window.Show();
+            }));
         }
     }
 }

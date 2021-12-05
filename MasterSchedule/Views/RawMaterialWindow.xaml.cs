@@ -39,6 +39,16 @@ namespace MasterSchedule.Views
         List<RawMaterialViewModel> rawMaterialViewReloadList;
         List<RawMaterialViewModelNew> rawMaterialViewModelNewList;
         List<RejectModel> rejectUpperAccessoriesList;
+        private PrivateDefineModel def;
+
+        List<OrdersModel> ordersList;
+        List<RawMaterialModel> rawMaterialList;
+        List<OrderExtraModel> orderExtraList;
+        List<SewingMasterModel> sewingMasterList;
+        List<OutsoleRawMaterialModel> outsoleRawMaterialList;
+        List<OutsoleMaterialModel> outsoleMaterialList;
+        List<AssemblyMasterModel> assemblyMasterList;
+        List<OutsoleMasterModel> outsoleMasterList;
         public RawMaterialWindow(AccountModel account)
         {
             InitializeComponent();
@@ -77,23 +87,539 @@ namespace MasterSchedule.Views
             rawMaterialViewReloadList = new List<RawMaterialViewModel>();
             rawMaterialViewModelNewList = new List<RawMaterialViewModelNew>();
             rejectUpperAccessoriesList = new List<RejectModel>();
+            def = new PrivateDefineModel();
+
+            ordersList = new List<OrdersModel>();
+            rawMaterialList = new List<RawMaterialModel>();
+            orderExtraList = new List<OrderExtraModel>();
+            sewingMasterList = new List<SewingMasterModel>();
+            outsoleRawMaterialList = new List<OutsoleRawMaterialModel>();
+            outsoleMaterialList = new List<OutsoleMaterialModel>();
+            assemblyMasterList = new List<AssemblyMasterModel>();
+            outsoleMasterList = new List<OutsoleMasterModel>();
         }
 
         private void bwLoad_DoWork(object sender, DoWorkEventArgs e)
         {
-            productionMemoList = ProductionMemoController.Select();
-            rawMaterialViewModelNewList = RawMaterialController.Select_1();
-            rejectUpperAccessoriesList = RejectController.GetRejectUpperAccessories();
-
-            int index = 1;
-            foreach (var x in rawMaterialViewModelNewList)
+            def = PrivateDefineController.GetDefine();
+            if (!string.IsNullOrEmpty(def.Factory) && !def.Factory.Equals("THIENLOC"))
             {
-                Dispatcher.Invoke(new Action(() => {
-                    lblStatus.Text = String.Format("Creating {0}/{1} rows ...", index, rawMaterialViewModelNewList.Count());
-                }));
-                rawMaterialViewList.Add(ConvertX(x));
-                index++;
+                var productNoListWithAccount = OrdersController.Select().Where(w => account.TypeOfShoes != -1 ? w.TypeOfShoes == account.TypeOfShoes : w.TypeOfShoes != -16111992).Select(s => s.ProductNo).ToList();
+                productionMemoList = ProductionMemoController.Select().Where(w => productNoListWithAccount.Contains(w.ProductionNumbers)).ToList();
+                rawMaterialViewModelNewList = RawMaterialController.Select_1().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
+                rejectUpperAccessoriesList = RejectController.GetRejectUpperAccessories();
+                int index = 1;
+                foreach (var x in rawMaterialViewModelNewList)
+                {
+                    Dispatcher.Invoke(new Action(() => {
+                        lblStatus.Text = String.Format("Creating {0}/{1} rows ...", index, rawMaterialViewModelNewList.Count());
+                    }));
+                    rawMaterialViewList.Add(ConvertX(x));
+                    index++;
+                }
             }
+            else
+            {
+                ordersList = OrdersController.Select();
+                rawMaterialList = RawMaterialController.Select();
+                orderExtraList = OrderExtraController.Select();
+                sewingMasterList = SewingMasterController.SelectCutAStartDate();
+                productionMemoList = ProductionMemoController.Select();
+                outsoleRawMaterialList = OutsoleRawMaterialController.Select();
+                outsoleMaterialList = OutsoleMaterialController.Select();
+                assemblyMasterList = AssemblyMasterController.Select();
+                outsoleMasterList = OutsoleMasterController.Select();
+
+                int index = 1;
+                foreach (OrdersModel orders in ordersList)
+                {
+                    Dispatcher.Invoke(new Action(() => {
+                        lblStatus.Text = String.Format("Creating {0}/{1} rows ...", index, ordersList.Count());
+                    }));
+                    RawMaterialViewModel rawMaterialView = Convert(orders);
+                    {
+                        rawMaterialViewList.Add(rawMaterialView);
+                    }
+                    index++;
+                }
+            }
+
+        }
+        
+        private RawMaterialViewModel Convert(OrdersModel orders)
+        {
+            var rawMaterialView = new RawMaterialViewModel();
+            rawMaterialView.ProductNo = orders.ProductNo;
+            rawMaterialView.ProductNoBackground = Brushes.Transparent;
+            rawMaterialView.Country = orders.Country;
+            rawMaterialView.ShoeName = orders.ShoeName;
+            rawMaterialView.ArticleNo = orders.ArticleNo;
+            rawMaterialView.PatternNo = orders.PatternNo;
+            rawMaterialView.OutsoleCode = orders.OutsoleCode;
+            rawMaterialView.Quantity = orders.Quantity;
+            rawMaterialView.ETD = orders.ETD;//String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", orders.ETD);
+
+            rawMaterialView.CutAStartDate = dtDefault;
+            var sewingMaster = sewingMasterList.Where(s => s.ProductNo == orders.ProductNo).FirstOrDefault();
+            if (sewingMaster != null)
+            {
+                rawMaterialView.CutAStartDate = sewingMaster.CutAStartDate;
+                // addtion code wrong
+                //rawMaterialView.Sewing_StartDate = sewingMaster.SewingStartDate;
+            }
+            int[] materialIdUpperArray = { 1, 2, 3, 4, 10 };
+            var materialArrivalUpper = MaterialArrival(orders.ProductNo, materialIdUpperArray);
+            DateTime upperMatsArrivalOrginal = dtDefault;
+            if (materialArrivalUpper != null)
+            {
+                upperMatsArrivalOrginal = materialArrivalUpper.Date;
+            }
+            rawMaterialView.CutAStartDateForeground = Brushes.Black;
+            if (rawMaterialView.CutAStartDate < upperMatsArrivalOrginal)
+            {
+                rawMaterialView.CutAStartDateForeground = Brushes.Red;
+            }
+            else
+            {
+                if (materialArrivalUpper != null)
+                {
+                    // addtion code. same with cutastartdate in sewing master file
+                    //int range = TimeHelper.CalculateDate(materialArrivalUpper.Date, rawMaterialView.CutAStartDate);
+                    int range = (Int32)((rawMaterialView.CutAStartDate - materialArrivalUpper.Date).TotalDays);
+                    if (0 <= range && range <= 3)
+                    {
+                        rawMaterialView.CutAStartDateForeground = Brushes.Orange;
+                    }
+
+                    else
+                    {
+                        if (rawMaterialView.CutAStartDateForeground == Brushes.Orange)
+                        {
+                            rawMaterialView.CutAStartDateForeground = Brushes.Orange;
+                        }
+                        else
+                        {
+                            rawMaterialView.CutAStartDateForeground = materialArrivalUpper.Foreground;
+                        }
+                    }
+                }
+            }
+
+            // Assembly startDate
+            var assyMaster = assemblyMasterList.Where(w => w.ProductNo == orders.ProductNo).FirstOrDefault();
+            var outsoleMaster = outsoleMasterList.Where(w => w.ProductNo == orders.ProductNo).FirstOrDefault();
+            if (assyMaster != null && sewingMaster != null && outsoleMaster != null)
+            {
+                rawMaterialView.AssemblyStartDate = assyMaster.AssemblyStartDate;
+                rawMaterialView.AssemblyStartDateForeground = Brushes.Black;
+                if (rawMaterialView.AssemblyStartDate < new DateTime(Math.Max(outsoleMaster.OutsoleFinishDate.Ticks, sewingMaster.SewingFinishDate.Ticks)))
+                {
+                    rawMaterialView.AssemblyStartDateForeground = Brushes.Red;
+                }
+            }
+
+            string memoId = "";
+            var productionMemoByProductionNumberList = productionMemoList.Where(p => p.ProductionNumbers.Contains(orders.ProductNo) == true).ToList();
+            for (int p = 0; p <= productionMemoByProductionNumberList.Count - 1; p++)
+            {
+                var productionMemo = productionMemoByProductionNumberList[p];
+                memoId += productionMemo.MemoId;
+                if (p < productionMemoByProductionNumberList.Count - 1)
+                {
+                    memoId += "\n";
+                }
+            }
+            rawMaterialView.MemoId = memoId;
+            //LAMINATION 1
+            var rawMaterialList_D1 = rawMaterialList.Where(r => r.ProductNo == orders.ProductNo).ToList();
+
+            var lamination = rawMaterialList_D1.Where(r => r.MaterialTypeId == 1).OrderBy(r => r.ModifiedTime).LastOrDefault();
+            if (lamination != null)
+            {
+                rawMaterialView.LAMINATION_ETD = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", lamination.ETD);
+                if (lamination.ETD.Date == dtDefault)
+                {
+                    rawMaterialView.LAMINATION_ETD = "";
+                }
+                rawMaterialView.LAMINATION_ActualDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", lamination.ActualDate);
+                if (lamination.ActualDate.Date == dtDefault)
+                {
+                    rawMaterialView.LAMINATION_ActualDate = "";
+                }
+                rawMaterialView.LAMINATION_Remarks = lamination.Remarks;
+            }
+
+            //TAIWAN 10
+            var taiwan = rawMaterialList_D1.Where(r => r.MaterialTypeId == 10).OrderBy(r => r.ModifiedTime).LastOrDefault();
+            if (taiwan != null)
+            {
+                rawMaterialView.TAIWAN_ETD = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", taiwan.ETD);
+                if (taiwan.ETD.Date == dtDefault)
+                {
+                    rawMaterialView.TAIWAN_ETD = "";
+                }
+                rawMaterialView.TAIWAN_ActualDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", taiwan.ActualDate);
+                if (taiwan.ActualDate.Date == dtDefault)
+                {
+                    rawMaterialView.TAIWAN_ActualDate = "";
+                }
+                rawMaterialView.TAIWAN_Remarks = taiwan.Remarks;
+            }
+
+            //CUTTING 2
+            var cutting = rawMaterialList_D1.Where(r => r.MaterialTypeId == 2).OrderBy(r => r.ModifiedTime).LastOrDefault();
+            if (cutting != null)
+            {
+                rawMaterialView.CUTTING_ETD = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", cutting.ETD);
+                if (cutting.ETD.Date == dtDefault)
+                {
+                    rawMaterialView.CUTTING_ETD = "";
+                }
+                rawMaterialView.CUTTING_ActualDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", cutting.ActualDate);
+                if (cutting.ActualDate.Date == dtDefault)
+                {
+                    rawMaterialView.CUTTING_ActualDate = "";
+                }
+                rawMaterialView.CUTTING_Remarks = cutting.Remarks;
+            }
+
+            //LEATHER 3
+            var leather = rawMaterialList_D1.Where(r => r.MaterialTypeId == 3).OrderBy(r => r.ModifiedTime).LastOrDefault();
+            if (leather != null)
+            {
+                rawMaterialView.LEATHER_ETD = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", leather.ETD);
+                if (leather.ETD.Date == dtDefault)
+                {
+                    rawMaterialView.LEATHER_ETD = "";
+                }
+                rawMaterialView.LEATHER_ActualDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", leather.ActualDate);
+                if (leather.ActualDate.Date == dtDefault)
+                {
+                    rawMaterialView.LEATHER_ActualDate = "";
+                }
+                rawMaterialView.LEATHER_Remarks = leather.Remarks;
+            }
+
+            //SEMI-PROCESS 4
+            var semiprocess = rawMaterialList_D1.Where(r => r.MaterialTypeId == 4).OrderBy(r => r.ModifiedTime).LastOrDefault();
+            if (semiprocess != null)
+            {
+                rawMaterialView.SEMIPROCESS_ETD = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", semiprocess.ETD);
+                if (semiprocess.ETD.Date == dtDefault)
+                {
+                    rawMaterialView.SEMIPROCESS_ETD = "";
+                }
+                rawMaterialView.SEMIPROCESS_ActualDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", semiprocess.ActualDate);
+                if (semiprocess.ActualDate.Date == dtDefault)
+                {
+                    rawMaterialView.SEMIPROCESS_ActualDate = "";
+                }
+                rawMaterialView.SEMIPROCESS_Remarks = semiprocess.Remarks;
+            }
+
+            //SEWING 5
+            var sewing = rawMaterialList_D1.Where(r => r.MaterialTypeId == 5).OrderBy(r => r.ModifiedTime).LastOrDefault();
+            if (sewing != null)
+            {
+                rawMaterialView.SEWING_ETD = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", sewing.ETD);
+                if (sewing.ETD.Date == dtDefault)
+                {
+                    rawMaterialView.SEWING_ETD = "";
+                }
+                rawMaterialView.SEWING_ActualDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", sewing.ActualDate);
+                if (sewing.ActualDate.Date == dtDefault)
+                {
+                    rawMaterialView.SEWING_ActualDate = "";
+                }
+                rawMaterialView.SEWING_Remarks = sewing.Remarks;
+            }
+
+            //OUTSOLE 6
+
+            #region OLD CODE
+            //RawMaterialModel outsole = new RawMaterialModel();
+            //outsole = rawMaterialList_D1.Where(r => r.MaterialTypeId == 6).OrderBy(r => r.ModifiedTime).LastOrDefault();
+
+            //var outsoleMaterialQuantityZero = new List<OutsoleMaterialModel>();
+            //outsoleMaterialQuantityZero = outsoleMaterialList.Where(w => w.Quantity == 0 && w.ProductNo == orders.ProductNo).ToList();
+            //var outsoleSupplierIdList = new List<int>();
+            //outsoleSupplierIdList = outsoleMaterialQuantityZero.Select(s => s.OutsoleSupplierId).Distinct().ToList();
+            //var outsoleRawMaterialNotSupplied = new List<OutsoleRawMaterialModel>();
+            //foreach (int supplierId in outsoleSupplierIdList)
+            //{
+            //    var outsoleRawMaterialBySupplierId = new OutsoleRawMaterialModel();
+            //    outsoleRawMaterialBySupplierId = outsoleRawMaterialList.Where(w => w.ProductNo == orders.ProductNo && w.OutsoleSupplierId == supplierId).FirstOrDefault();
+            //    outsoleRawMaterialNotSupplied.Add(outsoleRawMaterialBySupplierId);
+            //}
+
+            //if (outsoleRawMaterialNotSupplied.Count > 0)
+            //{
+            //    var outsoleRaw = outsoleRawMaterialNotSupplied.OrderBy(o => o.ETD).LastOrDefault();
+            //    var outsoleRemarks = rawMaterialList_D1.Where(r => r.MaterialTypeId == 6).OrderBy(r => r.ModifiedTime).LastOrDefault();
+            //    rawMaterialView.OUTSOLE_ETD = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", outsoleRaw.ETD);
+            //    rawMaterialView.OUTSOLE_ActualDate = "";
+            //    rawMaterialView.OUTSOLE_Remarks = outsoleRemarks.Remarks;
+            //}
+            //else
+            //{
+            //    var outsole = rawMaterialList_D1.Where(r => r.MaterialTypeId == 6).OrderBy(r => r.ModifiedTime).LastOrDefault();
+            //    if (outsole != null)
+            //    {
+            //        rawMaterialView.OUTSOLE_ETD = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", outsole.ETD);
+            //        if (outsole.ETD.Date == dtDefault)
+            //        {
+            //            rawMaterialView.OUTSOLE_ETD = "";
+            //        }
+            //        rawMaterialView.OUTSOLE_ActualDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", outsole.ActualDate);
+            //        if (outsole.ActualDate.Date == dtDefault)
+            //        {
+            //            rawMaterialView.OUTSOLE_ActualDate = "";
+            //        }
+            //        rawMaterialView.OUTSOLE_Remarks = outsole.Remarks;
+            //    }
+            //}
+            #endregion
+
+            // Load ETD,ActualDate from OutsoleRawMaterial
+            var outsoleRawMaterial_PO = outsoleRawMaterialList.Where(w => w.ProductNo == orders.ProductNo).ToList();
+            if (outsoleRawMaterial_PO.Count > 0)
+            {
+                rawMaterialView.OUTSOLE_ETD = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}",
+                                                            outsoleRawMaterial_PO.OrderBy(o => o.ETD).LastOrDefault().ETD);
+                var actualDateList = outsoleRawMaterial_PO.Select(s => s.ActualDate).ToList();
+                if (!actualDateList.Contains(dtDefault))
+                {
+                    rawMaterialView.OUTSOLE_ActualDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}",
+                                                                       outsoleRawMaterial_PO.OrderBy(o => o.ActualDate).LastOrDefault().ActualDate);
+                }
+            }
+
+            // Load Outsole_Remarks from OutsoleMaterial
+            var outsoleMaterial_PO = outsoleMaterialList.Where(w => w.ProductNo == orders.ProductNo).ToList();
+            if (outsoleMaterial_PO.Sum(s => s.Quantity) > 0)
+            {
+                var supplierIdList = outsoleMaterial_PO.Select(s => s.OutsoleSupplierId).Distinct().ToList();
+                var balanceList = new List<Int32>();
+                foreach (var supplierId in supplierIdList)
+                {
+                    int quantity_SupplierId = outsoleMaterial_PO.Where(w => w.OutsoleSupplierId == supplierId).Sum(s => s.Quantity);
+                    int reject_SupplierId = outsoleMaterial_PO.Where(w => w.OutsoleSupplierId == supplierId).Sum(s => s.QuantityReject);
+                    int balance;
+                    if (quantity_SupplierId < orders.Quantity)
+                        balance = orders.Quantity - quantity_SupplierId + reject_SupplierId;
+                    else
+                        balance = reject_SupplierId;
+                    balanceList.Add(balance);
+                }
+                if (balanceList.Max() > 0)
+                {
+                    rawMaterialView.OUTSOLE_Remarks = balanceList.Max().ToString();
+                    rawMaterialView.OUTSOLE_ActualDate = "";
+                }
+
+                // Highlight Po has RejectAssembly
+                rawMaterialView.OUTSOLE_ActualDate_BACKGROUND = Brushes.Transparent;
+                var totalRejectAssembly = outsoleMaterial_PO.Sum(s => s.RejectAssembly);
+                if (totalRejectAssembly > 0)
+                    rawMaterialView.OUTSOLE_ActualDate_BACKGROUND = Brushes.Yellow;
+            }
+
+            // UPPER COMPONENT MATERIAL 12
+            var upperComponentMaterial = rawMaterialList_D1.Where(w => w.MaterialTypeId == 12).OrderBy(r => r.ModifiedTime).LastOrDefault();
+            if (upperComponentMaterial != null)
+            {
+                if (upperComponentMaterial.ETD.Date != dtDefault)
+                    rawMaterialView.UPPERCOMPONENT_ETD = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", upperComponentMaterial.ETD);
+                if (upperComponentMaterial.ActualDate.Date != dtDefault)
+                    rawMaterialView.UPPERCOMPONENT_ActualDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", upperComponentMaterial.ActualDate);
+
+                rawMaterialView.UPPERCOMPONENT_Remarks = upperComponentMaterial.Remarks;
+            }
+
+            // INSOCK 13
+            var insockRawMaterial = rawMaterialList_D1.Where(w => w.MaterialTypeId == 13).OrderBy(r => r.ModifiedTime).LastOrDefault();
+            if (insockRawMaterial != null)
+            {
+                rawMaterialView.INSOCK_ETD = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", insockRawMaterial.ETD);
+                if (insockRawMaterial.ETD.Date == dtDefault)
+                {
+                    rawMaterialView.INSOCK_ETD = "";
+                }
+                rawMaterialView.INSOCK_ActualDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", insockRawMaterial.ActualDate);
+                if (insockRawMaterial.ActualDate.Date == dtDefault)
+                {
+                    rawMaterialView.INSOCK_ActualDate = "";
+                }
+                rawMaterialView.INSOCK_Remarks = insockRawMaterial.Remarks;
+            }
+
+
+            //SECURITY LABEL 7
+            var securityLabel = rawMaterialList_D1.Where(r => r.MaterialTypeId == 7).OrderBy(r => r.ModifiedTime).LastOrDefault();
+            if (securityLabel != null)
+            {
+                rawMaterialView.SECURITYLABEL_ETD = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", securityLabel.ETD);
+                if (securityLabel.ETD.Date == dtDefault)
+                {
+                    rawMaterialView.SECURITYLABEL_ETD = "";
+                }
+                rawMaterialView.SECURITYLABEL_ActualDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", securityLabel.ActualDate);
+                if (securityLabel.ActualDate.Date == dtDefault)
+                {
+                    rawMaterialView.SECURITYLABEL_ActualDate = "";
+                }
+                rawMaterialView.SECURITYLABEL_Remarks = securityLabel.Remarks;
+            }
+
+            //ASSEMBLY 8
+            var assembly = rawMaterialList_D1.Where(r => r.MaterialTypeId == 8).OrderBy(r => r.ModifiedTime).LastOrDefault();
+            if (assembly != null)
+            {
+                rawMaterialView.ASSEMBLY_ETD = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", assembly.ETD);
+                if (assembly.ETD.Date == dtDefault)
+                {
+                    rawMaterialView.ASSEMBLY_ETD = "";
+                }
+                rawMaterialView.ASSEMBLY_ActualDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", assembly.ActualDate);
+                if (assembly.ActualDate.Date == dtDefault)
+                {
+                    rawMaterialView.ASSEMBLY_ActualDate = "";
+                }
+                rawMaterialView.ASSEMBLY_Remarks = assembly.Remarks;
+            }
+
+            //SOCK LINING 9
+            var sockLining = rawMaterialList_D1.Where(r => r.MaterialTypeId == 9).OrderBy(r => r.ModifiedTime).LastOrDefault();
+            if (sockLining != null)
+            {
+                rawMaterialView.SOCKLINING_ETD = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", sockLining.ETD);
+                if (sockLining.ETD.Date == dtDefault)
+                {
+                    rawMaterialView.SOCKLINING_ETD = "";
+                }
+                rawMaterialView.SOCKLINING_ActualDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", sockLining.ActualDate);
+                if (sockLining.ActualDate.Date == dtDefault)
+                {
+                    rawMaterialView.SOCKLINING_ActualDate = "";
+                }
+                rawMaterialView.SOCKLINING_Remarks = sockLining.Remarks;
+            }
+
+            //CARTON 11
+            var assyGetStartDate = new AssemblyMasterModel();
+            assyGetStartDate = assemblyMasterList.Where(w => w.ProductNo == orders.ProductNo).FirstOrDefault();
+            DateTime assyStartDate = dtDefault;
+            if (assyGetStartDate != null)
+            {
+                if (assyGetStartDate.AssemblyStartDate != dtDefault)
+                {
+                    assyStartDate = assyGetStartDate.AssemblyStartDate;
+                }
+            }
+
+            var carton = rawMaterialList_D1.Where(r => r.MaterialTypeId == 11).OrderBy(r => r.ModifiedTime).LastOrDefault();
+            if (carton != null)
+            {
+                int dateRange = 0;
+                rawMaterialView.CARTON_ETD = "";
+                rawMaterialView.CARTON_ActualDate = "";
+                rawMaterialView.CARTON_Remarks = carton.Remarks;
+
+                rawMaterialView.CARTON_ActualDate_Sort = carton.ActualDate;
+                rawMaterialView.CARTON_ETD_Sort = carton.ETD;
+                if (carton.ETD != dtDefault)
+                {
+                    rawMaterialView.CARTON_ETD = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", carton.ETD);
+                    if (assyStartDate != dtDefault)
+                    {
+                        //dateRange = TimeHelper.CalculateDate(carton.ETD, assyStartDate);
+                        dateRange = (Int32)((assyStartDate - carton.ETD).TotalDays);
+                    }
+                }
+
+                if (carton.ActualDate != dtDefault)
+                {
+                    rawMaterialView.CARTON_ActualDate = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", carton.ActualDate);
+                    if (assyStartDate != dtDefault)
+                    {
+                        //dateRange = TimeHelper.CalculateDate(carton.ActualDate, assyStartDate);
+                        dateRange = (Int32)((assyStartDate - carton.ActualDate).TotalDays);
+                    }
+                }
+
+                // Hightlight
+                rawMaterialView.CARTON_ETD_Background = Brushes.Transparent;
+                rawMaterialView.CARTON_ActualDate_Background = Brushes.Transparent;
+                if (dateRange <= 2)
+                {
+                    if (String.IsNullOrEmpty(rawMaterialView.CARTON_ActualDate) == false)
+                        rawMaterialView.CARTON_ActualDate_Background = Brushes.Red;
+                    if (String.IsNullOrEmpty(rawMaterialView.CARTON_ETD) == false)
+                        rawMaterialView.CARTON_ETD_Background = Brushes.Red;
+                }
+
+                if (dateRange > 14)
+                {
+                    if (String.IsNullOrEmpty(rawMaterialView.CARTON_ActualDate) == false)
+                        rawMaterialView.CARTON_ActualDate_Background = Brushes.Yellow;
+                    if (String.IsNullOrEmpty(rawMaterialView.CARTON_ETD) == false)
+                        rawMaterialView.CARTON_ETD_Background = Brushes.Yellow;
+                }
+            }
+
+
+            var orderExtra = orderExtraList.Where(o => o.ProductNo == orders.ProductNo).FirstOrDefault();
+            if (orderExtra != null)
+            {
+                DateTime loadingDate = dtDefault;
+                if (DateTime.TryParse(orderExtra.LoadingDate, out loadingDate) == true)
+                {
+                    rawMaterialView.LoadingDate = string.Format(new CultureInfo("en-US"), "{0:dd-MMM}", loadingDate);
+                }
+                else
+                {
+                    rawMaterialView.LoadingDate = "";
+                }
+            }
+            return rawMaterialView;
+        }
+
+        private MaterialArrivalViewModel MaterialArrival(string productNo, int[] materialIdArray)
+        {
+            var rawMaterialTypeList = rawMaterialList.Where(r => r.ProductNo == productNo && materialIdArray.Contains(r.MaterialTypeId)).ToList();
+            rawMaterialTypeList.RemoveAll(r => r.ETD.Date == dtDefault.Date);
+            var materialArrivalView = new MaterialArrivalViewModel();
+            if (rawMaterialTypeList.Select(r => r.ActualDate).Count() > 0 && rawMaterialTypeList.Select(r => r.ActualDate.Date).Contains(dtDefault.Date) == false)
+            {
+                materialArrivalView.Date = rawMaterialTypeList.Select(r => r.ActualDate).Max();
+                materialArrivalView.Foreground = Brushes.Blue;
+                materialArrivalView.Background = Brushes.Transparent;
+            }
+            else
+            {
+                if (rawMaterialTypeList.Select(r => r.ETD).Count() > 0 && rawMaterialTypeList.Where(r => r.ETD.Date != dtDefault.Date).Count() > 0)
+                {
+                    materialArrivalView.Date = rawMaterialTypeList.Where(r => r.ActualDate.Date == dtDefault.Date).Select(r => r.ETD).Max();
+                    materialArrivalView.Foreground = Brushes.Black;
+                    materialArrivalView.Background = Brushes.Transparent;
+                    if (materialArrivalView.Date < DateTime.Now.Date)
+                    {
+                        materialArrivalView.Background = Brushes.Red;
+                    }
+                    else
+                    {
+                        if (rawMaterialTypeList.Where(r => String.IsNullOrEmpty(r.Remarks) == false).Count() > 0)
+                        {
+                            materialArrivalView.Background = Brushes.Yellow;
+                        }
+                    }
+                }
+                else
+                {
+                    materialArrivalView = null;
+                }
+            }
+            return materialArrivalView;
         }
 
         private void bwLoad_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -1273,7 +1799,7 @@ namespace MasterSchedule.Views
 
         private void btnReload_Click(object sender, RoutedEventArgs e)
         {
-            if (bwReload.IsBusy == false)
+            if (bwReload.IsBusy == false && !def.Factory.Equals("THIENLOC"))
             {
                 rawMaterialViewList = new List<RawMaterialViewModel>();
                 lblStatus.Text = "";

@@ -48,12 +48,13 @@ namespace MasterSchedule.Controllers
             var @Excess             = new SqlParameter("@Excess", model.Excess);
             var @WorkingCard        = new SqlParameter("@WorkingCard", model.WorkingCard);
             var @ReturnReject       = new SqlParameter("@ReturnReject", model.ReturnReject);
+            var @ReturnRemark = new SqlParameter("@ReturnRemark", model.ReturnRemark);
             //var @SizeNoUpper        = new SqlParameter("@SizeNoUpper", model.SizeNoUpper);
 
             using (var db = new SaovietMasterScheduleEntities())
             {
-                if (db.ExecuteStoreCommand("EXEC spm_InsertOutsoleMaterialChecking_2    @WorkerId, @ProductNo, @CheckingDate, @OutsoleSupplierId, @SizeNo, @Quantity, @Reject, @ErrorId, @Excess, @WorkingCard, @ReturnReject",
-                                                                                        @WorkerId, @ProductNo, @CheckingDate, @OutsoleSupplierId, @SizeNo, @Quantity, @Reject, @ErrorId, @Excess, @WorkingCard, @ReturnReject) > 0)
+                if (db.ExecuteStoreCommand("EXEC spm_InsertOutsoleMaterialChecking_4    @WorkerId, @ProductNo, @CheckingDate, @OutsoleSupplierId, @SizeNo, @Quantity, @Reject, @ErrorId, @Excess, @WorkingCard, @ReturnReject, @ReturnRemark",
+                                                                                        @WorkerId, @ProductNo, @CheckingDate, @OutsoleSupplierId, @SizeNo, @Quantity, @Reject, @ErrorId, @Excess, @WorkingCard, @ReturnReject, @ReturnRemark) > 0)
                 {
                     return true;
                 }

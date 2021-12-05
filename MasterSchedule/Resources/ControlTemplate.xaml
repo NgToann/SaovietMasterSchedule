@@ -244,6 +244,42 @@
             </Border>
         </Grid>
     </ControlTemplate>
+    <ControlTemplate x:Key="GroupBoxTemplate1" TargetType="{x:Type GroupBox}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border x:Name="brHeader" BorderBrush="{DynamicResource ResourceKey=BorderBackgroundConfirmOSMatsCart}" Background="White" Margin="10,0,0,0" CornerRadius="0,0,0,0" Panel.ZIndex="5">                
+                <ContentPresenter ContentSource="Header" RecognizesAccessKey="True"/>
+            </Border>
+            <Border Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="{DynamicResource ResourceKey=BorderBackgroundConfirmOSMatsCart}" BorderThickness="0,1,1,1" CornerRadius="0,0,0,0" Margin="0,-20,0,0" Padding="7,30,7,7" Panel.ZIndex="0">
+                <ContentPresenter/>
+            </Border>
+        </Grid>
+    </ControlTemplate>
+    <ControlTemplate x:Key="GroupBoxTemplate2" TargetType="{x:Type GroupBox}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border x:Name="brHeader" BorderBrush="{DynamicResource ResourceKey=BorderBackgroundConfirmOSMatsCart}" Background="White" Margin="10,0,0,0" CornerRadius="0,0,0,0" Panel.ZIndex="5">
+                <ContentPresenter ContentSource="Header" RecognizesAccessKey="True"/>
+            </Border>
+            <Border Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="{DynamicResource ResourceKey=BorderBackgroundConfirmOSMatsCart}" BorderThickness="1,1,1,1" CornerRadius="0,0,0,0" Margin="0,-15,0,0" Padding="7,30,7,7" Panel.ZIndex="0">
+                <ContentPresenter/>
+            </Border>
+        </Grid>
+    </ControlTemplate>
     <ControlTemplate x:Key="GroupBoxTemplate_HeaderAuto" TargetType="{x:Type GroupBox}">
         <Grid>
             <Grid.RowDefinitions>
@@ -298,4 +334,5 @@
             </Border>
         </Grid>
     </ControlTemplate>
+
 </ResourceDictionary>

@@ -96,12 +96,12 @@ namespace MasterSchedule.Views
                 
                 if (order != null)
                 {
-                    sewingMasterExportView.Country = order.Country;
-                    sewingMasterExportView.ShoeName = order.ShoeName;
-                    sewingMasterExportView.ArticleNo = order.ArticleNo;
-                    sewingMasterExportView.PatternNo = order.PatternNo;
-                    sewingMasterExportView.Quantity = order.Quantity;
-                    sewingMasterExportView.ETD = order.ETD;
+                    sewingMasterExportView.Country      = order.Country;
+                    sewingMasterExportView.ShoeName     = order.ShoeName;
+                    sewingMasterExportView.ArticleNo    = order.ArticleNo;
+                    sewingMasterExportView.PatternNo    = order.PatternNo;
+                    sewingMasterExportView.Quantity     = order.Quantity;
+                    sewingMasterExportView.ETD          = order.ETD;
 
                     List<ProductionMemoModel> productionMemoByProductionNumberList = productionMemoList.Where(p => p.ProductionNumbers.Contains(order.ProductNo) == true).ToList();
                     for (int p = 0; p <= productionMemoByProductionNumberList.Count - 1; p++)
@@ -470,7 +470,7 @@ namespace MasterSchedule.Views
             {
                 return;
             }
-            SewingMasterReportWindow window = new SewingMasterReportWindow(sewingMasterExportViewReportList, lblLine.ToolTip.ToString());
+            SewingMasterReportWindow window = new SewingMasterReportWindow(sewingMasterExportViewReportList, lblLine.ToolTip.ToString(), 0);
             window.Show();
         }
     }

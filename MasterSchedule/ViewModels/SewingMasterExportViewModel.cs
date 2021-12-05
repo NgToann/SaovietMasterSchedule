@@ -22,6 +22,7 @@ namespace MasterSchedule.ViewModels
         public string UpperMatsArrival { get; set; }
         public bool IsUpperMatsArrivalOk { get; set; }
         public DateTime CutAStartDate { get; set; }
+        public String CutBStartDate { get; set; }
         public string SewingMatsArrival { get; set; }
         public bool IsSewingMatsArrivalOk { get; set; }
         public DateTime SewingStartDate { get; set; }

@@ -1,9 +1,11 @@
 ﻿namespace MasterSchedule.DataSets
 {
 }
-namespace MasterSchedule.DataSets {
-    
-    
-    public partial class SewingMasterDataSet {
+namespace MasterSchedule.DataSets
+{
+
+
+    public partial class SewingMasterDataSet
+    {
     }
 }

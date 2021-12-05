@@ -11,6 +11,10 @@ using MasterSchedule.ViewModels;
 using MasterSchedule.Controllers;
 using MasterSchedule.Helpers;
 using System.Text.RegularExpressions;
+using System.Data;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Globalization;
 
 namespace MasterSchedule.Views
 {
@@ -20,6 +24,7 @@ namespace MasterSchedule.Views
     public partial class UpperWHInventoryWindow : Window
     {
         BackgroundWorker bwLoadData;
+        BackgroundWorker bwPreviewUpperArrival;
 
         List<SewingOutputModel> sewingOutputList;
         List<OutsoleOutputModel> outsoleOutputList;
@@ -36,13 +41,18 @@ namespace MasterSchedule.Views
 
         List<UpperWHInventoryViewModel> upperWHInventoryViewList;
         List<UpperWHInventoryViewModel> upperWHInventoryViewList_WithSocklining;
-
+        List<ReportMaterialArrivalModel> matsArrivalList;
         public UpperWHInventoryWindow()
         {
             bwLoadData = new BackgroundWorker();
             bwLoadData.WorkerSupportsCancellation = true;
             bwLoadData.DoWork += new DoWorkEventHandler(bwLoadData_DoWork);
             bwLoadData.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwLoadData_RunWorkerCompleted);
+
+            bwPreviewUpperArrival = new BackgroundWorker();
+            bwPreviewUpperArrival.DoWork += BwPreviewUpperArrival_DoWork;
+            bwPreviewUpperArrival.RunWorkerCompleted += BwPreviewUpperArrival_RunWorkerCompleted;
+
             sewingOutputList = new List<SewingOutputModel>();
             outsoleOutputList = new List<OutsoleOutputModel>();
             orderList = new List<OrdersModel>();
@@ -56,6 +66,8 @@ namespace MasterSchedule.Views
             sizeRunList = new List<SizeRunModel>();
 
             rawMaterialViewModelNewList = new List<RawMaterialViewModelNew>();
+            matsArrivalList = new List<ReportMaterialArrivalModel>();
+
             InitializeComponent();
         }
 
@@ -190,6 +202,8 @@ namespace MasterSchedule.Views
         {
             if (bwLoadData.IsBusy == false)
             {
+                dpFrom.SelectedDate = DateTime.Now.Date;
+                dpTo.SelectedDate = DateTime.Now.Date;
                 this.Cursor = Cursors.Wait;
                 bwLoadData.RunWorkerAsync();
             }
@@ -253,5 +267,167 @@ namespace MasterSchedule.Views
                 return;
             }
         }
+
+        private void btnPreview_Click(object sender, RoutedEventArgs e)
+        {
+            if (!bwPreviewUpperArrival.IsBusy)
+            {
+                var dateFrom = dpFrom.SelectedDate.Value.Date;
+                var dateTo = dpTo.SelectedDate.Value.Date;
+                dgUpperArrival.Columns.Clear();
+                dgUpperArrival.ItemsSource = null;
+                this.Cursor = Cursors.Wait;
+                btnPreview.IsEnabled = false;
+                var pars = new object[] { dateFrom, dateTo };
+                bwPreviewUpperArrival.RunWorkerAsync(pars);
+            }
+        }
+        private void BwPreviewUpperArrival_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var pars = e.Argument as object[];
+            var dateFrom = (DateTime)pars[0];
+            var dateTo = (DateTime)pars[1];
+            if (eMats == EMaterial.Upper)
+                matsArrivalList = ReportController.GetUpperMatsArrivalFromTo(dateFrom, dateTo);
+            else if (eMats == EMaterial.Outsole)
+                matsArrivalList = ReportController.GetOutsoleMatsArrivalFromTo(dateFrom, dateTo);
+
+            if (matsArrivalList.Count() <= 0)
+                return;
+
+            Dispatcher.Invoke(new Action(() =>
+            {
+                var dt = new DataTable();
+                dt.Columns.Add("Line", typeof(String));
+                DataGridTextColumn colSewLine = new DataGridTextColumn();
+                if (eMats == EMaterial.Upper)
+                    colSewLine.Header = "Sewing Line";
+                else if (eMats == EMaterial.Outsole)
+                    colSewLine.Header = "Outsole Line";
+
+                //colSewLine.Width = 120;
+                colSewLine.Binding = new Binding("Line");
+                colSewLine.ClipboardContentBinding = new Binding("Line");
+                dgUpperArrival.Columns.Add(colSewLine);
+
+                int colId = 0;
+                for(DateTime date = dateFrom; date <= dateTo; date = date.AddDays(8)) 
+                {
+                    var month = String.Format(new CultureInfo("en-US"), "{0:MMM}", date);
+                    var header = string.Format("{0} {1:dd}-{2:dd}", month, date, date.AddDays(7));
+                    dt.Columns.Add(string.Format("Column{0}", colId), typeof(string));
+                    var col = new DataGridTextColumn();
+                    col.Header = header;
+                    col.Binding = new Binding(string.Format("Column{0}", colId));
+                    col.ClipboardContentBinding = new Binding(string.Format("Column{0}", colId));
+                    dgUpperArrival.Columns.Add(col);
+                    colId++;
+                }
+
+                var regex = new Regex("[a-z]|[A-Z]");
+                foreach(var item in matsArrivalList)
+                {
+                    int sewingLineNo = 0, outsoleLineNo = 0;
+                    if (!String.IsNullOrEmpty(item.SewingLine))
+                    {
+                        var x = regex.Replace(item.SewingLine, "");
+                        int.TryParse(x, out sewingLineNo);
+                        item.SewingLineNo = sewingLineNo;
+                    }
+                    if(!string.IsNullOrEmpty(item.OutsoleLine))
+                    {
+                        var y = regex.Replace(item.OutsoleLine, "");
+                        int.TryParse(y, out outsoleLineNo);
+                        item.OutsoleLineNo = outsoleLineNo;
+                    }
+                }
+                if (eMats == EMaterial.Upper)
+                    matsArrivalList = matsArrivalList.OrderBy(o => o.SewingLineNo).ThenBy(th => th.SewingLine).ToList();
+                else if (eMats == EMaterial.Outsole)
+                    matsArrivalList = matsArrivalList.OrderBy(o => o.OutsoleLineNo).ThenBy(th => th.OutsoleLine).ToList();
+                List<string> lines = new List<String>();
+                if (eMats == EMaterial.Upper)
+                    lines = matsArrivalList.Select(s => s.SewingLine).Distinct().ToList();
+                else if (eMats == EMaterial.Outsole)
+                    lines = matsArrivalList.Select(s => s.OutsoleLine).Distinct().ToList();
+
+
+                foreach (var line in lines)
+                {
+                    var dr = dt.NewRow();
+                    dr["Line"] = line;
+                    int colBindIdDetail = 0;
+                    for (DateTime date = dateFrom; date <= dateTo; date = date.AddDays(8))
+                    {
+                        var totalPairsByLineByDate = 0;
+
+                        if (eMats == EMaterial.Upper)
+                            totalPairsByLineByDate = matsArrivalList.Where(w => w.SewingLine == line
+                                                                                && w.DateDisplay >= date && w.DateDisplay < date.AddDays(8)
+                                                                                && w.Status.Equals("OK"))
+                                                                         .Sum(s => s.Quantity);
+                        else if (eMats == EMaterial.Outsole)
+                            totalPairsByLineByDate = matsArrivalList.Where(w => w.OutsoleLine == line
+                                                                                && w.DateDisplay >= date && w.DateDisplay < date.AddDays(8)
+                                                                                && w.Status.Equals("OK"))
+                                                                         .Sum(s => s.Quantity);
+
+                        if (totalPairsByLineByDate > 0)
+                            dr[string.Format("Column{0}", colBindIdDetail)] = totalPairsByLineByDate;
+                        colBindIdDetail++;
+                    }
+                    dt.Rows.Add(dr);
+                }
+
+                // dr total OK
+                var drTotalOK = dt.NewRow();
+                drTotalOK["Line"] = "Arrived";
+                int colBindId = 0;
+                for (DateTime date = dateFrom; date <= dateTo; date = date.AddDays(8))
+                {
+                    var totalPair = matsArrivalList.Where(w => w.DateDisplay >= date && w.DateDisplay < date.AddDays(8) && w.Status.Equals("OK")).Sum(s => s.Quantity);
+                    if (totalPair > 0)
+                        drTotalOK[string.Format("Column{0}", colBindId)] = totalPair;
+                    colBindId++;
+                }
+                dt.Rows.Add(drTotalOK);
+
+                // dr total OK + Plan
+                var drTotalOKAndPlan = dt.NewRow();
+                drTotalOKAndPlan["Line"] = "Arrived + Plan";
+                colBindId = 0;
+                for (DateTime date = dateFrom; date <= dateTo; date = date.AddDays(8))
+                {
+                    var totalPair = matsArrivalList.Where(w => w.DateDisplay >= date && w.DateDisplay < date.AddDays(8)).Sum(s => s.Quantity);
+                    if (totalPair > 0)
+                        drTotalOKAndPlan[string.Format("Column{0}", colBindId)] = totalPair;
+                    colBindId++;
+                }
+                dt.Rows.Add(drTotalOKAndPlan);
+
+                dgUpperArrival.ItemsSource = dt.AsDataView();
+                dgUpperArrival.Items.Refresh();
+
+            }));
+
+
+        }
+        private void BwPreviewUpperArrival_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            this.Cursor = null;
+            btnPreview.IsEnabled = true;
+        }
+
+        private EMaterial eMats = EMaterial.Upper;
+        private void radUpper_Checked(object sender, RoutedEventArgs e)
+        {
+            eMats = EMaterial.Upper;
+        }
+
+        private void radOutsole_Checked(object sender, RoutedEventArgs e)
+        {
+            eMats = EMaterial.Outsole;
+        }
+
     }
 }

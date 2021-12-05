@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" Background="#F8FAF6"
         xmlns:local="clr-namespace:MasterSchedule.Views" Foreground="Black" Loaded="Window_Loaded"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" FontSize="14" ResizeMode="CanMinimize" KeyUp="Window_KeyUp"
-        Title="Master Schedule - Add Quantity Check for Outsole Material" Height="300" Width="480">
+        Title="Master Schedule - Add Quantity Check for Outsole Material" Height="330" Width="480">
     <Grid Margin="2">
         <GroupBox Grid.Row="3" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
             <GroupBox.Header>
                 <Border x:Name="brGroupInfor" Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
-                    <TextBlock x:Name="tblGroupInfor" Text="   Input Size and Quantity   "/>
+                    <TextBlock x:Name="tblGroupInfor" Text="Input Size and Quantity (Nhập hàng kiểm OK)"/>
                 </Border>
             </GroupBox.Header>
             <Grid>
@@ -21,30 +21,45 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
-                        <RowDefinition Height="3"/>
+                        <RowDefinition Height="5"/>
                         <RowDefinition Height="auto"/>
-                        <RowDefinition Height="3"/>
+                        <RowDefinition Height="5"/>
                         <RowDefinition Height="auto"/>
-                        <RowDefinition Height="3"/>
+                        <RowDefinition Height="5"/>
                         <RowDefinition Height="auto"/>
-                        <RowDefinition Height="3"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Product No:"/>
+                    <TextBlock Text="Product No (Đơn hàng): "/>
                     <TextBlock x:Name="tblProductNo" Grid.Column="2"/>
-                    <TextBlock Grid.Row="2" Text="Supplier:"/>
+                    <TextBlock Grid.Row="2" Text="Supplier (Công ty): "/>
                     <TextBlock Grid.Row="2" x:Name="tblSupplier" Grid.Column="2"/>
-                    <TextBlock Grid.Row="4" Text="Checking Date:"/>
+                    <TextBlock Grid.Row="4" Text="Checking Date (Ngày kiểm): "/>
                     <TextBlock Grid.Row="4" x:Name="tblCheckingDate" Grid.Column="2"/>
-                    <TextBlock Grid.Row="6" Text="Worker Id"/>
+                    <TextBlock Grid.Row="6" Text="Worker Id (Mã Worker): "/>
                     <TextBlock Grid.Row="6" x:Name="tblWorkerId" Grid.Column="2"/>
                     <TextBlock Grid.Row="8" x:Name="tblDefectTitle"/>
                     <TextBlock Grid.Row="8" x:Name="tblDefect" Grid.Column="2"/>
+
+                    <Border x:Name="brReturnRemark" Grid.Row="9" Height="30" Visibility="Collapsed"
+                            Grid.ColumnSpan="3"
+                            CornerRadius="5"
+                            Background="LightGray">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <RadioButton GroupName="Reason" Content="Still has reject (Có hàng phế)" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" IsChecked="True"/>
+                            <RadioButton GroupName="Reason" Grid.Column="1" Content="Not (Không có hàng phế)" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center"/>
+                        </Grid>
+                    </Border>
                 </Grid>
                 <Grid Grid.Row="1" Margin="0,4,0,0">
                     <Grid.ColumnDefinitions>
@@ -60,14 +75,16 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="O/S SizeNo" HorizontalAlignment="Center"/>
-                    <TextBlock x:Name="tblQtyOrQtyReject" Grid.Column="2" Text="Quantity" HorizontalAlignment="Center"/>
-                    <TextBox x:Name="txtSizeNo"   Grid.Row="2"                  Text="Size" FontSize="68" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1,1,1,1" PreviewKeyDown="txtSizeNo_PreviewKeyDown"/>
+                    <TextBlock x:Name="tblQtyOrQtyReject" Grid.Column="2" Text=" Quantity&#x0a;(Số lượng)" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="txtSizeNo"   Grid.Row="2"                  Text="Size" FontSize="68" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1,1,1,1" PreviewKeyDown="txtSizeNo_PreviewKeyDown">
+                    </TextBox>
                     <TextBox x:Name="txtQuantity" Grid.Row="2" Grid.Column="2"  Text="1" FontSize="50" TextAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1,1,1,1" PreviewKeyDown="txtQuantity_PreviewKeyDown"/>
-                    
-                    <TextBlock x:Name="tblWorkingCard"  Grid.Column="4" Margin="10,0,0,0" Text="Working Cart(Index No)" HorizontalAlignment="Center" Visibility="Collapsed"/>
+
+                    <TextBlock x:Name="tblWorkingCard"  Grid.Column="4" Margin="10,0,0,0" Text="Working Cart(Index No)&#x0a;Số thùng" HorizontalAlignment="Center" Visibility="Collapsed"/>
                     <TextBox x:Name="txtWorkingCard"    Grid.Row="2"    Margin="10,0,0,0" Grid.Column="4"    Text="1" FontSize="40" TextAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1,1,1,1" PreviewKeyDown="txtWorkingCard_PreviewKeyDown" Visibility="Collapsed"/>
-                    
-                    
+
+                    <TextBlock x:Name="tblReturnRemark" Grid.Column="4" Margin="10,0,0,0" Text="       Return Remark       &#x0a;      (Hàng bù bị phế)" HorizontalAlignment="Center" Foreground="Red" Visibility="Collapsed"/>
+                    <TextBox x:Name="txtReturnRemark" Grid.Row="2" Grid.Column="4" Margin="10,0,0,0" FontSize="40" Text="0" TextAlignment="Center" VerticalContentAlignment="Center" BorderBrush="Black" BorderThickness="1,1,1,1" Visibility="Collapsed" PreviewKeyDown="txtReturnRemark_PreviewKeyDown"/>
                 </Grid>
             </Grid>
         </GroupBox>

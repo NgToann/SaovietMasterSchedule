@@ -20,6 +20,7 @@ namespace MasterSchedule.Models
         public int QuantityOrder { get; set; }
         public int QuantityDelivery { get; set; }
         public string WorkerId { get; set; }
+        public DateTime CheckingDate { get; set; }
         public string SizeNo { get; set; }
         public string SizeNoUpper { get; set; }
         public int Quantity { get; set; }
@@ -28,6 +29,7 @@ namespace MasterSchedule.Models
         public string ErrorName { get; set; }
         public string ErrorVietNamese { get; set; }
         public int ReturnReject { get; set; }
+        public int ReturnRemark { get; set; }
         public double TotalHours { get; set; }
         public string POStatus { get; set; }
         public int TotalQuantityCheckedOK { get; set; }

@@ -91,7 +91,7 @@ namespace MasterSchedule.Controllers
             var @DateTo = new SqlParameter("@DateTo", dateTo);
             using (var db = new SaovietMasterScheduleEntities())
             {
-                return db.ExecuteStoreQuery<ReportOSMWHCheckingModel>("EXEC reporter_SelectOSMWHCheckingListFromTo @DateFrom, @DateTo", @DateFrom, @DateTo).ToList();
+                return db.ExecuteStoreQuery<ReportOSMWHCheckingModel>("EXEC reporter_SelectOSMWHCheckingListFromTo_1 @DateFrom, @DateTo", @DateFrom, @DateTo).ToList();
             };
         }
 
@@ -160,6 +160,36 @@ namespace MasterSchedule.Controllers
             using (var db = new SaovietMasterScheduleEntities())
             {
                 return db.ExecuteStoreQuery<ReportUpperAccessoriesModel>("reporter_ReportUpperAccessories").ToList();
+            }
+        }
+
+        //
+        public static List<ReportOSMPaintShopModel> GetPaintShop()
+        {
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<ReportOSMPaintShopModel>("reporter_OSMPaintShop").ToList();
+            }
+        }
+
+        //
+        public static List<ReportMaterialArrivalModel> GetUpperMatsArrivalFromTo(DateTime dateFrom, DateTime dateTo)
+        {
+            var @DateFrom = new SqlParameter("@DateFrom", dateFrom);
+            var @DateTo = new SqlParameter("@DateTo", dateTo);
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<ReportMaterialArrivalModel>("reporter_UpperMaterialArrivalFromTo @DateFrom, @DateTo", @DateFrom, @DateTo).ToList();
+            }
+        }
+        //
+        public static List<ReportMaterialArrivalModel> GetOutsoleMatsArrivalFromTo(DateTime dateFrom, DateTime dateTo)
+        {
+            var @DateFrom = new SqlParameter("@DateFrom", dateFrom);
+            var @DateTo = new SqlParameter("@DateTo", dateTo);
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<ReportMaterialArrivalModel>("reporter_OutsoleMaterialArrivalFromTo @DateFrom, @DateTo", @DateFrom, @DateTo).ToList();
             }
         }
     }

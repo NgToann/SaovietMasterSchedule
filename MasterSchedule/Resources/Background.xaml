@@ -68,4 +68,57 @@
             </GradientStopCollection>
         </GradientBrush.GradientStops>
     </LinearGradientBrush>
+    <LinearGradientBrush x:Key="radBgNormal">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="LightGray"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="radBgSelected">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="SeaGreen"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="bgConfirm">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="ForestGreen"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="bgNotConfirm">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="LightGray"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="bgReleased">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="CornflowerBlue"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="bgConfirmSelected">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="CornflowerBlue"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BorderBackgroundConfirmOSMatsCart">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="SeaGreen"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <Thickness x:Key="thicknessType1">1</Thickness>
+    <CornerRadius x:Key="radiusType1">5</CornerRadius>
+    <CornerRadius x:Key="radiusType2">3</CornerRadius>
 </ResourceDictionary>

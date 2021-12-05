@@ -17,10 +17,20 @@ namespace MasterSchedule.Controllers
             SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
             return db.ExecuteStoreQuery<OutsoleMasterModel>("EXEC spm_SelectOutsoleMaster").ToList();
         }
+        public static List<OutsoleMasterSourceModel> SelectSource()
+        {
+            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
+            return db.ExecuteStoreQuery<OutsoleMasterSourceModel>("EXEC spm_SelectOutsoleMasterSource").ToList();
+        }
         public static List<OutsoleMasterModel> Select_1()
         {
             SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
             return db.ExecuteStoreQuery<OutsoleMasterModel>("EXEC spm_SelectOutsoleMaster_1").ToList();
+        }
+        public static List<OutsoleMasterModel> Select_2()
+        {
+            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
+            return db.ExecuteStoreQuery<OutsoleMasterModel>("EXEC spm_SelectOutsoleMaster_2").ToList();
         }
 
         // IsEnable = 1 || 0
@@ -66,18 +76,18 @@ namespace MasterSchedule.Controllers
             return false;
         }
 
-        public static bool Insert_2(OutsoleMasterModel model)
+        public static bool Insert_2(OutsoleMasterModel model, AccountModel account)
         {
-            DateTime dtDefault = new DateTime(2000, 01, 01);
-            var @ProductNo = new SqlParameter("@ProductNo", model.ProductNo);
-            var @Sequence = new SqlParameter("@Sequence", model.Sequence);
-            var @OutsoleLine = new SqlParameter("@OutsoleLine", model.OutsoleLine);
-            var @OutsoleStartDate = new SqlParameter("@OutsoleStartDate", model.OutsoleStartDate);
-            var @OutsoleFinishDate = new SqlParameter("@OutsoleFinishDate", model.OutsoleFinishDate);
-            var @OutsoleQuota = new SqlParameter("@OutsoleQuota", model.OutsoleQuota);
-            var @OutsoleActualStartDate = new SqlParameter("@OutsoleActualStartDate", model.OutsoleActualStartDate);
-            var @OutsoleActualFinishDate = new SqlParameter("@OutsoleActualFinishDate", model.OutsoleActualFinishDate);
-            var @Remarks = new SqlParameter("@Remarks", model.Remarks);
+            DateTime dtDefault  = new DateTime(2000, 01, 01);
+            var @ProductNo      = new SqlParameter("@ProductNo", model.ProductNo != null ? model.ProductNo : "");
+            var @Sequence       = new SqlParameter("@Sequence", model.Sequence);
+            var @OutsoleLine    = new SqlParameter("@OutsoleLine", model.OutsoleLine != null ? model.OutsoleLine : "");
+            var @OutsoleStartDate   = new SqlParameter("@OutsoleStartDate", model.OutsoleStartDate != null ? model.OutsoleStartDate : dtDefault);
+            var @OutsoleFinishDate  = new SqlParameter("@OutsoleFinishDate", model.OutsoleFinishDate != null ? model.OutsoleFinishDate : dtDefault);
+            var @OutsoleQuota       = new SqlParameter("@OutsoleQuota", model.OutsoleQuota);
+            var @OutsoleActualStartDate  = new SqlParameter("@OutsoleActualStartDate", model.OutsoleActualStartDate != null ? model.OutsoleActualStartDate : "");
+            var @OutsoleActualFinishDate = new SqlParameter("@OutsoleActualFinishDate", model.OutsoleActualFinishDate != null ? model.OutsoleActualFinishDate : "");
+            var @Remarks        = new SqlParameter("@Remarks", model.Remarks != null ? model.Remarks : "");
 
             DateTime outsoleActualStartDateAutoDt = TimeHelper.Convert(model.OutsoleActualStartDateAuto);
             DateTime outsoleActualFinishDateAutoDt = TimeHelper.Convert(model.OutsoleActualFinishDateAuto);
@@ -98,7 +108,7 @@ namespace MasterSchedule.Controllers
             var outsoleBalanceInsert = model.OutsoleBalance;
             if (model.OutsoleBalance_Date != dtDefault)
             {
-                outsoleBalanceInsert = model.OutsoleBalance_Date.ToShortDateString();
+                outsoleBalanceInsert = String.Format("{0:MM/dd/yyyy}", model.OutsoleBalance_Date);
             }
             var @OutsoleBalance     = new SqlParameter("@OutsoleBalance", outsoleBalanceInsert);
 
@@ -118,10 +128,11 @@ namespace MasterSchedule.Controllers
 
             var @OutsoleActualStartDate_Date    = new SqlParameter("@OutsoleActualStartDate_Date", model.OutsoleActualStartDate_Date);
             var @OutsoleActualFinishDate_Date   = new SqlParameter("@OutsoleActualFinishDate_Date", model.OutsoleActualFinishDate_Date);
+            var @Reviser = new SqlParameter("@Reviser", account.FullName);
 
             SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
-            if (db.ExecuteStoreCommand(@"EXEC spm_InsertOutsoleMaster_5 @ProductNo, @Sequence, @OutsoleLine, @OutsoleStartDate, @OutsoleFinishDate, @OutsoleQuota, @OutsoleActualStartDate, @OutsoleActualFinishDate, @OutsoleActualStartDateAuto, @OutsoleActualFinishDateAuto, @OutsoleBalance, @Remarks, @IsSequenceUpdate, @IsOutsoleLineUpdate, @IsOutsoleStartDateUpdate, @IsOutsoleFinishDateUpdate, @IsOutsoleQuotaUpdate, @IsOutsoleActualStartDateUpdate, @IsOutsoleActualFinishDateUpdate, @IsOutsoleActualStartDateAutoUpdate, @IsOutsoleActualFinishDateAutoUpdate, @IsOutsoleBalanceUpdate, @IsRemarksUpdate, @OutsoleActualStartDate_Date, @OutsoleActualFinishDate_Date",
-                                                                        @ProductNo, @Sequence, @OutsoleLine, @OutsoleStartDate, @OutsoleFinishDate, @OutsoleQuota, @OutsoleActualStartDate, @OutsoleActualFinishDate, @OutsoleActualStartDateAuto, @OutsoleActualFinishDateAuto, @OutsoleBalance, @Remarks, @IsSequenceUpdate, @IsOutsoleLineUpdate, @IsOutsoleStartDateUpdate, @IsOutsoleFinishDateUpdate, @IsOutsoleQuotaUpdate, @IsOutsoleActualStartDateUpdate, @IsOutsoleActualFinishDateUpdate, @IsOutsoleActualStartDateAutoUpdate, @IsOutsoleActualFinishDateAutoUpdate, @IsOutsoleBalanceUpdate, @IsRemarksUpdate, @OutsoleActualStartDate_Date, @OutsoleActualFinishDate_Date) > 0)
+            if (db.ExecuteStoreCommand(@"EXEC spm_InsertOutsoleMaster_8 @ProductNo, @Sequence, @OutsoleLine, @OutsoleStartDate, @OutsoleFinishDate, @OutsoleQuota, @OutsoleActualStartDate, @OutsoleActualFinishDate, @OutsoleActualStartDateAuto, @OutsoleActualFinishDateAuto, @OutsoleBalance, @Remarks, @IsSequenceUpdate, @IsOutsoleLineUpdate, @IsOutsoleStartDateUpdate, @IsOutsoleFinishDateUpdate, @IsOutsoleQuotaUpdate, @IsOutsoleActualStartDateUpdate, @IsOutsoleActualFinishDateUpdate, @IsOutsoleActualStartDateAutoUpdate, @IsOutsoleActualFinishDateAutoUpdate, @IsOutsoleBalanceUpdate, @IsRemarksUpdate, @OutsoleActualStartDate_Date, @OutsoleActualFinishDate_Date, @Reviser",
+                                                                        @ProductNo, @Sequence, @OutsoleLine, @OutsoleStartDate, @OutsoleFinishDate, @OutsoleQuota, @OutsoleActualStartDate, @OutsoleActualFinishDate, @OutsoleActualStartDateAuto, @OutsoleActualFinishDateAuto, @OutsoleBalance, @Remarks, @IsSequenceUpdate, @IsOutsoleLineUpdate, @IsOutsoleStartDateUpdate, @IsOutsoleFinishDateUpdate, @IsOutsoleQuotaUpdate, @IsOutsoleActualStartDateUpdate, @IsOutsoleActualFinishDateUpdate, @IsOutsoleActualStartDateAutoUpdate, @IsOutsoleActualFinishDateAutoUpdate, @IsOutsoleBalanceUpdate, @IsRemarksUpdate, @OutsoleActualStartDate_Date, @OutsoleActualFinishDate_Date, @Reviser) > 0)
             {
                 return true;
             }

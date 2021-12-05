@@ -28,20 +28,29 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Vertical" Margin="4,0,4,0">
                     <TextBlock Text="ArticleNo (exclude color)" VerticalAlignment="Bottom" FontWeight="SemiBold"/>
-                    <TextBox x:Name="txtArticleNo" VerticalContentAlignment="Center" BorderBrush="Black" TextChanged="txtArticleNo_TextChanged"/>
+                    <Border Padding="2"
+                        BorderBrush="Gray" BorderThickness="1" CornerRadius="5" >
+                        <TextBox x:Name="txtArticleNo" VerticalContentAlignment="Center" Padding="4,0,0,0" BorderBrush="Transparent" BorderThickness="0" Background="Transparent" TextChanged="txtArticleNo_TextChanged"/>
+                    </Border>
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Grid.Column="1" Margin="4,0,4,0">
                     <TextBlock Text="Shoe Name" VerticalAlignment="Bottom" FontWeight="SemiBold"/>
-                    <TextBox Text="{Binding ShoeName}" VerticalContentAlignment="Center" BorderBrush="Black"/>
+                    <Border Padding="2"
+                        BorderBrush="Gray" BorderThickness="1" CornerRadius="5" >
+                        <TextBox Text="{Binding ShoeName}" Padding="4,0,0,0" VerticalContentAlignment="Center" BorderBrush="Transparent" BorderThickness="0" Background="Transparent"/>
+                    </Border>
                 </StackPanel>
                 <StackPanel Grid.Column="2" Orientation="Vertical" Margin="4,0,4,0">
                     <TextBlock Text="PatternNo" VerticalAlignment="Bottom" FontWeight="SemiBold"/>
-                    <TextBox Text="{Binding PatternNo}" VerticalContentAlignment="Center" BorderBrush="Black"/>
+                    <Border Padding="2"
+                        BorderBrush="Gray" BorderThickness="1" CornerRadius="5" >
+                        <TextBox Text="{Binding PatternNo}" VerticalContentAlignment="Center" Padding="4,0,0,0" BorderBrush="Transparent" BorderThickness="0" Background="Transparent"/>
+                    </Border>
                 </StackPanel>
-                
+
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="grbMachine" Grid.Row="3" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
+        <GroupBox x:Name="grbMachine" Grid.Row="2" Template="{DynamicResource ResourceKey=GroupBoxTemplate}" Margin="0,88,0,10" Grid.RowSpan="2">
             <GroupBox.Header>
                 <Border Padding="4" Background="{DynamicResource ResourceKey=Background1}">
                     <TextBlock Text="Input Machine Request for: "/>
@@ -67,8 +76,11 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Worker" VerticalAlignment="Bottom" FontWeight="SemiBold"/>
-                        <TextBox Width="150" Text="{Binding Worker}" BorderBrush="Black" Margin="10,0,0,0" VerticalContentAlignment="Center"/>
+                        <TextBlock Text="Worker" Margin="0,0,10,0" VerticalAlignment="Bottom" FontWeight="SemiBold"/>
+                        <Border Padding="2" 
+                            BorderBrush="Gray" BorderThickness="1" CornerRadius="5" >
+                            <TextBox Width="150" Text="{Binding Worker}"  Padding="4,0,0,0" VerticalContentAlignment="Center" BorderBrush="Transparent" BorderThickness="0" Background="Transparent"/>
+                        </Border>
                     </StackPanel>
                     <Button x:Name="btnDelete" Grid.Column="1" Content="  Delete  " Margin="0,0,10,0"/>
                     <Button x:Name="btnSave" Grid.Column="2" Content="  Save  " Click="btnSave_Click"/>

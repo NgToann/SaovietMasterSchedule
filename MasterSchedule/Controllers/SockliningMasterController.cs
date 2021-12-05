@@ -114,7 +114,7 @@ namespace MasterSchedule.Controllers
 
             using (var db = new SaovietMasterScheduleEntities())
             {
-                if (db.ExecuteStoreCommand("EXEC spm_InsertSockliningMaster_2   @ProductNo, @Sequence, @SockliningLine, @SockliningStartDate, @SockliningFinishDate, @SockliningQuota, @SockliningActualStartDate, @SockliningActualFinishDate, @InsoleBalance, @InsockBalance, @IsSequenceUpdate, @IsSockliningLineUpdate, @IsSockliningStartDateUpdate, @IsSockliningFinishDateUpdate, @IsSockliningQuotaUpdate, @IsSockliningActualStartDateUpdate, @IsSockliningActualFinishDateUpdate, @IsInsoleBalanceUpdate, @IsInsockBalanceUpdate ",
+                if (db.ExecuteStoreCommand("EXEC spm_InsertSockliningMaster_3   @ProductNo, @Sequence, @SockliningLine, @SockliningStartDate, @SockliningFinishDate, @SockliningQuota, @SockliningActualStartDate, @SockliningActualFinishDate, @InsoleBalance, @InsockBalance, @IsSequenceUpdate, @IsSockliningLineUpdate, @IsSockliningStartDateUpdate, @IsSockliningFinishDateUpdate, @IsSockliningQuotaUpdate, @IsSockliningActualStartDateUpdate, @IsSockliningActualFinishDateUpdate, @IsInsoleBalanceUpdate, @IsInsockBalanceUpdate ",
                                                                                 @ProductNo, @Sequence, @SockliningLine, @SockliningStartDate, @SockliningFinishDate, @SockliningQuota, @SockliningActualStartDate, @SockliningActualFinishDate, @InsoleBalance, @InsockBalance, @IsSequenceUpdate, @IsSockliningLineUpdate, @IsSockliningStartDateUpdate, @IsSockliningFinishDateUpdate, @IsSockliningQuotaUpdate, @IsSockliningActualStartDateUpdate, @IsSockliningActualFinishDateUpdate, @IsInsoleBalanceUpdate, @IsInsockBalanceUpdate) > 0)
                 {
                     return true;

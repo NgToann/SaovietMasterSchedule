@@ -19,54 +19,62 @@
         <GroupBox Margin="0,0,0,2" Template="{DynamicResource ResourceKey=GroupBoxTemplate}">
             <GroupBox.Header>
                 <Border Background="{DynamicResource ResourceKey=GroupBackground}" Style="{DynamicResource ResourceKey=BorderStyle}">
-                    <TextBlock Text="Searching Information" Foreground="Black" Padding="10,0,10,0"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Searching Information" Foreground="Black" Padding="10,0,10,0"/>
+                        <CheckBox x:Name="chkShowHide" Content="Show / Hide" Foreground="White" Margin="0,0,5,0" VerticalContentAlignment="Center" Checked="chkShowHide_Checked" Unchecked="chkShowHide_Unchecked" IsChecked="True" Cursor="Hand"/>
+                    </StackPanel>
                 </Border>
             </GroupBox.Header>
-            <Expander IsExpanded="True" FlowDirection="RightToLeft">
-                <Grid  FlowDirection="LeftToRight">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="5"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="10"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="10"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+            <Grid x:Name="grInfo"  FlowDirection="LeftToRight">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                    <!--<RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>-->
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <RadioButton x:Name="radPO" Content="Product No" VerticalContentAlignment="Center" VerticalAlignment="Bottom" GroupName="SearchWhat" IsChecked="True" Checked="radPO_Checked"/>
+                <Grid Grid.Column="2">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="20"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="20"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <RadioButton x:Name="radPO" Content="Product No" VerticalContentAlignment="Center" VerticalAlignment="Bottom" GroupName="SearchWhat" IsChecked="True" Checked="radPO_Checked"/>
-                    <TextBox Grid.Column="2" x:Name="txtPoSearch" FontSize="15" Padding="2,1,0,1" VerticalContentAlignment="Center" Height="{Binding ElementName=dpFrom, Path=ActualHeight}" IsEnabled="{Binding ElementName=radPO, Path=IsChecked}" BorderBrush="Black" PreviewKeyUp="txtPoSearch_PreviewKeyUp"/>
-                    <RadioButton Grid.Row="2" x:Name="radDateTime" Content="Check Date" VerticalContentAlignment="Center" VerticalAlignment="Bottom" GroupName="SearchWhat" Checked="radDateTime_Checked"/>
-                    <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal">
-                        <TextBlock Text="From" VerticalAlignment="Bottom" Margin="0,0,2,0"/>
-                        <DatePicker x:Name="dpFrom" IsEnabled="{Binding ElementName=radDateTime, Path=IsChecked}"/>
-                        <TextBlock Text="to" VerticalAlignment="Bottom" Margin="10,0,10,0"/>
-                        <DatePicker x:Name="dpTo" IsEnabled="{Binding ElementName=radDateTime, Path=IsChecked}"/>
-                    </StackPanel>
-
-                    <TextBlock Text="PO Status" Grid.Row="4" FontStyle="Italic" Foreground="Blue"/>
-                    <Grid Grid.Row="4" Grid.Column="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <RadioButton x:Name="radPOAll"                              Content="All"       VerticalContentAlignment="Center" GroupName="POFinishOrNot" IsChecked="True" Checked="radPOAll_Checked"/>
-                        <RadioButton x:Name="radPOFinished" Grid.Column="1"         Content="Finished"  VerticalContentAlignment="Center" GroupName="POFinishOrNot" Checked="radPOFinished_Checked"/>
-                        <RadioButton x:Name="radPONotYetFinished" Grid.Column="2"   Content="Not"       VerticalContentAlignment="Center" GroupName="POFinishOrNot" Checked="radPONotYetFinished_Checked"/>
-                    </Grid>
-
-                    <TextBlock Text="Supplier" Grid.Row="6"/>
-                    <ComboBox x:Name="cbSuppliers" DisplayMemberPath="Name" SelectedValue="OutsoleSupplierId" Grid.Row="6" Grid.Column="2" VerticalContentAlignment="Center" SelectionChanged="cbSuppliers_SelectionChanged"/>
-                    <Button Grid.Column="4" Grid.RowSpan="7" x:Name="btnSearch" Content="  _Search  " Template="{DynamicResource ResourceKey=ButtonTemplate}" Click="btnSearch_Click" IsDefault="True"/>
+                    <TextBox  x:Name="txtPoSearch" FontSize="15" Padding="2,1,0,1" VerticalContentAlignment="Center" Height="{Binding ElementName=dpFrom, Path=ActualHeight}" IsEnabled="{Binding ElementName=radPO, Path=IsChecked}" BorderBrush="Black" PreviewKeyUp="txtPoSearch_PreviewKeyUp"/>
+                    <ComboBox x:Name="cbSuppliers" Margin="5,0,0,0" DisplayMemberPath="Name" SelectedValue="OutsoleSupplierId" Grid.Row="6" Grid.Column="2" VerticalContentAlignment="Center" SelectionChanged="cbSuppliers_SelectionChanged"/>
                 </Grid>
-            </Expander>
+                <RadioButton Grid.Row="2" x:Name="radDateTime" Content="Check Date" VerticalContentAlignment="Center" VerticalAlignment="Bottom" GroupName="SearchWhat" Checked="radDateTime_Checked"/>
+                <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal">
+                    <TextBlock Text="From" VerticalAlignment="Bottom" Margin="0,0,2,0"/>
+                    <DatePicker x:Name="dpFrom" IsEnabled="{Binding ElementName=radDateTime, Path=IsChecked}"/>
+                    <TextBlock Text="to" VerticalAlignment="Bottom" Margin="10,0,10,0"/>
+                    <DatePicker x:Name="dpTo" IsEnabled="{Binding ElementName=radDateTime, Path=IsChecked}"/>
+                </StackPanel>
+
+                <TextBlock Text="PO Status" Grid.Row="4" FontStyle="Italic" Foreground="Blue"/>
+                <Grid Grid.Row="4" Grid.Column="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <RadioButton x:Name="radPOAll"                              Content="All"       VerticalContentAlignment="Center" GroupName="POFinishOrNot" IsChecked="True" Checked="radPOAll_Checked"/>
+                    <RadioButton x:Name="radPOFinished" Grid.Column="1"         Content="Finished"  VerticalContentAlignment="Center" GroupName="POFinishOrNot" Checked="radPOFinished_Checked"/>
+                    <RadioButton x:Name="radPONotYetFinished" Grid.Column="2"   Content="Not"       VerticalContentAlignment="Center" GroupName="POFinishOrNot" Checked="radPONotYetFinished_Checked"/>
+                </Grid>
+
+                <!--<TextBlock Text="Supplier" Grid.Row="6"/>-->
+                <!--<ComboBox x:Name="cbSuppliers" DisplayMemberPath="Name" SelectedValue="OutsoleSupplierId" Grid.Row="6" Grid.Column="2" VerticalContentAlignment="Center" SelectionChanged="cbSuppliers_SelectionChanged"/>-->
+                <Button Grid.Column="4" Grid.RowSpan="7" x:Name="btnSearch" Content="  _Search  " Template="{DynamicResource ResourceKey=ButtonTemplate}" Click="btnSearch_Click" IsDefault="True"/>
+            </Grid>
         </GroupBox>
         <TabControl Grid.Row="1" Grid.ColumnSpan="2">
             <TabItem>
@@ -87,7 +95,7 @@
             </TabItem>
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="Reject Detail Report" FontWeight="SemiBold" Foreground="Red" Padding="3"/>
+                    <TextBlock Text="Daily Reject Request Report" FontWeight="SemiBold" Foreground="Red" Padding="3"/>
                 </TabItem.Header>
                 <WindowsFormsHost Grid.Row="1">
                     <rpv:ReportViewer x:Name="reportViewerRejectDetail" ShowFindControls="True"/>

@@ -12,4 +12,8 @@ namespace MasterSchedule.Models
         Delete,
         None      
     }
+    public enum EMaterial
+    {
+        Upper, Outsole
+    }
 }

@@ -27,10 +27,11 @@ namespace MasterSchedule.Views
         BackgroundWorker bwViewDetail;
         //List<ReportOSMWHCheckingModel> reportOSMWHCheckingList;
         List<ReportOSMWHCheckingModel> reportViewList;
+        List<ReportOSMWHCheckingModel> oswhCheckList;
         List<OutsoleSuppliersModel> supplierList;
 
-        private SearchWhat searchMode   = SearchWhat.ByPO;
-        private POStatus poStatus       = POStatus.POFinished;
+        private SearchWhat searchMode = SearchWhat.ByPO;
+        private POStatus poStatus = POStatus.POFinished;
         OutsoleSuppliersModel supplierClicked;
         DateTime searchFrom, searchTo;
         DateTime dtDefault = new DateTime(2000, 01, 01);
@@ -56,7 +57,7 @@ namespace MasterSchedule.Views
             bwSearch.RunWorkerCompleted += BwSearch_RunWorkerCompleted;
 
             bwLoadWHInventory = new BackgroundWorker();
-            bwLoadWHInventory.DoWork += BwLoadWHInventory_DoWork; 
+            bwLoadWHInventory.DoWork += BwLoadWHInventory_DoWork;
             bwLoadWHInventory.RunWorkerCompleted += BwLoadWHInventory_RunWorkerCompleted;
 
             bwViewDetail = new BackgroundWorker();
@@ -64,19 +65,19 @@ namespace MasterSchedule.Views
             bwViewDetail.RunWorkerCompleted += BwViewDetail_RunWorkerCompleted;
 
             //reportOSMWHCheckingList = new List<ReportOSMWHCheckingModel>();
-            reportViewList          = new List<ReportOSMWHCheckingModel>();
-            supplierList            = new List<OutsoleSuppliersModel>();
-            supplierClicked         = new OutsoleSuppliersModel();
+            reportViewList = new List<ReportOSMWHCheckingModel>();
+            supplierList = new List<OutsoleSuppliersModel>();
+            supplierClicked = new OutsoleSuppliersModel();
 
-            reportNewList           = new List<ReportOSMWHCheckingModel>();
-            osMaterialCheckWHInventoryList  = new List<ReportOSMaterialCheckWHInventoryModel>();
-            osMatCheckDetailList            = new List<ReportOSMaterialCheckDetailModel>();
-            sizeRunList     = new List<SizeRunModel>();
-            OSMaterialList  = new List<OutsoleMaterialModel>();
+            reportNewList = new List<ReportOSMWHCheckingModel>();
+            osMaterialCheckWHInventoryList = new List<ReportOSMaterialCheckWHInventoryModel>();
+            osMatCheckDetailList = new List<ReportOSMaterialCheckDetailModel>();
+            sizeRunList = new List<SizeRunModel>();
+            OSMaterialList = new List<OutsoleMaterialModel>();
 
             OSMaterialFilter = new List<OutsoleMaterialModel>();
             OSMatCheckFilter = new List<ReportOSMaterialCheckDetailModel>();
-
+            oswhCheckList = new List<ReportOSMWHCheckingModel>();
             btnViewDetailClicked = new Button();
 
             InitializeComponent();
@@ -116,7 +117,7 @@ namespace MasterSchedule.Views
             cbSuppliers.SelectedItem = supplierList.FirstOrDefault();
             this.Cursor = null;
         }
-     
+
         private void BwSearch_DoWork(object sender, DoWorkEventArgs e)
         {
             string poSearch = "";
@@ -128,13 +129,15 @@ namespace MasterSchedule.Views
 
             if (searchMode == SearchWhat.ByPO)
             {
-                reportNewList = ReportController.SelectOSMWHCheckingByPO(poSearch);
+                oswhCheckList = ReportController.SelectOSMWHCheckingByPO(poSearch);
+                reportNewList = oswhCheckList;
                 //reportOSMWHCheckingList = ReportController.GetOSMWHCheckingByPO(poSearch);
             }
             if (searchMode == SearchWhat.ByDateTime)
             {
                 //reportOSMWHCheckingList = ReportController.GetOSMWHCheckingFromTo(searchFrom, searchTo);
-                reportNewList = ReportController.SelectOSWHMCheckingFromTo(searchFrom, searchTo);
+                oswhCheckList = ReportController.SelectOSWHMCheckingFromTo(searchFrom, searchTo);
+                reportNewList = oswhCheckList.Where(w => w.CheckingDate >= searchFrom && w.CheckingDate <= searchTo).ToList();
             }
 
             Dispatcher.Invoke(new Action(() => {
@@ -146,7 +149,7 @@ namespace MasterSchedule.Views
                 }
                 Dispatcher.Invoke(new Action(() =>
                 {
-                    CreateData(reportViewList, searchFrom, searchTo);
+                    CreateData(reportViewList, searchFrom, searchTo, oswhCheckList);
                 }));
 
                 // Limit Supplier combobox
@@ -154,12 +157,12 @@ namespace MasterSchedule.Views
                 var supplierDisplayList = new List<OutsoleSuppliersModel>();
                 supplierDisplayList.Add(new OutsoleSuppliersModel { Name = "All", OutsoleSupplierId = -999 });
                 supplierDisplayList.AddRange(supplierList.Where(w => supplierIdList.Contains(w.OutsoleSupplierId)).ToList());
-                cbSuppliers.ItemsSource     = supplierDisplayList;
-                cbSuppliers.SelectedItem    = supplierDisplayList.FirstOrDefault();
+                cbSuppliers.ItemsSource = supplierDisplayList;
+                cbSuppliers.SelectedItem = supplierDisplayList.FirstOrDefault();
             }));
         }
 
-        private void CreateData(List<ReportOSMWHCheckingModel> reportOSMWHCheckingList, DateTime searchFrom, DateTime searchTo)
+        private void CreateData(List<ReportOSMWHCheckingModel> reportOSMWHCheckingList, DateTime searchFrom, DateTime searchTo, List<ReportOSMWHCheckingModel> oswhCheckList)
         {
             var productNoList = reportOSMWHCheckingList.Select(s => s.ProductNo).Distinct().ToList();
 
@@ -172,13 +175,13 @@ namespace MasterSchedule.Views
                 foreach (var suppID in supplierPerPOList)
                 {
                     var reportByPOBySupplierList = reportOSMWHCheckingList.Where(w => w.ProductNo == po && w.OutsoleSupplierId == suppID).ToList();
-                    var reportByPOSuppFirst      = reportByPOBySupplierList.FirstOrDefault();
+                    var reportByPOSuppFirst = reportByPOBySupplierList.FirstOrDefault();
 
-                    var errorIDListByPO     = reportByPOBySupplierList.Select(s => s.ErrorId).Distinct().ToList();
-                    
-                    var totalQtyOK          = reportByPOBySupplierList.Sum(s => s.Quantity);
-                    var totalReturnReject   = reportByPOBySupplierList.Sum(s => s.ReturnReject);
-                    var totalReject         = reportByPOBySupplierList.Sum(s => s.Reject);
+                    var errorIDListByPO = reportByPOBySupplierList.Select(s => s.ErrorId).Distinct().ToList();
+
+                    var totalQtyOK = reportByPOBySupplierList.Sum(s => s.Quantity);
+                    var totalReturnReject = reportByPOBySupplierList.Sum(s => s.ReturnReject);
+                    var totalReject = reportByPOBySupplierList.Sum(s => s.Reject);
 
                     if (poStatus == POStatus.POFinished && reportByPOSuppFirst.POStatus.Equals("Not"))
                         continue;
@@ -259,49 +262,49 @@ namespace MasterSchedule.Views
                         double totalInspectionHrs = 0;
                         foreach (var po in productNoListByOSCode)
                         {
-                            var reportByPO      = reportOSWHByWorkerBySupplierByOSCode.Where(w => w.ProductNo == po).ToList();
+                            var reportByPO = reportOSWHByWorkerBySupplierByOSCode.Where(w => w.ProductNo == po).ToList();
                             var reportFirstByPO = reportByPO.FirstOrDefault();
 
-                            var totalCheckOK        = reportByPO.Sum(s => s.Quantity);
-                            var totalReject         = reportByPO.Sum(s => s.Reject);
-                            var totalReturnReject   = reportByPO.Sum(s => s.ReturnReject);
+                            var totalCheckOK = reportByPO.Sum(s => s.Quantity);
+                            var totalReject = reportByPO.Sum(s => s.Reject);
+                            var totalReturnReject = reportByPO.Sum(s => s.ReturnReject);
 
                             if (poStatus == POStatus.POFinished && reportFirstByPO.POStatus.Equals("Not"))
                             {
                                 poNeedRemoveList.Add(po);
                                 continue;
                             }
-                            if (poStatus == POStatus.PONotYetFinish  && reportFirstByPO.POStatus.Equals("Finished"))
+                            if (poStatus == POStatus.PONotYetFinish && reportFirstByPO.POStatus.Equals("Finished"))
                             {
                                 poNeedRemoveList.Add(po);
                                 continue;
                             }
 
-                            totalCheckedByOSCode        += totalCheckOK;
-                            totalRejectedByOSCode       += totalReject;
-                            totalReturnRejectByOSCode   += totalReturnReject;
-                            totalInspectionHrs          += reportFirstByPO.TotalHours;
+                            totalCheckedByOSCode += totalCheckOK;
+                            totalRejectedByOSCode += totalReject;
+                            totalReturnRejectByOSCode += totalReturnReject;
+                            totalInspectionHrs += reportFirstByPO.TotalHours;
                         }
 
                         int totalQtyOK = totalCheckedByOSCode + totalReturnRejectByOSCode;
-                        
+
                         if (totalQtyOK > 0)
                         {
                             var totalQtyOKByWorker = reportOSMWHByWorkerId.Where(w => poNeedRemoveList.Contains(w.ProductNo) == false).Sum(s => s.Quantity + s.ReturnReject); // - s.Reject
                             DataRow dr = dtReviser.NewRow();
 
-                            dr["WorkerId"]              = workerId;
-                            dr["WorkerTotalCheck"]      = totalQtyOKByWorker;
-                            dr["SupplierName"]          = reportOSWHByWorkerBySupplierByOSCode.FirstOrDefault().Name;
-                            dr["SupplierOperation"]     = reportOSWHByWorkerBySupplierByOSCode.FirstOrDefault().SupplierOperation;
+                            dr["WorkerId"] = workerId;
+                            dr["WorkerTotalCheck"] = totalQtyOKByWorker;
+                            dr["SupplierName"] = reportOSWHByWorkerBySupplierByOSCode.FirstOrDefault().Name;
+                            dr["SupplierOperation"] = reportOSWHByWorkerBySupplierByOSCode.FirstOrDefault().SupplierOperation;
                             if (totalInspectionHrs > 0)
                                 dr["InspectionTime"] = String.Format("{0}", Math.Round(totalInspectionHrs / 3600, 3, MidpointRounding.AwayFromZero));
-                            dr["OSCode"]                = outsoleCode;
-                            dr["QuantityChecked"]       = totalCheckedByOSCode > 0 ? totalCheckedByOSCode.ToString() : "";
-                            dr["QuantityRejected"]      = totalRejectedByOSCode > 0 ? totalRejectedByOSCode.ToString() : "";
+                            dr["OSCode"] = outsoleCode;
+                            dr["QuantityChecked"] = totalCheckedByOSCode > 0 ? totalCheckedByOSCode.ToString() : "";
+                            dr["QuantityRejected"] = totalRejectedByOSCode > 0 ? totalRejectedByOSCode.ToString() : "";
                             dr["QuantityReturnRejected"] = totalReturnRejectByOSCode > 0 ? totalReturnRejectByOSCode.ToString() : "";
 
-                            dr["Total"]                 = totalQtyOK > 0 ? totalQtyOK.ToString() : "";
+                            dr["Total"] = totalQtyOK > 0 ? totalQtyOK.ToString() : "";
 
                             dtReviser.Rows.Add(dr);
                         }
@@ -315,6 +318,7 @@ namespace MasterSchedule.Views
             DataTable dtRejectDetail = new OSMWHCheckingDetailDataset().Tables["OSMWHCheckingDetailTable"];
 
             var supplierIdList = reportOSMWHCheckingList.Select(s => s.OutsoleSupplierId).Distinct().ToList();
+
             foreach (var suppId in supplierIdList)
             {
                 var reportOSMWHCheckingListBySuppId = reportOSMWHCheckingList.Where(w => w.OutsoleSupplierId == suppId).ToList();
@@ -323,13 +327,14 @@ namespace MasterSchedule.Views
                 foreach (var osCode in osCodeListBySuppId)
                 {
                     var reportOSMWHCheckingListBySuppIdByOSCode = reportOSMWHCheckingListBySuppId.Where(w => w.OutsoleCode == osCode).ToList();
-                    var poListBySuppByOSCode = reportOSMWHCheckingListBySuppIdByOSCode.Select(s => s.ProductNo).Distinct().ToList();                    
+                    var poListBySuppByOSCode = reportOSMWHCheckingListBySuppIdByOSCode.Select(s => s.ProductNo).Distinct().ToList();
                     foreach (var productNo in poListBySuppByOSCode)
                     {
                         var reportOSMWHCheckingListByPO = reportOSMWHCheckingListBySuppIdByOSCode.Where(w => w.ProductNo == productNo).ToList();
                         var errorIdListByPO = reportOSMWHCheckingListByPO.Select(s => s.ErrorId).Distinct().ToList();
+                        var oswhCheckByPOBySupp = oswhCheckList.Where(w => w.ProductNo == productNo && w.OutsoleSupplierId == suppId).ToList();
                         var xReport = reportOSMWHCheckingListByPO.FirstOrDefault();
-                        
+
                         var totalQtyOK = reportOSMWHCheckingListByPO.Sum(s => s.Quantity);
                         var totalReturnReject = reportOSMWHCheckingListByPO.Sum(s => s.ReturnReject);
 
@@ -352,24 +357,6 @@ namespace MasterSchedule.Views
                             dr["ArticleNo"] = xReport.ArticleNo;
                             dr["EFD"] = String.Format("{0: MM/dd}", xReport.EFD);
 
-                            var sizeNoListContainsError = reportOSMWHCheckingListByPO.Where(w => w.ErrorId > 0).Select(s => s.SizeNo).Distinct().ToList();
-                            if (sizeNoListContainsError.Count() > 0)
-                                sizeNoListContainsError = sizeNoListContainsError.OrderBy(s => regex.IsMatch(s) ? Double.Parse(regex.Replace(s, "100")) : Double.Parse(s)).ToList();
-
-                            List<String> detailViewList = new List<string>();
-                            foreach (var sizeNo in sizeNoListContainsError)
-                            {
-                                var totalRejectBySize = reportOSMWHCheckingListByPO.Where(w => w.SizeNo == sizeNo).Sum(s => s.Reject);
-                                var totalReturnRejectBySize = reportOSMWHCheckingListByPO.Where(w => w.SizeNo == sizeNo).Sum(s => s.ReturnReject);
-                                if (totalRejectBySize - totalReturnRejectBySize > 0)
-                                    detailViewList.Add(String.Format("#{0} = {1}", sizeNo, totalRejectBySize - totalReturnRejectBySize));
-                            }
-                            if (detailViewList.Count() > 0)
-                                dr["Detail"] = String.Join("; ", detailViewList);
-
-                            //if (!String.IsNullOrEmpty(xReport.RejectCurrentDetail))
-                            //    dr["Detail"] = xReport.RejectCurrentDetail;
-
                             string fromTo = "";
                             if (searchFrom != searchTo)
                                 fromTo = String.Format("From: {0: MM/dd/yyyy} to {1: MM/dd/yyyy}", searchFrom, searchTo);
@@ -390,11 +377,15 @@ namespace MasterSchedule.Views
                             if (returnReject > 0)
                                 dr["QuantityReturn"] = returnReject;
 
+                            var qtyRemark = reportOSMWHCheckingListByPO.Sum(s => s.ReturnRemark);
+                            if (qtyRemark > 0)
+                                dr["QuantityRemark"] = qtyRemark;
+
                             var reportByErrorIdList = reportOSMWHCheckingListByPO.Where(w => w.ErrorId == errorId && w.ErrorId > 0).ToList();
                             var reportByErrorIdFirst = reportByErrorIdList.FirstOrDefault();
 
                             List<string> errorAndQtyViewList = new List<string>();
-                            if (errorId > 0)
+                            if (errorId > 0 && reportByErrorIdFirst != null)
                             {
                                 dr["ErrorId"] = errorId;
                                 dr["ErrorName"] = String.Format("{0}\n{1}", reportByErrorIdFirst.ErrorName, reportByErrorIdFirst.ErrorVietNamese);
@@ -410,6 +401,75 @@ namespace MasterSchedule.Views
                                 }
                                 if (errorAndQtyViewList.Count() > 0)
                                     dr["ErrorView"] = String.Join("; ", errorAndQtyViewList);
+                            }
+
+                            var oswhCheckListByPoBySupp = oswhCheckList.Where(w => w.ProductNo == productNo && w.OutsoleSupplierId == suppId).ToList();
+                            var dateCheckList = oswhCheckListByPoBySupp.Select(s => s.CheckingDate).Distinct().ToList();
+                            if (dateCheckList.Count() > 0)
+                                dateCheckList = dateCheckList.OrderBy(o => o).ToList();
+
+                            var sizeHasReject = oswhCheckByPOBySupp.Where(w => w.Reject > 0
+                                                                           && w.CheckingDate <= searchTo).Select(s => s.SizeNo).Distinct().ToList();
+                            if (sizeHasReject.Count() > 0)
+                                sizeHasReject = sizeHasReject.OrderBy(s => regex.IsMatch(s) ? Double.Parse(regex.Replace(s, "100")) : Double.Parse(s)).ToList();
+                            List<String> rejectRemainDisplay = new List<string>();
+
+                            List<RequestReject> requestList = new List<RequestReject>();
+                            for (DateTime date = searchFrom; date <= searchTo; date = date.AddDays(1))
+                            {
+                                var rejectList = oswhCheckByPOBySupp.Where(w => w.Reject > 0 && w.CheckingDate == date).ToList();
+                                foreach (var sizeNo in rejectList.Select(s => s.SizeNo).Distinct().ToList())
+                                {
+                                    requestList.Add(new RequestReject
+                                    {
+                                        SizeNo = sizeNo,
+                                        Quantity = rejectList.Where(w => w.SizeNo == sizeNo).Sum(s => s.Reject)
+                                    });
+                                }
+                                var remarkList = oswhCheckByPOBySupp.Where(w => w.ReturnRemark > 0 && w.CheckingDate == date).ToList();
+                                foreach (var sizeNo in remarkList.Select(s => s.SizeNo).Distinct().ToList())
+                                {
+                                    requestList.Add(new RequestReject
+                                    {
+                                        SizeNo = sizeNo,
+                                        Quantity = remarkList.Where(w => w.SizeNo == sizeNo).Sum(s => s.ReturnRemark)
+                                    });
+                                }
+                            }
+
+                            var sizeNoRequest = requestList.Select(s => s.SizeNo).Distinct().ToList();
+                            if (sizeNoRequest.Count() > 0)
+                                sizeNoRequest = sizeNoRequest.OrderBy(s => regex.IsMatch(s) ? Double.Parse(regex.Replace(s, "100")) : Double.Parse(s)).ToList();
+
+                            var returnList = oswhCheckByPOBySupp.Where(w => w.CheckingDate >= searchFrom && w.CheckingDate <= searchTo && w.ReturnReject > 0).ToList();
+                            //int totalReturn = 0;
+                            var noOfDayHasChecking = oswhCheckByPOBySupp.Where(w => w.CheckingDate >= searchFrom && w.CheckingDate <= searchTo).Select(s => s.CheckingDate).Distinct().ToList();
+                            foreach (var sizeNo in sizeNoRequest)
+                            {
+                                int qtyRequest = requestList.Where(w => w.SizeNo == sizeNo).Sum(s => s.Quantity);
+                                //totalReturn = returnList.Where(w => w.SizeNo == sizeNo).Sum(s => s.ReturnReject);
+                                //if ((searchTo - searchFrom).TotalDays > 0 && noOfDayHasChecking.Count() > 1)
+                                //{
+                                //    qtyRequest = qtyRequest - totalReturn;
+                                //}
+                                rejectRemainDisplay.Add(String.Format("#{0}={1}", sizeNo, qtyRequest));
+                            }
+
+                            dr["Detail"] = String.Join("; ", rejectRemainDisplay);
+                            if (searchMode == SearchWhat.ByPO)
+                            {
+                                rejectRemainDisplay = new List<string>();
+                                var rejectList = oswhCheckList.Where(w => w.Reject > 0).ToList();
+                                var sizeHasRejectList = rejectList.Select(s => s.SizeNo).Distinct().ToList();
+                                if (sizeHasRejectList.Count() > 0)
+                                    sizeHasRejectList = sizeHasRejectList.OrderBy(s => regex.IsMatch(s) ? Double.Parse(regex.Replace(s, "100")) : Double.Parse(s)).ToList();
+                                foreach (var sizeNo in sizeHasRejectList)
+                                {
+                                    var request = oswhCheckList.Where(w => w.SizeNo == sizeNo).Sum(s => s.Reject - s.ReturnReject + s.ReturnRemark);
+                                    if (request > 0)
+                                        rejectRemainDisplay.Add(String.Format("#{0}={1}", sizeNo, request));
+                                }
+                                dr["Detail"] = String.Join("; ", rejectRemainDisplay);
                             }
 
                             dtRejectDetail.Rows.Add(dr);
@@ -442,7 +502,6 @@ namespace MasterSchedule.Views
             reportViewerReviserIncentive.LocalReport.DataSources.Add(rdsReviser);
             reportViewerReviserIncentive.RefreshReport();
 
-
             ReportDataSource rdsRejectDetail = new ReportDataSource();
             rdsRejectDetail.Name = "OSMWHCheckingDetail";
             rdsRejectDetail.Value = dtRejectDetail;
@@ -452,6 +511,13 @@ namespace MasterSchedule.Views
             reportViewerRejectDetail.LocalReport.DataSources.Clear();
             reportViewerRejectDetail.LocalReport.DataSources.Add(rdsRejectDetail);
             reportViewerRejectDetail.RefreshReport();
+        }
+
+        class RequestReject
+        {
+            public string SizeNo { get; set; }
+            public int Quantity { get; set; }
+            public int QuantityReturn { get; set; } = 0;
         }
 
         private void BwSearch_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -513,7 +579,7 @@ namespace MasterSchedule.Views
             reportViewList = reportNewList.ToList();
             if (supplierClicked != null && supplierClicked.OutsoleSupplierId != -999)
                 reportViewList = reportNewList.Where(w => w.OutsoleSupplierId == supplierClicked.OutsoleSupplierId).ToList();
-            CreateData(reportViewList, searchFrom, searchTo);
+            CreateData(reportViewList, searchFrom, searchTo, oswhCheckList);
         }
 
         private void btnRefreshWHInventory_Click(object sender, RoutedEventArgs e)
@@ -528,7 +594,8 @@ namespace MasterSchedule.Views
         private void BwLoadWHInventory_DoWork(object sender, DoWorkEventArgs e)
         {
             // Excute Query
-            try {
+            try
+            {
                 osMaterialCheckWHInventoryList = ReportController.SelectOSMaterialWHInventory();
             }
             catch (Exception ex)
@@ -578,14 +645,14 @@ namespace MasterSchedule.Views
                 bwViewDetail.RunWorkerAsync(rowClicked);
             }
         }
-        
+
         bool firstLoadDetail = false;
         private void BwViewDetail_DoWork(object sender, DoWorkEventArgs e)
         {
             var rowClicked = e.Argument as ReportOSMaterialCheckWHInventoryModel;
-            osMatCheckDetailList    = ReportController.SelectOSMaterialCheckByOSCode(rowClicked.OutsoleCode);
-            sizeRunList             = SizeRunController.SelectPerOutsoleCode(rowClicked.OutsoleCode);
-            OSMaterialList          = OutsoleMaterialController.SelectByOSCode(rowClicked.OutsoleCode);
+            osMatCheckDetailList = ReportController.SelectOSMaterialCheckByOSCode(rowClicked.OutsoleCode);
+            sizeRunList = SizeRunController.SelectPerOutsoleCode(rowClicked.OutsoleCode);
+            OSMaterialList = OutsoleMaterialController.SelectByOSCode(rowClicked.OutsoleCode);
 
             // CREATE COLUMNS
             Dispatcher.Invoke(new Action(() =>
@@ -599,6 +666,7 @@ namespace MasterSchedule.Views
             // Binding Combobox Supplier
             var supplierInventoryList = new List<OutsoleSuppliersModel>();
             supplierInventoryList.Add(new OutsoleSuppliersModel { Name = "-- Select a Supplier --", OutsoleSupplierId = -999 });
+            
             supplierInventoryList.AddRange(supplierList.Where(w => OSMaterialList.Select(s => s.OutsoleSupplierId).Distinct().ToList().Contains(w.OutsoleSupplierId)).ToList());
             cboSupplierInventory.ItemsSource = supplierInventoryList;
             cboSupplierInventory.SelectedItem = supplierInventoryList.FirstOrDefault();
@@ -736,7 +804,7 @@ namespace MasterSchedule.Views
 
                         int qtyDelivery = osMaterialBySupp.FirstOrDefault(f => f.SizeNo.Equals(sizeNo)).Quantity;
                         int qtyChecked = 0, qtyNotCheck = 0;
-                        
+
                         if (sizeOSListBySizeOrder.Count() > 1)
                         {
                             if (!sizeOSAddedList.Contains(sizeOSListBySizeOrder.FirstOrDefault()))
@@ -774,7 +842,7 @@ namespace MasterSchedule.Views
                     }
                     if (totalNotCheck > 0)
                     {
-                        dr["Total"] = String.Format("{0:N0}",totalNotCheck);
+                        dr["Total"] = String.Format("{0:N0}", totalNotCheck);
                         totaltotal += totalNotCheck;
                     }
                     dt.Rows.Add(dr);
@@ -816,7 +884,7 @@ namespace MasterSchedule.Views
                 LoadDataInventory(OSMaterialFilter, OSMatCheckFilter);
             }
         }
-        
+
         private void btnFilter_Click(object sender, RoutedEventArgs e)
         {
             string filterWhat = txtPOFilter.Text.Trim().ToUpper().ToString();
@@ -847,12 +915,25 @@ namespace MasterSchedule.Views
                 LoadDataInventory(OSMaterialFilter, OSMatCheckFilter);
             }
         }
-        
+
         private void txtPOFilter_PreviewKeyUp(object sender, KeyEventArgs e)
         {
             btnSearch.IsDefault = false;
             btnFilter.IsDefault = true;
         }
+
+        private void chkShowHide_Checked(object sender, RoutedEventArgs e)
+        {
+            if (this.IsLoaded)
+                grInfo.Visibility = Visibility.Visible;
+        }
+
+        private void chkShowHide_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (this.IsLoaded)
+                grInfo.Visibility = Visibility.Collapsed;
+        }
+
         private void txtPoSearch_PreviewKeyUp(object sender, KeyEventArgs e)
         {
             btnFilter.IsDefault = false;

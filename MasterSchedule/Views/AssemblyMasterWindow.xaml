@@ -147,7 +147,23 @@
             </DataGrid.Columns>
         </local:CustomDataGrid>
         <Grid Grid.Row="2">
-            <Button x:Name="btnCaculate" MinWidth="150" HorizontalAlignment="Left" Content="Calculate" IsEnabled="False" Click="btnCaculate_Click" />
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="btnCaculate" MinWidth="150" HorizontalAlignment="Left" Content="Calculate" IsEnabled="False" Click="btnCaculate_Click" />
+                <Button x:Name="btnRefresh" Margin="10,0,0,0" Grid.Column="4" Template="{DynamicResource ResourceKey=ButtonNoneTemplate}" ToolTip="Refresh" Cursor="Hand" Click="btnRefresh_Click">
+                    <Button.Content>
+                        <Image Width="16" Height="16" Source="/Images/mini_refresh.png"/>
+                    </Button.Content>
+                </Button>
+            </StackPanel>
+            <Grid Grid.Column="2" HorizontalAlignment="Right" Margin="0,0,2,0">
+                <ProgressBar x:Name="prgStatus" Width="140" Height="15"/>
+                <TextBlock x:Name="lblStatus" Width="140" Height="15" Padding="2,0,0,0" FontSize="11" VerticalAlignment="Center" Foreground="Blue" FontStyle="Italic"/>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

@@ -6,7 +6,7 @@
         <TablixBody>
           <TablixColumns>
             <TablixColumn>
-              <Width>8.11437in</Width>
+              <Width>8.53589in</Width>
             </TablixColumn>
           </TablixColumns>
           <TablixRows>
@@ -36,10 +36,13 @@
                                 <Width>0.63542in</Width>
                               </TablixColumn>
                               <TablixColumn>
-                                <Width>0.5625in</Width>
+                                <Width>0.51551in</Width>
                               </TablixColumn>
                               <TablixColumn>
-                                <Width>0.56251in</Width>
+                                <Width>0.51551in</Width>
+                              </TablixColumn>
+                              <TablixColumn>
+                                <Width>0.51551in</Width>
                               </TablixColumn>
                               <TablixColumn>
                                 <Width>0.51551in</Width>
@@ -310,6 +313,7 @@
                                                 <Value>Delivery</Value>
                                                 <Style>
                                                   <FontFamily>calibri</FontFamily>
+                                                  <FontSize>9pt</FontSize>
                                                   <FontWeight>SemiBold</FontWeight>
                                                 </Style>
                                               </TextRun>
@@ -439,6 +443,57 @@
                                   </TablixCell>
                                   <TablixCell>
                                     <CellContents>
+                                      <Textbox Name="Textbox5">
+                                        <CanGrow>true</CanGrow>
+                                        <KeepTogether>true</KeepTogether>
+                                        <Paragraphs>
+                                          <Paragraph>
+                                            <TextRuns>
+                                              <TextRun>
+                                                <Value>Qty</Value>
+                                                <Style>
+                                                  <FontFamily>calibri</FontFamily>
+                                                  <FontWeight>SemiBold</FontWeight>
+                                                </Style>
+                                              </TextRun>
+                                            </TextRuns>
+                                            <Style>
+                                              <TextAlign>Center</TextAlign>
+                                            </Style>
+                                          </Paragraph>
+                                          <Paragraph>
+                                            <TextRuns>
+                                              <TextRun>
+                                                <Value>Remark</Value>
+                                                <Style>
+                                                  <FontFamily>calibri</FontFamily>
+                                                  <FontWeight>SemiBold</FontWeight>
+                                                </Style>
+                                              </TextRun>
+                                            </TextRuns>
+                                            <Style>
+                                              <TextAlign>Center</TextAlign>
+                                            </Style>
+                                          </Paragraph>
+                                        </Paragraphs>
+                                        <rd:DefaultName>Textbox5</rd:DefaultName>
+                                        <Style>
+                                          <Border>
+                                            <Color>Gray</Color>
+                                            <Style>Solid</Style>
+                                          </Border>
+                                          <BackgroundColor>LightGrey</BackgroundColor>
+                                          <VerticalAlign>Middle</VerticalAlign>
+                                          <PaddingLeft>2pt</PaddingLeft>
+                                          <PaddingRight>2pt</PaddingRight>
+                                          <PaddingTop>2pt</PaddingTop>
+                                          <PaddingBottom>2pt</PaddingBottom>
+                                        </Style>
+                                      </Textbox>
+                                    </CellContents>
+                                  </TablixCell>
+                                  <TablixCell>
+                                    <CellContents>
                                       <Textbox Name="ErrorName">
                                         <CanGrow>true</CanGrow>
                                         <KeepTogether>true</KeepTogether>
@@ -484,21 +539,7 @@
                                           <Paragraph>
                                             <TextRuns>
                                               <TextRun>
-                                                <Value>Total</Value>
-                                                <Style>
-                                                  <FontFamily>calibri</FontFamily>
-                                                  <FontWeight>SemiBold</FontWeight>
-                                                </Style>
-                                              </TextRun>
-                                            </TextRuns>
-                                            <Style>
-                                              <TextAlign>Center</TextAlign>
-                                            </Style>
-                                          </Paragraph>
-                                          <Paragraph>
-                                            <TextRuns>
-                                              <TextRun>
-                                                <Value>(Reject - Return)</Value>
+                                                <Value>Reject Request</Value>
                                                 <Style>
                                                   <FontFamily>calibri</FontFamily>
                                                   <FontWeight>SemiBold</FontWeight>
@@ -821,6 +862,42 @@
                                   </TablixCell>
                                   <TablixCell>
                                     <CellContents>
+                                      <Textbox Name="QuantityRemark">
+                                        <CanGrow>true</CanGrow>
+                                        <KeepTogether>true</KeepTogether>
+                                        <Paragraphs>
+                                          <Paragraph>
+                                            <TextRuns>
+                                              <TextRun>
+                                                <Value>=Fields!QuantityRemark.Value</Value>
+                                                <Style>
+                                                  <FontFamily>calibri</FontFamily>
+                                                  <FontSize>9pt</FontSize>
+                                                </Style>
+                                              </TextRun>
+                                            </TextRuns>
+                                            <Style>
+                                              <TextAlign>Center</TextAlign>
+                                            </Style>
+                                          </Paragraph>
+                                        </Paragraphs>
+                                        <rd:DefaultName>QuantityRemark</rd:DefaultName>
+                                        <Style>
+                                          <Border>
+                                            <Color>LightGrey</Color>
+                                            <Style>Solid</Style>
+                                          </Border>
+                                          <VerticalAlign>Middle</VerticalAlign>
+                                          <PaddingLeft>2pt</PaddingLeft>
+                                          <PaddingRight>2pt</PaddingRight>
+                                          <PaddingTop>2pt</PaddingTop>
+                                          <PaddingBottom>2pt</PaddingBottom>
+                                        </Style>
+                                      </Textbox>
+                                    </CellContents>
+                                  </TablixCell>
+                                  <TablixCell>
+                                    <CellContents>
                                       <Textbox Name="ErrorView">
                                         <CanGrow>true</CanGrow>
                                         <KeepTogether>true</KeepTogether>
@@ -905,6 +982,7 @@
                               <TablixMember />
                               <TablixMember />
                               <TablixMember />
+                              <TablixMember />
                               <TablixMember>
                                 <Group Name="ErrorId">
                                   <GroupExpressions>
@@ -943,7 +1021,7 @@
                           <DataSetName>OSMWHCheckingDetail</DataSetName>
                           <Top>0.73958in</Top>
                           <Height>0.69792in</Height>
-                          <Width>8.11437in</Width>
+                          <Width>8.53589in</Width>
                           <Style>
                             <Border>
                               <Style>None</Style>
@@ -1059,7 +1137,7 @@
         </TablixRowHierarchy>
         <DataSetName>OSMWHCheckingDetail</DataSetName>
         <Height>1.4375in</Height>
-        <Width>8.11437in</Width>
+        <Width>8.53589in</Width>
         <Style>
           <Border>
             <Style>None</Style>
@@ -1070,7 +1148,7 @@
     <Height>3.65125cm</Height>
     <Style />
   </Body>
-  <Width>20.6105cm</Width>
+  <Width>21.68116cm</Width>
   <Page>
     <PageFooter>
       <Height>0.6cm</Height>
@@ -1202,10 +1280,14 @@
           <DataField>QuantityReturn</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="QuantityRemark">
+          <DataField>QuantityRemark</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
       </Fields>
       <rd:DataSetInfo>
         <rd:DataSetName>OSMWHCheckingDetailDataset</rd:DataSetName>
-        <rd:SchemaPath>F:\SV PROJECT\MS\1.2.6.2 Cding\Saoviet Master Schedule Solution\MasterSchedule\DataSets\OSMWHCheckingDetailDataset.xsd</rd:SchemaPath>
+        <rd:SchemaPath>F:\SV PROJECT\MS\1.2.9.4 Cdinggg Improve SavingDataSpeed\Saoviet Master Schedule Solution\SaovietMasterSchedule\MasterSchedule\DataSets\OSMWHCheckingDetailDataset.xsd</rd:SchemaPath>
         <rd:TableName>OSMWHCheckingDetailTable</rd:TableName>
         <rd:TableAdapterFillMethod />
         <rd:TableAdapterGetDataMethod />

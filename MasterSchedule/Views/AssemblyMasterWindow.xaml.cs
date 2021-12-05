@@ -62,13 +62,19 @@ namespace MasterSchedule.Views
         List<OutsoleReleaseMaterialModel> outsoleReleaseMaterialList;
         List<RawMaterialViewModelNew> rawMaterialViewModelNewList;
 
+        List<AssemblyMasterSourceModel> assemblySourceList;
+
+        List<String> linesNeedSaving;
+        List<POSequenceModel> poSequenceSourceList;
+        private PrivateDefineModel def;
         public AssemblyMasterWindow(AccountModel account)
         {
             InitializeComponent();
             this.account = account;
             bwLoad = new BackgroundWorker();
             bwLoad.WorkerSupportsCancellation = true;
-            bwLoad.DoWork += new DoWorkEventHandler(bwLoad_DoWork);
+            //bwLoad.DoWork += new DoWorkEventHandler(bwLoad_DoWork);
+            bwLoad.DoWork += new DoWorkEventHandler(bwLoad_DoWork_1);
             bwLoad.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwLoad_RunWorkerCompleted);
             offDayList = new List<OffDayModel>();
             orderList = new List<OrdersModel>();
@@ -111,6 +117,12 @@ namespace MasterSchedule.Views
             outsoleRawMaterialList = new List<OutsoleRawMaterialModel>();
             outsoleMaterialList = new List<OutsoleMaterialModel>();
             outsoleReleaseMaterialList = new List<OutsoleReleaseMaterialModel>();
+
+            assemblySourceList = new List<AssemblyMasterSourceModel>();
+
+            poSequenceSourceList = new List<POSequenceModel>();
+            linesNeedSaving = new List<string>();
+            def = new PrivateDefineModel();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -139,6 +151,21 @@ namespace MasterSchedule.Views
             if (bwLoad.IsBusy == false)
             {
                 this.Cursor = Cursors.Wait;
+                bwLoad.RunWorkerAsync();
+            }
+        }
+
+        private void btnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            if (bwLoad.IsBusy == false)
+            {
+                assemblyMasterViewList.Clear();
+                this.Cursor = Cursors.Wait;
+                btnCaculate.IsEnabled = false;
+                btnRefresh.IsEnabled = false;
+                prgStatus.Value = 0;
+                lblStatus.Text = "Re-loading ...";
+                prgStatus.Visibility = Visibility.Visible;
                 bwLoad.RunWorkerAsync();
             }
         }
@@ -465,6 +492,242 @@ namespace MasterSchedule.Views
             assemblyMasterViewList = assemblyMasterViewList.OrderBy(a => a.AssemblyLine).ThenBy(a => a.Sequence).ToList();
         }
 
+        private void bwLoad_DoWork_1(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                def = PrivateDefineController.GetDefine();
+                if (!string.IsNullOrEmpty(def.Factory) && !def.Factory.Equals("THIENLOC"))
+                {
+
+                    offDayList = OffDayController.Select();
+                    var productNoListWithAccount = OrdersController.Select().Where(w => account.TypeOfShoes != -1 ? w.TypeOfShoes == account.TypeOfShoes : w.TypeOfShoes != -16111992).Select(s => s.ProductNo).ToList();
+                    productionMemoList = ProductionMemoController.Select().Where(w => productNoListWithAccount.Contains(w.ProductionNumbers)).ToList();
+                    assemblySourceList = AssemblyMasterController.SelectAssemblySource().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
+                    assemblyMasterList = AssemblyMasterController.Select().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
+                    foreach (var assy in assemblyMasterList)
+                    {
+                        poSequenceSourceList.Add(new POSequenceModel
+                        {
+                            ProductNo = assy.ProductNo,
+                            Sequence = assy.Sequence,
+                            Id = string.Format("{0}-{1}", assy.ProductNo, assy.Sequence)
+                        });
+                    }
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        lblStatus.Text = "Loading PO ...";
+                        prgStatus.Maximum = assemblySourceList.Count();
+                    }));
+                    int index = 1;
+                    foreach (var assySource in assemblySourceList)
+                    {
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            lblStatus.Text = String.Format("Loading {0} / {1} PO", index, assemblySourceList.Count());
+                            prgStatus.Value = index;
+                        }));
+                        string memoId = "";
+                        List<ProductionMemoModel> productionMemoByProductionNumberList = productionMemoList.Where(p => p.ProductionNumbers.Contains(assySource.ProductNo) == true).ToList();
+                        for (int p = 0; p <= productionMemoByProductionNumberList.Count - 1; p++)
+                        {
+                            ProductionMemoModel productionMemo = productionMemoByProductionNumberList[p];
+                            memoId += productionMemo.MemoId;
+                            if (p < productionMemoByProductionNumberList.Count - 1)
+                            {
+                                memoId += "\n";
+                            }
+                        }
+
+                        var assemblyMasterView = new AssemblyMasterViewModel
+                        {
+                            ProductNo = assySource.ProductNo,
+                            ProductNoBackground = Brushes.Transparent,
+                            Country = assySource.Country,
+                            ShoeName = assySource.ShoeName,
+                            ArticleNo = assySource.ArticleNo,
+                            LastCode = assySource.LastCode,
+                            Quantity = assySource.Quantity,
+                            ETD = assySource.ETD,
+                            MemoId = memoId,
+
+                            AssemblyLine = assySource.AssemblyLine,
+                            AssemblyQuota = assySource.AssemblyQuota,
+                            AssemblyBalance = assySource.AssemblyBalance,
+
+                            SewingLine = assySource.SewingLine,
+                            SewingStartDate = assySource.SewingStartDate,
+                            SewingFinishDate = assySource.SewingFinishDate,
+                            SewingQuota = assySource.SewingQuota,
+
+                            OutsoleFinishDate = assySource.OutsoleFinishDate,
+                            OutsoleLine = assySource.OutsoleLine,
+                            ReleasedQuantity = assySource.AssemblyReleasedQuantity,
+                            OutsoleReleasedQuantity = assySource.OutsoleReleasedQuantity,
+                        };
+
+                        assemblyMasterView.AssemblyStartDate = dtDefault;
+                        if (assySource.AssemblyStartDate != dtDefault)
+                            assemblyMasterView.AssemblyStartDate = assySource.AssemblyStartDate;
+
+                        assemblyMasterView.AssemblyFinishDate = dtDefault;
+                        if (assySource.AssemblyFinishDate != dtDefault)
+                            assemblyMasterView.AssemblyFinishDate = assySource.AssemblyFinishDate;
+
+                        assemblyMasterView.AssemblyActualStartDate = "";
+                        if (!String.IsNullOrEmpty(assySource.AssemblyActualStartDate))
+                            assemblyMasterView.AssemblyActualStartDate = TimeHelper.DisplayDate(TimeHelper.Convert(assySource.AssemblyActualStartDate), 1);
+
+                        assemblyMasterView.AssemblyActualFinishDate = "";
+                        if (!String.IsNullOrEmpty(assySource.AssemblyActualFinishDate))
+                            assemblyMasterView.AssemblyActualFinishDate = TimeHelper.DisplayDate(TimeHelper.Convert(assySource.AssemblyActualFinishDate), 1);
+
+                        if (assySource.SewingBalance.Contains("/"))
+                            assemblyMasterView.SewingBalance = TimeHelper.DisplayDate(TimeHelper.Convert(assySource.SewingBalance), 1);
+                        else
+                            assemblyMasterView.SewingBalance = assySource.SewingBalance;
+
+                        if (assySource.OutsoleBalance.Contains("/"))
+                            assemblyMasterView.OutsoleBalance = TimeHelper.DisplayDate(TimeHelper.Convert(assySource.OutsoleBalance), 1);
+                        else
+                            assemblyMasterView.OutsoleBalance = assySource.OutsoleBalance;
+
+                        // OUTSOLE Material
+                        assemblyMasterView.OSMatsArrivalForeground = Brushes.Black;
+                        assemblyMasterView.OSMatsArrivalBackground = Brushes.Transparent;
+                        if (assySource.OutsoleMaterialArrivalOriginal != dtDefault)
+                            assemblyMasterView.OSMatsArrival = TimeHelper.DisplayDate(assySource.OutsoleMaterialArrivalOriginal, 0);
+                        if (assySource.OutsoleMaterialStatus == "OK")
+                        {
+                            assemblyMasterView.OSMatsArrivalForeground = Brushes.Blue;
+                            assemblyMasterView.OSMatsArrivalBackground = Brushes.Transparent;
+                        }
+                        else if (assySource.OutsoleMaterialArrivalOriginal != dtDefault)
+                        {
+                            if (assySource.OutsoleMaterialArrivalOriginal < DateTime.Now.Date)
+                                assemblyMasterView.OSMatsArrivalBackground = Brushes.Red;
+                        }
+                        if (!String.IsNullOrEmpty(assySource.OutsoleMaterialRemarks))
+                        {
+                            assemblyMasterView.OSMatsArrivalBackground = Brushes.Yellow;
+                            if (assySource.OutsoleMaterialArrivalOriginal < DateTime.Now.Date)
+                                assemblyMasterView.OSMatsArrivalForeground = Brushes.Red;
+                        }
+
+                        // ASSEMBLY Material
+                        assemblyMasterView.AssemblyMatsArrivalForeground = Brushes.Black;
+                        assemblyMasterView.AssemblyMatsArrivalBackground = Brushes.Transparent;
+                        if (assySource.AssemblyMaterialArrivalOriginal != dtDefault)
+                            assemblyMasterView.AssemblyMatsArrival = TimeHelper.DisplayDate(assySource.AssemblyMaterialArrivalOriginal, 0);
+                        if (assySource.AssemblyMaterialStatus == "OK")
+                            assemblyMasterView.AssemblyMatsArrivalForeground = Brushes.Blue;
+                        else if (assySource.AssemblyMaterialArrivalOriginal != dtDefault)
+                        {
+                            if (assySource.AssemblyMaterialArrivalOriginal < DateTime.Now.Date)
+                                assemblyMasterView.AssemblyMatsArrivalBackground = Brushes.Red;
+                        }
+                        if (!String.IsNullOrEmpty(assySource.AssemblyMaterialRemarks))
+                        {
+                            assemblyMasterView.AssemblyMatsArrivalBackground = Brushes.Yellow;
+                            if (assySource.AssemblyMaterialArrivalOriginal < DateTime.Now.Date)
+                                assemblyMasterView.AssemblyMatsArrivalForeground = Brushes.Red;
+                        }
+
+                        // SOCKLINING Material
+                        assemblyMasterView.SockliningMatsArrivalForeground = Brushes.Black;
+                        assemblyMasterView.SockliningMatsArrivalBackground = Brushes.Transparent;
+                        if (assySource.SockliningMaterialArrivalOriginal != dtDefault)
+                            assemblyMasterView.SockliningMatsArrival = TimeHelper.DisplayDate(assySource.SockliningMaterialArrivalOriginal, 0);
+                        if (assySource.SockliningMaterialStatus == "OK")
+                            assemblyMasterView.SockliningMatsArrivalForeground = Brushes.Blue;
+                        else if (assySource.SockliningMaterialArrivalOriginal != dtDefault)
+                        {
+                            if (assySource.SockliningMaterialArrivalOriginal < DateTime.Now.Date)
+                                assemblyMasterView.SockliningMatsArrivalBackground = Brushes.Red;
+                        }
+                        if (!String.IsNullOrEmpty(assySource.SockliningMaterialRemarks))
+                        {
+                            assemblyMasterView.SockliningMatsArrivalBackground = Brushes.Yellow;
+                            if (assySource.SockliningMaterialArrivalOriginal < DateTime.Now.Date)
+                                assemblyMasterView.SockliningMatsArrivalForeground = Brushes.Red;
+                        }
+
+                        // CARTON Material
+                        assemblyMasterView.CartonMatsArrivalForeground = Brushes.Black;
+                        assemblyMasterView.CartonMatsArrivalBackground = Brushes.Transparent;
+                        if (assySource.CartonStatusMaterialArrivalOriginal != dtDefault)
+                            assemblyMasterView.CartonMatsArrival = TimeHelper.DisplayDate(assySource.CartonStatusMaterialArrivalOriginal, 0);
+                        if (assySource.CartonStatusMaterialStatus == "OK")
+                            assemblyMasterView.CartonMatsArrivalForeground = Brushes.Blue;
+                        else if (assySource.CartonStatusMaterialArrivalOriginal != dtDefault)
+                        {
+                            if (assySource.CartonStatusMaterialArrivalOriginal < DateTime.Now.Date)
+                                assemblyMasterView.CartonMatsArrivalBackground = Brushes.Red;
+                        }
+                        if (!String.IsNullOrEmpty(assySource.CartonStatusMaterialRemarks))
+                        {
+                            assemblyMasterView.CartonMatsArrivalBackground = Brushes.Yellow;
+                            if (assySource.CartonStatusMaterialArrivalOriginal < DateTime.Now.Date)
+                                assemblyMasterView.CartonMatsArrivalForeground = Brushes.Red;
+                        }
+
+                        assemblyMasterView.AssemblyStartDateForeground = Brushes.Black;
+                        assemblyMasterView.AssemblyFinishDateForeground = Brushes.Black;
+                        if (assemblyMasterView.AssemblyStartDate < new DateTime(Math.Max(assemblyMasterView.OutsoleFinishDate.Ticks, assemblyMasterView.SewingFinishDate.Ticks))
+                            && assySource.AssemblyStartDate != dtDefault)
+                            assemblyMasterView.AssemblyStartDateForeground = Brushes.Red;
+
+                        if (assemblyMasterView.AssemblyFinishDate > assemblyMasterView.ETD
+                            && assySource.AssemblyFinishDate != dtDefault)
+                            assemblyMasterView.AssemblyFinishDateForeground = Brushes.Red;
+
+                        assemblyMasterView.SockliningBalance = "";
+                        if (!String.IsNullOrEmpty(assySource.InsockBalance) && !String.IsNullOrEmpty(assySource.InsoleBalance))
+                        {
+                            int qtyInsoleBalance = 0;
+                            int qtyInsockBalance = 0;
+                            int.TryParse(assySource.InsoleBalance, out qtyInsoleBalance);
+                            int.TryParse(assySource.InsockBalance, out qtyInsockBalance);
+                            int qtySockliningBalance = Math.Max(qtyInsoleBalance, qtyInsockBalance);
+                            if (qtySockliningBalance > 0)
+                            {
+                                assemblyMasterView.SockliningBalance = qtySockliningBalance.ToString();
+                            }
+                            else
+                            {
+                                DateTime dtInsoleBalance = TimeHelper.Convert(assySource.InsoleBalance);
+                                DateTime dtInsockBalance = TimeHelper.Convert(assySource.InsockBalance);
+                                DateTime dtSockliningBalance = new DateTime(Math.Max(dtInsoleBalance.Ticks, dtInsockBalance.Ticks));
+                                if (String.IsNullOrEmpty(assySource.InsoleBalance) == false && String.IsNullOrEmpty(assySource.InsockBalance) == false && dtSockliningBalance != dtNothing)
+                                {
+                                    assemblyMasterView.SockliningBalance = TimeHelper.DisplayDate(dtSockliningBalance, 1);
+                                    if (assemblyMasterView.AssemblyMatsArrival != null)
+                                        assemblyMasterView.AssemblyMatsArrival = assemblyMasterView.SockliningBalance;
+                                    //assemblyMasterView.SockliningBalance = TimeHelper.DisplayDate(dtSockliningBalance, 1);
+                                }
+                            }
+                        }
+
+                        assemblyMasterViewList.Add(assemblyMasterView);
+                        index++;
+                    }
+                    assemblyMasterViewList = assemblyMasterViewList.OrderBy(a => a.AssemblyLine).ThenBy(a => a.Sequence).ToList();
+
+                }
+                else
+                {
+                    bwLoad_DoWork(sender, e);
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    MessageBox.Show(ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                }));
+            }
+        }
+
         // OUTSOLE
         private MaterialArrivalViewModel OutsoleMaterialArrival(string productNo, int[] materialIdArray)
         {
@@ -517,7 +780,9 @@ namespace MasterSchedule.Views
             dgSewingMaster.ItemsSource = assemblyMasterViewFindList;
             btnCaculate.IsEnabled = true;
             btnSave.IsEnabled = true;
-
+            lblStatus.Text = "";
+            prgStatus.Visibility = Visibility.Collapsed;
+            btnRefresh.IsEnabled = true;
             //btnEnableSimulation.IsEnabled = true;
             this.Cursor = null;
         }
@@ -560,11 +825,19 @@ namespace MasterSchedule.Views
                     }
                     if (assemblyActualStartDateUpdateList.Contains(productNo) == false)
                     {
-                        assemblyMasterView.AssemblyActualStartDate = assemblyMaster.AssemblyActualStartDate;
+                        //assemblyMasterView.AssemblyActualStartDate = assemblyMaster.AssemblyActualStartDate;
+                        if (TimeHelper.Convert(assemblyMaster.AssemblyActualStartDate) != dtDefault)
+                            assemblyMasterView.AssemblyActualStartDate = TimeHelper.DisplayDate(TimeHelper.Convert(assemblyMaster.AssemblyActualStartDate), 1);
+                        else
+                            assemblyMasterView.AssemblyActualFinishDate = "";
                     }
                     if (assemblyActualFinishDateUpdateList.Contains(productNo) == false)
                     {
-                        assemblyMasterView.AssemblyActualFinishDate = assemblyMaster.AssemblyActualFinishDate;
+                        //assemblyMasterView.AssemblyActualFinishDate = assemblyMaster.AssemblyActualFinishDate;
+                        if (TimeHelper.Convert(assemblyMaster.AssemblyActualFinishDate) != dtDefault)
+                            assemblyMasterView.AssemblyActualFinishDate = TimeHelper.DisplayDate(TimeHelper.Convert(assemblyMaster.AssemblyActualFinishDate), 1);
+                        else
+                            assemblyMasterView.AssemblyActualFinishDate = "";
                     }
                     if (assemblyBalanceUpdateList.Contains(productNo) == false)
                     {
@@ -800,6 +1073,8 @@ namespace MasterSchedule.Views
                 return;
             }
 
+            if (!linesNeedSaving.Contains(assemblyMasterView.AssemblyLine))
+                linesNeedSaving.Add(assemblyMasterView.AssemblyLine);
             string productNo = assemblyMasterView.ProductNo;
 
             if (e.Column == colAssemblyLine || e.Column == colAssemblyQuota || e.Column == colAssemblyActualStartDate ||
@@ -920,6 +1195,189 @@ namespace MasterSchedule.Views
 
         private void bwInsert_DoWork(object sender, DoWorkEventArgs e)
         {
+            try
+            {
+                if (!string.IsNullOrEmpty(def.Factory) && !def.Factory.Equals("THIENLOC"))
+                {
+                    e.Result = true;
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        prgStatus.Visibility = Visibility.Visible;
+                        prgStatus.Value = 0;
+                    }));
+                    var sourceList = assemblyMasterViewFindList.ToList();
+
+                    // Insert New PO
+                    var productNoSourceList = assemblyMasterList.Select(s => s.ProductNo).Distinct().ToList();
+                    var insertNewPOList = sourceList.Where(w => !productNoSourceList.Contains(w.ProductNo)).ToList();
+                    if (insertNewPOList.Count() > 0)
+                    {
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            prgStatus.Value = 0;
+                            prgStatus.Maximum = insertNewPOList.Count();
+                            lblStatus.Text = "Inserting New PO ...";
+                        }));
+                        int index = 1;
+                        foreach (var item in insertNewPOList)
+                        {
+                            InsertAModel(item, true);
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                lblStatus.Text = String.Format("Saving {0} / {1} PO", index, insertNewPOList.Count());
+                                prgStatus.Value = index;
+                            }));
+                            index++;
+                        }
+                    }
+
+
+                    // Update AssemblyMaster Info
+                    var updateList = sourceList.Where(w => linesNeedSaving.Contains(w.AssemblyLine)).ToList();
+                    if (updateList.Count() > 0)
+                    {
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            lblStatus.Text = "Saving PO ...";
+                            prgStatus.Value = 0;
+                            prgStatus.Maximum = updateList.Count();
+                        }));
+                        int index_1 = 1;
+                        if (updateList.Count() > 0)
+                        {
+                            foreach (var item in updateList)
+                            {
+                                InsertAModel(item, false);
+                                Dispatcher.Invoke(new Action(() =>
+                                {
+                                    lblStatus.Text = String.Format("Saving {0} / {1} PO", index_1, updateList.Count());
+                                    prgStatus.Value = index_1;
+                                }));
+                                index_1++;
+                            }
+                            linesNeedSaving.Clear();
+                        }
+                    }
+
+
+                    // Update the Sequence
+                    if (sourceList.Count() == assemblyMasterViewList.Count())
+                    {
+                        // Get the sequence list
+                        int sqNo = 0;
+                        var productNoList = sourceList.Select(s => s.ProductNo).ToList();
+                        var sequenceCurrentList = new List<POSequenceModel>();
+                        foreach (var po in productNoList)
+                        {
+                            sequenceCurrentList.Add(new POSequenceModel
+                            {
+                                ProductNo = po,
+                                Sequence = sqNo,
+                                Id = po + "-" + sqNo.ToString()
+                            });
+                            sqNo++;
+                        }
+
+                        var sqNeedUpdateList = new List<POSequenceModel>();
+                        foreach (var item in sequenceCurrentList)
+                        {
+                            var checkSqChange = poSequenceSourceList.FirstOrDefault(f => f.Id == item.Id);
+                            if (checkSqChange == null)
+                                sqNeedUpdateList.Add(item);
+                        }
+                        poSequenceSourceList.Clear();
+                        poSequenceSourceList = sequenceCurrentList.ToList();
+                        if (sqNeedUpdateList.Count() > 0)
+                        {
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                lblStatus.Text = "Saving Sequence PO ...";
+                                prgStatus.Value = 0;
+                                prgStatus.Maximum = sqNeedUpdateList.Count();
+                            }));
+                            int index = 1;
+                            foreach (var item in sqNeedUpdateList)
+                            {
+                                Dispatcher.Invoke(new Action(() =>
+                                {
+                                    lblStatus.Text = String.Format("Saving {0} / {1} Sq", index, sqNeedUpdateList.Count());
+                                    prgStatus.Value = index;
+                                }));
+                                CommonController.UpdateSequenceByPO(item.ProductNo, item.Sequence, "Assembly");
+                                index++;
+                            }
+                            //changingSequence = false;
+                        }
+                    }
+                }
+                else
+                {
+                    bwInsert_DoWork_Before(sender, e);
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    MessageBox.Show(ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                    e.Result = false;
+                    return;
+                }));
+            }
+        }
+        
+        private void InsertAModel(AssemblyMasterViewModel assyInsertViewModel, bool isNewPO)
+        {
+            string productNo = assyInsertViewModel.ProductNo;
+            string assemblyLine = assyInsertViewModel.AssemblyLine;
+            AssemblyMasterModel model = new AssemblyMasterModel
+            {
+                ProductNo = assyInsertViewModel.ProductNo,
+                Sequence = assyInsertViewModel.Sequence,
+                AssemblyLine = assyInsertViewModel.AssemblyLine,
+                AssemblyStartDate = assyInsertViewModel.AssemblyStartDate,
+                AssemblyFinishDate = assyInsertViewModel.AssemblyFinishDate,
+                AssemblyQuota = assyInsertViewModel.AssemblyQuota,
+                AssemblyActualStartDate = assyInsertViewModel.AssemblyActualStartDate,
+                AssemblyActualFinishDate = assyInsertViewModel.AssemblyActualFinishDate,
+                AssemblyBalance = assyInsertViewModel.AssemblyBalance,
+
+                IsSequenceUpdate = false,
+                IsAssemblyLineUpdate = false,
+                IsAssemblyStartDateUpdate = false,
+                IsAssemblyFinishDateUpdate = false,
+                IsAssemblyQuotaUpdate = false,
+                IsAssemblyActualStartDateUpdate = false,
+                IsAssemblyActualFinishDateUpdate = false,
+                IsAssemblyBalanceUpdate = false,
+            };
+
+            model.IsSequenceUpdate = isSequenceEditing;
+
+            model.IsAssemblyLineUpdate = assemblyLineUpdateList.Contains(productNo);
+            model.IsAssemblyStartDateUpdate = lineAssemblyEditingList.Contains(assemblyLine);
+            model.IsAssemblyFinishDateUpdate = lineAssemblyEditingList.Contains(assemblyLine);
+            model.IsAssemblyQuotaUpdate = assemblyQuotaUpdateList.Contains(productNo);
+            model.IsAssemblyActualStartDateUpdate = assemblyActualStartDateUpdateList.Contains(productNo);
+            model.IsAssemblyActualFinishDateUpdate = assemblyActualFinishDateUpdateList.Contains(productNo);
+            model.IsAssemblyBalanceUpdate = assemblyBalanceUpdateList.Contains(productNo);
+            // && sequenceUpdateList.Contains(model.Sequence)
+            if ((model.IsSequenceUpdate == true) ||
+                model.IsAssemblyLineUpdate == true ||
+                model.IsAssemblyStartDateUpdate == true ||
+                model.IsAssemblyFinishDateUpdate == true ||
+                model.IsAssemblyQuotaUpdate == true ||
+                model.IsAssemblyActualStartDateUpdate == true ||
+                model.IsAssemblyActualFinishDateUpdate == true ||
+                model.IsAssemblyBalanceUpdate == true ||
+                isNewPO == true)
+            {
+                AssemblyMasterController.Insert_2(model);                
+            }
+        }
+        
+        private void bwInsert_DoWork_Before(object sender, DoWorkEventArgs e)
+        {
             foreach (AssemblyMasterViewModel assemblyMaster in assemblyMasterViewToInsertList)
             {
                 string productNo = assemblyMaster.ProductNo;
@@ -966,20 +1424,6 @@ namespace MasterSchedule.Views
                     model.IsAssemblyBalanceUpdate == true)
                 {
                     AssemblyMasterController.Insert_2(model);
-
-                    //Dispatcher.Invoke(new Action(() =>
-                    //{
-                    //    dgSewingMaster.ScrollIntoView(assemblyMaster);
-                    //    dgSewingMaster.SelectedItem = assemblyMaster;
-                    //}));
-
-                    // Insert ProductNoRevise
-                    //var productNoReviseInsertModel = new ProductNoReviseModel() {
-                    //    ProductNo = model.ProductNo,
-                    //    ReviseDate = DateTime.Now.Date,
-                    //    SectionId = _SECTIONID
-                    //};
-                    //ProductNoReviseController.Insert(productNoReviseInsertModel);
                 }
             }
         }
@@ -988,6 +1432,8 @@ namespace MasterSchedule.Views
         {
             btnSave.IsEnabled = true;
             this.Cursor = null;
+            if (e.Result != null && (bool)e.Result == false)
+                return;
             if (e.Error != null)
             {
                 MessageBox.Show(e.Error.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -1005,6 +1451,9 @@ namespace MasterSchedule.Views
             assemblyBalanceUpdateList.Clear();
             
             MessageBox.Show("Saved!", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+            lblStatus.Text = "";
+            btnRefresh.IsEnabled = true;
+            prgStatus.Visibility = Visibility.Collapsed;
         }
 
         private void dgSewingMaster_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
@@ -1013,6 +1462,7 @@ namespace MasterSchedule.Views
         }
 
         private List<AssemblyMasterViewModel> assemblyMasterViewSelectList = new List<AssemblyMasterViewModel>();
+        
         private void dgSewingMaster_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             popup.IsOpen = false;
@@ -1259,7 +1709,6 @@ namespace MasterSchedule.Views
                 bwLoad.RunWorkerAsync();
             }
         }
-
         private void miTranfer_Click(object sender, RoutedEventArgs e)
         {
             assemblyMasterViewToInsertList = dgSewingMaster.SelectedItems.OfType<AssemblyMasterViewModel>().ToList();

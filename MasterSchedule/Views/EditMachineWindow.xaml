@@ -51,10 +51,88 @@
                     <ColumnDefinition Width="5"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="btnUpdate" Content="Add" Height="25" VerticalAlignment="Bottom" Click="btnUpdate_Click"/>
-                <Button x:Name="btnDelete" Content="Delete " Height="25" Grid.Column="2" VerticalAlignment="Bottom" Click="btnDelete_Click"/>
+                <Button x:Name="btnUpdate" Content="Add" Height="28" VerticalAlignment="Bottom" Click="btnUpdate_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <Border x:Name="Bd"
+                                        CornerRadius="6"
+                                        Background="SeaGreen">
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                Text="Add"
+                                                Foreground="White"
+                                                HorizontalAlignment="Center">
+                                            </TextBlock>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <MultiTrigger>
+
+                                                <MultiTrigger.Conditions>
+                                                    <Condition Property="IsMouseOver" Value="True"/>
+                                                </MultiTrigger.Conditions>
+                                                <Setter Property="Background"
+                                                            TargetName="Bd"
+                                                            Value="Red"/>
+
+                                                <Setter Property="BorderBrush"
+                                                            TargetName="Bd"
+                                                            Value="Red"/>
+                                            </MultiTrigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button x:Name="btnDelete" Content="Delete " Height="28" Grid.Column="2" VerticalAlignment="Bottom" Click="btnDelete_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <Border x:Name="Bd"
+                                        CornerRadius="6"
+                                        Background="LightGray">
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                Text="Delete"
+                                                Foreground="White"
+                                                HorizontalAlignment="Center">
+                                            </TextBlock>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <MultiTrigger>
+
+                                                <MultiTrigger.Conditions>
+                                                    <Condition Property="IsMouseOver" Value="True"/>
+                                                </MultiTrigger.Conditions>
+                                                <Setter Property="Background"
+                                                            TargetName="Bd"
+                                                            Value="Red"/>
+
+                                                <Setter Property="BorderBrush"
+                                                            TargetName="Bd"
+                                                            Value="Red"/>
+                                            </MultiTrigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
             </Grid>
         </Grid>
-        <TextBox Grid.Row="6" Grid.Column="2" Text="{Binding Remarks}" TextWrapping="Wrap" BorderBrush="Black"/>
+        <Border Grid.Row="6" Grid.Column="2" Padding="8,6,8,6"
+                BorderBrush="Blue" BorderThickness="1"
+                Background="WhiteSmoke"
+                CornerRadius="15">
+            <!--Text="{Binding Remarks}"-->
+            <TextBox Text="{Binding Remarks}" Foreground="Blue" FontStyle="Italic" TextWrapping="Wrap" BorderBrush="Transparent" BorderThickness="0" Background="Transparent"/>
+        </Border>
     </Grid>
 </Window>

@@ -8,9 +8,11 @@ namespace MasterSchedule.Models
     public class OrdersModel
     {
         public string ProductNo { get; set; }
+        public  int TypeOfShoes { get; set; }
         public string GTNPONo { get; set; }
         public string UCustomerCode { get; set; }
         public DateTime ETD { get; set; }
+        public DateTime ShipDate { get; set; }
         public string ArticleNo { get; set; }
         public string ShoeName { get; set; }
         public int Quantity { get; set; }

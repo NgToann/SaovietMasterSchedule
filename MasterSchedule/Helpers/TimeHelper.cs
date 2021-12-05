@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -7,6 +8,21 @@ namespace MasterSchedule.Helpers
 {
     class TimeHelper
     {
+        /// <summary>
+        /// 0 return format: dd-MMM  1 return format: M/d
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="type">0:dd-MMM 1:M/d</param>
+        /// <returns></returns>
+        public static string DisplayDate(DateTime date, int type)
+        {
+            string result = "";
+            if (type == 0)
+                result = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", date);
+            if (type == 1)
+                result = String.Format("{0:M/d}", date);
+            return result;
+        }
         public static DateTime Convert(string input)
         {
             DateTime output = new DateTime(2000, 1, 1);

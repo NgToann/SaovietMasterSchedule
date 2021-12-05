@@ -8,6 +8,7 @@ namespace MasterSchedule.Models
     public class PrivateDefineModel
     {
         public int DefineId { get; set; }
+        public string Factory { get; set; }
         public int SewingVsCutAStartDate { get; set; }
         public int SewingVsCutAStartDate_1 { get; set; }
         public int SewingVsOthersCutTypeB { get; set; }

@@ -46,7 +46,6 @@ namespace MasterSchedule
         PopupNotYetDeliveryWindow window2;
         PopupOSWHRejectWindow window3;
         PopupDelayShipmentWindow window4;
-
         bool loaded = false;
 
         Point location1, location2, location3, location4;
@@ -932,6 +931,24 @@ namespace MasterSchedule
             window.Show();
         }
 
+        private void miOSPaintShop_Click(object sender, RoutedEventArgs e)
+        {
+            OSMPaintShopWindow window = new OSMPaintShopWindow();
+            window.Show();
+        }
+
+        private void miMasterChart_Click(object sender, RoutedEventArgs e)
+        {
+            MasterStatisticsWindow window = new MasterStatisticsWindow();
+            window.Show();
+        }
+
+        private void miConfirmOSWorkingCart_Click(object sender, RoutedEventArgs e)
+        {
+            ConfirmOutsoleMaterialWorkingCartWindow window = new ConfirmOutsoleMaterialWorkingCartWindow(account);
+            window.Show();
+        }
+
         private void Window_StateChanged(object sender, EventArgs e)
         {
             if (this.WindowState == System.Windows.WindowState.Minimized && loaded == true)
@@ -1038,7 +1055,14 @@ namespace MasterSchedule
                 "1.2.8.4: " + "Update: Import WHLamination Material, Report(OSWHMaterialCheckDetail) 'SV'.\n" +
                 "1.2.8.5: " + "Update: Input Upper Accessories Delivery 'SV'.\n" +
                 "1.2.8.6: " + "Update: Upper Accessories Reports 'SV'\n" +
-                "1.2.8.8: " + "Update: Display OS/Size OSDeliveryReport 'SV'";
+                "1.2.8.8: " + "Update: Display OS/Size OSDeliveryReport 'SV'\n" +
+                "1.2.9.1: " + "Update: SewingMaster report directly 'SV'\n" +
+                "1.2.9.2: " + "Update: Import lamination excel file from newshoes report 'SV'\n" +
+                "1.2.9.3: " + "Update: Improve WindowLoading Speed 'SV'\n" +
+                "1.2.9.5: " + "Update: OS WH Material Report FromTo, OS Painting Report 'SV'\n" +
+                "1.2.9.8: " + "Update: Improve saving data speed (sewing, outsole, assembly, socklining) 'SV', Separate SamplePO 'TL'.\n" +
+                "1.2.9.9: " + "Update: Add ShipDate Column 'SV'.\n"+
+                "1.3.0.2: " + "Update: Add Material Arrival Report Weekly 'SV'";
             //MessageBox.Show(version, string.Format("Current Version: {0}", AssemblyHelper.Version()), MessageBoxButton.OK, MessageBoxImage.Information);
             UpdateHistoryWindow window = new UpdateHistoryWindow(version, AssemblyHelper.Version());
             window.Show();

@@ -86,7 +86,6 @@ namespace MasterSchedule.Views
                 MessageBox.Show("Login Failed.", this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        // Kamusta ka ngayon raw? Ang ngiti mo maganda ! Saanka pupunta ?
         private void Window_Closed(object sender, EventArgs e)
         {
             App.Current.Shutdown();

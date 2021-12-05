@@ -111,6 +111,8 @@ namespace MasterSchedule.ViewModels
             }
         }
 
+        public string ShipDateDisplay { get; set; }
+
         private string _UpperMatsArrival;
         public string UpperMatsArrival
         {

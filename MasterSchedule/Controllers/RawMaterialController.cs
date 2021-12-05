@@ -80,6 +80,14 @@ namespace MasterSchedule.Controllers
             }
         }
 
+        public static List<RawMaterialSummarizeModel> SelectSummarize()
+        {
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<RawMaterialSummarizeModel>("EXEC spm_SelectRawMaterialSumarize").ToList();
+            }
+        }
+
         public static List<RawMaterialViewModelNew> Select_1()
         {
             using (var db = new SaovietMasterScheduleEntities())

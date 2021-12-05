@@ -1091,3 +1091,73 @@ F:\SV PROJECT\MS\1.2.8.7 Cding\Saoviet Master Schedule Solution\SaovietMasterSch
 F:\SV PROJECT\MS\1.2.8.7 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csproj.CoreCompileInputs.cache
 F:\SV PROJECT\MS\1.2.8.7 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.exe
 F:\SV PROJECT\MS\1.2.8.7 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.pdb
+F:\SV PROJECT\MS\1.2.8.9 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\bin\Debug\CheckUpdate.exe
+F:\SV PROJECT\MS\1.2.8.9 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\bin\Debug\CheckUpdate.pdb
+F:\SV PROJECT\MS\1.2.8.9 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csprojAssemblyReference.cache
+F:\SV PROJECT\MS\1.2.8.9 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\App.baml
+F:\SV PROJECT\MS\1.2.8.9 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\MainWindow.baml
+F:\SV PROJECT\MS\1.2.8.9 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\App.g.cs
+F:\SV PROJECT\MS\1.2.8.9 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\MainWindow.g.cs
+F:\SV PROJECT\MS\1.2.8.9 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate_MarkupCompile.cache
+F:\SV PROJECT\MS\1.2.8.9 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.g.resources
+F:\SV PROJECT\MS\1.2.8.9 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.Properties.Resources.resources
+F:\SV PROJECT\MS\1.2.8.9 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csproj.GenerateResource.cache
+F:\SV PROJECT\MS\1.2.8.9 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csproj.CoreCompileInputs.cache
+F:\SV PROJECT\MS\1.2.8.9 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.exe
+F:\SV PROJECT\MS\1.2.8.9 Cding\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.pdb
+F:\SV PROJECT\MS\1.2.9.4 Cdinggg Improve SavingDataSpeed\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\bin\Debug\CheckUpdate.exe
+F:\SV PROJECT\MS\1.2.9.4 Cdinggg Improve SavingDataSpeed\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\bin\Debug\CheckUpdate.pdb
+F:\SV PROJECT\MS\1.2.9.4 Cdinggg Improve SavingDataSpeed\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csprojAssemblyReference.cache
+F:\SV PROJECT\MS\1.2.9.4 Cdinggg Improve SavingDataSpeed\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\App.baml
+F:\SV PROJECT\MS\1.2.9.4 Cdinggg Improve SavingDataSpeed\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\MainWindow.baml
+F:\SV PROJECT\MS\1.2.9.4 Cdinggg Improve SavingDataSpeed\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\App.g.cs
+F:\SV PROJECT\MS\1.2.9.4 Cdinggg Improve SavingDataSpeed\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\MainWindow.g.cs
+F:\SV PROJECT\MS\1.2.9.4 Cdinggg Improve SavingDataSpeed\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate_MarkupCompile.cache
+F:\SV PROJECT\MS\1.2.9.4 Cdinggg Improve SavingDataSpeed\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.g.resources
+F:\SV PROJECT\MS\1.2.9.4 Cdinggg Improve SavingDataSpeed\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.Properties.Resources.resources
+F:\SV PROJECT\MS\1.2.9.4 Cdinggg Improve SavingDataSpeed\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csproj.GenerateResource.cache
+F:\SV PROJECT\MS\1.2.9.4 Cdinggg Improve SavingDataSpeed\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csproj.CoreCompileInputs.cache
+F:\SV PROJECT\MS\1.2.9.4 Cdinggg Improve SavingDataSpeed\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.exe
+F:\SV PROJECT\MS\1.2.9.4 Cdinggg Improve SavingDataSpeed\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.pdb
+F:\SV PROJECT\MS\1.2.9.5 Improve SewingMaster SavingData\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\bin\Debug\CheckUpdate.exe
+F:\SV PROJECT\MS\1.2.9.5 Improve SewingMaster SavingData\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\bin\Debug\CheckUpdate.pdb
+F:\SV PROJECT\MS\1.2.9.5 Improve SewingMaster SavingData\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csprojAssemblyReference.cache
+F:\SV PROJECT\MS\1.2.9.5 Improve SewingMaster SavingData\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\App.baml
+F:\SV PROJECT\MS\1.2.9.5 Improve SewingMaster SavingData\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\MainWindow.baml
+F:\SV PROJECT\MS\1.2.9.5 Improve SewingMaster SavingData\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\App.g.cs
+F:\SV PROJECT\MS\1.2.9.5 Improve SewingMaster SavingData\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\MainWindow.g.cs
+F:\SV PROJECT\MS\1.2.9.5 Improve SewingMaster SavingData\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate_MarkupCompile.cache
+F:\SV PROJECT\MS\1.2.9.5 Improve SewingMaster SavingData\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.g.resources
+F:\SV PROJECT\MS\1.2.9.5 Improve SewingMaster SavingData\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.Properties.Resources.resources
+F:\SV PROJECT\MS\1.2.9.5 Improve SewingMaster SavingData\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csproj.GenerateResource.cache
+F:\SV PROJECT\MS\1.2.9.5 Improve SewingMaster SavingData\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csproj.CoreCompileInputs.cache
+F:\SV PROJECT\MS\1.2.9.5 Improve SewingMaster SavingData\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.exe
+F:\SV PROJECT\MS\1.2.9.5 Improve SewingMaster SavingData\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.pdb
+F:\SV PROJECT\MS\1.2.9.9 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\bin\Debug\CheckUpdate.exe
+F:\SV PROJECT\MS\1.2.9.9 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\bin\Debug\CheckUpdate.pdb
+F:\SV PROJECT\MS\1.2.9.9 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csprojAssemblyReference.cache
+F:\SV PROJECT\MS\1.2.9.9 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\App.baml
+F:\SV PROJECT\MS\1.2.9.9 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\MainWindow.baml
+F:\SV PROJECT\MS\1.2.9.9 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\App.g.cs
+F:\SV PROJECT\MS\1.2.9.9 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\MainWindow.g.cs
+F:\SV PROJECT\MS\1.2.9.9 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate_MarkupCompile.cache
+F:\SV PROJECT\MS\1.2.9.9 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.g.resources
+F:\SV PROJECT\MS\1.2.9.9 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.Properties.Resources.resources
+F:\SV PROJECT\MS\1.2.9.9 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csproj.GenerateResource.cache
+F:\SV PROJECT\MS\1.2.9.9 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csproj.CoreCompileInputs.cache
+F:\SV PROJECT\MS\1.2.9.9 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.exe
+F:\SV PROJECT\MS\1.2.9.9 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.pdb
+C:\Users\NgToann\Desktop\SV_WFH\1.3.0.0 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\bin\Debug\CheckUpdate.exe
+C:\Users\NgToann\Desktop\SV_WFH\1.3.0.0 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\bin\Debug\CheckUpdate.pdb
+C:\Users\NgToann\Desktop\SV_WFH\1.3.0.0 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csproj.AssemblyReference.cache
+C:\Users\NgToann\Desktop\SV_WFH\1.3.0.0 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\App.baml
+C:\Users\NgToann\Desktop\SV_WFH\1.3.0.0 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\MainWindow.baml
+C:\Users\NgToann\Desktop\SV_WFH\1.3.0.0 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\App.g.cs
+C:\Users\NgToann\Desktop\SV_WFH\1.3.0.0 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\MainWindow.g.cs
+C:\Users\NgToann\Desktop\SV_WFH\1.3.0.0 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate_MarkupCompile.cache
+C:\Users\NgToann\Desktop\SV_WFH\1.3.0.0 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.g.resources
+C:\Users\NgToann\Desktop\SV_WFH\1.3.0.0 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.Properties.Resources.resources
+C:\Users\NgToann\Desktop\SV_WFH\1.3.0.0 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csproj.GenerateResource.cache
+C:\Users\NgToann\Desktop\SV_WFH\1.3.0.0 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.csproj.CoreCompileInputs.cache
+C:\Users\NgToann\Desktop\SV_WFH\1.3.0.0 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.exe
+C:\Users\NgToann\Desktop\SV_WFH\1.3.0.0 Add ShipDate Column\Saoviet Master Schedule Solution\SaovietMasterSchedule\CheckUpdate\obj\x86\Debug\CheckUpdate.pdb

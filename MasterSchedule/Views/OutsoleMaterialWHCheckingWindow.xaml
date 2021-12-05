@@ -67,7 +67,8 @@
                             </Grid>
 
                             <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal">
-                                <TextBlock  Text="" Width="{Binding ElementName=tblGroupPOInfo,Path=ActualWidth}" VerticalAlignment="Center"/>
+                                <CheckBox x:Name="chkDisplayDelivery" Width="{Binding ElementName=tblGroupPOInfo,Path=ActualWidth}" Content="Show Delivery" FontSize="12" VerticalContentAlignment="Center" VerticalAlignment="Center" Checked="chkDisplayDelivery_Checked" Unchecked="chkDisplayDelivery_Unchecked" Cursor="Hand"/>
+                                <!--<TextBlock  Text="" Width="{Binding ElementName=tblGroupPOInfo,Path=ActualWidth}" VerticalAlignment="Center"/>-->
                                 <StackPanel x:Name="stkSuppliers" Orientation="Horizontal">
                                 </StackPanel>
                             </StackPanel>
@@ -89,7 +90,7 @@
                                 </Grid>
                             </GroupBox>
                         </Grid>
-                        <DataGrid x:Name="dgDeliveryStatus" Grid.Row="3" AutoGenerateColumns="False" AlternationCount="2"
+                        <DataGrid x:Name="dgDeliveryStatus" Grid.Row="3" AutoGenerateColumns="False" AlternationCount="2" Visibility="Visible"
                               CanUserAddRows="False" SelectionUnit="Cell" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" RowHeaderWidth="0"
                               IsReadOnly="True" FontFamily="Times New Roman" FontSize="15" LoadingRow="dgDeliveryStatus_LoadingRow">
                             <DataGrid.ColumnHeaderStyle>
@@ -135,7 +136,7 @@
                     <CheckBox x:Name="chkbCheckingDate" Margin="0,0,10,0" VerticalContentAlignment="Center" VerticalAlignment="Bottom" Checked="chkbCheckingDate_Checked" Unchecked="chkbCheckingDate_Unchecked">
                         <CheckBox.Content>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock x:Name="txtCheckDateTitle" Text="Check Date" Margin="0,0,5,0"/>
+                                <TextBlock x:Name="txtCheckDateTitle" Text="Change Date" Margin="0,0,5,0"/>
                                 <PasswordBox x:Name="txtConfirmBy" Width="100" Visibility="Collapsed" PasswordChanged="txtConfirmBy_PasswordChanged"/>
                             </StackPanel>
                         </CheckBox.Content>
@@ -162,7 +163,6 @@
                             </Style>
                         </Button.Style>
                     </Button>
-
                 </StackPanel>
                 <DataGrid x:Name="dgSupplierDeliveryDetail" Grid.Row="1" AutoGenerateColumns="False" AlternationCount="2"
                       CanUserAddRows="False" SelectionUnit="Cell" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" RowHeaderWidth="0"

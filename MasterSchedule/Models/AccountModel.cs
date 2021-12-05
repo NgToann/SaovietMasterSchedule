@@ -38,5 +38,6 @@ namespace MasterSchedule.Models
         public bool MaterialPlan { get; set; }
         public bool MaterialDelivery { get; set; }
         public bool MaterialReviser { get; set; }
+        public int TypeOfShoes { get; set; }
     }
 }

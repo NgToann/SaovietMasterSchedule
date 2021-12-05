@@ -171,5 +171,53 @@ namespace MasterSchedule.Controllers
                 return false;
             }
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="indexNo"></param>
+        /// <returns></returns>
+        public static List<OutsoleMaterialConfirmWorkingCartModel> GetOSConfirmByIndexNo(int indexNo)
+        {
+            var @WorkingCart = new SqlParameter("@WorkingCart", indexNo);
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleMaterialConfirmWorkingCartModel>("EXEC spm_SelectOutsoleMaterialConfirmByWorkingCart @WorkingCart", @WorkingCart).ToList();
+            }
+        }
+        //
+        public static List<OutsoleMaterialConfirmWorkingCartModel> GetOSConfirmByPO(string productNo)
+        {
+            var @ProductNo = new SqlParameter("@ProductNo", productNo);
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleMaterialConfirmWorkingCartModel>("EXEC spm_SelectOutsoleMaterialConfirmByProductNo @ProductNo", @ProductNo).ToList();
+            }
+        }
+        //
+        /// <summary>
+        /// Confirm Or Release: 1 is confirm, 2 is release
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="updateWhat">1 is confirm, 2 is release</param>
+        /// <returns></returns>
+        public static bool UpdateOSMaterial(OutsoleMaterialConfirmWorkingCartModel model, int updateWhat)
+        {
+            var @OSCheckingID   = new SqlParameter("@OSCheckingID", model.OSCheckingID);
+            var @IsConfirm      = new SqlParameter("@IsConfirm", model.IsConfirm);
+            var @IsRelease      = new SqlParameter("@IsRelease", model.IsRelease);
+            var @UpdateWhat     = new SqlParameter("@UpdateWhat", updateWhat);
+
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                if (db.ExecuteStoreCommand("EXEC spm_UpdateConfirmOSMaterial @OSCheckingID, @UpdateWhat, @IsConfirm, @IsRelease",
+                                                                             @OSCheckingID, @UpdateWhat, @IsConfirm, @IsRelease) >= 1)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
     }
 }

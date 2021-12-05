@@ -530,6 +530,8 @@ namespace MasterSchedule.Views
                 CheckingDate = DateTime.Now
             });
 
+            chkDisplayDelivery.IsChecked = true;
+
             if (oswhWorkingTimeList.Count() > 0)
                 timerCounterWT.Start();
         }
@@ -689,8 +691,8 @@ namespace MasterSchedule.Views
                         currentOutsoleMaterialCheckingList.AddRange(window.outsoleMaterialCheckingUpdatedBySizeList);
                     }
 
-                    // remove where return reject has qty = 0
-                    currentOutsoleMaterialCheckingList.RemoveAll(r => r.ReturnReject == 0 && r.ErrorId == -1);
+                    // remove where return reject has qtyReturnOK = 0 and qtyRemark = 0
+                    currentOutsoleMaterialCheckingList.RemoveAll(r => r.ReturnReject == 0 && r.ErrorId == -1 && r.ReturnRemark == 0);
                     var reloadList = currentOutsoleMaterialCheckingList.Where(w => w.OutsoleSupplierId == supplierClicked.OutsoleSupplierId).ToList();
                     LoadDataDetail(reloadList);
                 }
@@ -727,8 +729,13 @@ namespace MasterSchedule.Views
             colDate.ClipboardContentBinding = new Binding(String.Format("Date"));
             dgSupplierDeliveryDetail.Columns.Add(colDate);
 
+            var outsoleMaterialBySupplier = outsoleMaterialList.Where(w => w.OutsoleSupplierId == supplierClicked.OutsoleSupplierId).ToList();
+
             foreach (var sizeRun in sizeRunList)
             {
+                var osmBySize = outsoleMaterialBySupplier.FirstOrDefault(f => f.SizeNo == sizeRun.SizeNo);
+                var qtyDeliveryBySize = osmBySize != null ? osmBySize.Quantity.ToString() : "";
+
                 var size = sizeRun.SizeNo.Contains(".") ? sizeRun.SizeNo.Replace(".", "@") : sizeRun.SizeNo;
 
                 dtDeliveryDetail.Columns.Add(String.Format("{0}", size), typeof(String));
@@ -737,6 +744,7 @@ namespace MasterSchedule.Views
                 dtDeliveryDetail.Columns.Add(String.Format("ToolTip{0}", size), typeof(String));
 
                 DataGridTemplateColumn colSize = new DataGridTemplateColumn();
+                //colSize.Header = String.Format("{0}\n{1}\n{2}\n{3}", sizeRun.SizeNo, sizeRun.OutsoleSize, sizeRun.Quantity, qtyDeliveryBySize);
                 colSize.Header = String.Format("{0}\n{1}", sizeRun.SizeNo, sizeRun.OutsoleSize);
                 colSize.Width = columnWidth;
                 DataTemplate tplSize = new DataTemplate();
@@ -834,6 +842,25 @@ namespace MasterSchedule.Views
                     if (qtyCheckByDateBySize >= sizeRun.Quantity)
                         dr[String.Format("Foreground{0}", size)] = Brushes.Blue;
 
+
+                    // Return Reject
+                    var returnRejectList = currentCheckListBySize.Where(w => w.ErrorId == -1).ToList();
+                    var totalRemarks = returnRejectList.Sum(s => s.ReturnRemark);
+                    if (returnRejectList.Count() > 0)
+                    {
+                        displayDataList.Add(String.Format("* {0}", returnRejectList.Sum(s => s.ReturnReject)));
+                        dr[String.Format("{0}", size)] = String.Join("\n", displayDataList);
+
+                        dr[String.Format("Foreground{0}", size)] = Brushes.Blue;
+                        dr[String.Format("Background{0}", size)] = Brushes.Yellow;
+                        if (totalRemarks > 0)
+                        {
+                            dr[String.Format("Foreground{0}", size)] = Brushes.Red;
+                            dr[String.Format("Background{0}", size)] = Brushes.Yellow;
+                        }
+                    }
+
+
                     // Reject is ErrorId != 0 and != -1 : ErrorId > 0
                     var rejectList = currentCheckListBySize.Where(w => w.ErrorId > 0).ToList();
                     if (rejectList.Count() > 0)
@@ -854,17 +881,14 @@ namespace MasterSchedule.Views
                             toolTips.Add(String.Format("{0} : {1}", errorName.ErrorName, rejectByError));
                         }
 
+                        if (totalRemarks > 0)
+                            toolTips.Add(String.Format("Remark: {0}", totalRemarks));
+
                         dr[String.Format("ToolTip{0}", size)] = String.Join("\n", toolTips);
                     }
-
-                    // Return Reject
-                    var returnRejectList = currentCheckListBySize.Where(w => w.ErrorId == -1).ToList();
-                    if (returnRejectList.Count() > 0)
+                    else if (totalRemarks > 0)
                     {
-                        displayDataList.Add(String.Format("* {0}", returnRejectList.Sum(s => s.ReturnReject)));
-                        dr[String.Format("{0}", size)] = String.Join("\n", displayDataList);
-                        dr[String.Format("Foreground{0}", size)] = Brushes.Red;
-                        dr[String.Format("Background{0}", size)] = Brushes.Yellow;
+                        dr[String.Format("ToolTip{0}", size)] = String.Format("Remark: {0}", totalRemarks);
                     }
                 }
 
@@ -1041,6 +1065,19 @@ namespace MasterSchedule.Views
                 return;
             var window = new OSMaterialWHCheckViewDetailWindow(osMatWHCheckViewDetailList, errorList, orderInformation, supplierClicked);
             window.Show();
+        }
+
+        private void chkDisplayDelivery_Checked(object sender, RoutedEventArgs e)
+        {
+            if (this.IsLoaded)
+                dgDeliveryStatus.Visibility = Visibility.Visible;
+        }
+
+        private void chkDisplayDelivery_Unchecked(object sender, RoutedEventArgs e)
+        {
+
+            if (this.IsLoaded)
+                dgDeliveryStatus.Visibility = Visibility.Collapsed;
         }
 
         private enum PressMode

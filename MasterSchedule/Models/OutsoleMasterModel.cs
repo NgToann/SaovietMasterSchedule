@@ -8,6 +8,12 @@ namespace MasterSchedule.Models
     public class OutsoleMasterModel
     {
         public string ProductNo { get; set; }
+        public string Country { get; set; }
+        public string ShoeName { get; set; }
+        public string ArticleNo { get; set; }
+        public string PatternNo { get; set; }
+        public int Quantity { get; set; }
+        public DateTime ETD { get; set; }
         public int Sequence { get; set; }
         public string OutsoleLine { get; set; }
         public DateTime OutsoleStartDate { get; set; }

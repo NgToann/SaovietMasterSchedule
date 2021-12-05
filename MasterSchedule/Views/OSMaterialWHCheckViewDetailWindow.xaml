@@ -35,8 +35,8 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <RadioButton Grid.Row="1" Grid.Column="0" x:Name="radByCart" Content="CartonNo" VerticalContentAlignment="Center" HorizontalAlignment="Center" GroupName="ShowBy" Checked="radByCart_Checked"/>
-                    <RadioButton Grid.Row="1" Grid.Column="1" x:Name="radBySize" Content="SizeNo" VerticalContentAlignment="Center" HorizontalAlignment="Center" GroupName="ShowBy" Checked="radBySize_Checked" IsChecked="True"/>
+                    <RadioButton Grid.Row="1" Grid.Column="0" x:Name="radByCart" Content="CartonNo" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" GroupName="ShowBy" Checked="radByCart_Checked"/>
+                    <RadioButton Grid.Row="1" Grid.Column="1" x:Name="radBySize" Content="SizeNo" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" GroupName="ShowBy" Checked="radBySize_Checked" IsChecked="True"/>
                 </Grid>
             </Expander>
         </GroupBox>

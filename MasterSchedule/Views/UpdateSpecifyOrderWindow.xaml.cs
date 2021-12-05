@@ -149,6 +149,11 @@ namespace MasterSchedule.Views
 
                         order.ProductNo = productNo;
 
+                        double shipDateOADate = 0;
+                        Double.TryParse((excelRange.Cells[i, 10] as Excel.Range).Value2.ToString(), out shipDateOADate);
+                        DateTime shipDate = DateTime.FromOADate(shipDateOADate);
+                        order.ShipDate = shipDate;
+
                         double csdOADate = 0;
                         Double.TryParse((excelRange.Cells[i, 5] as Excel.Range).Value2.ToString(), out csdOADate);
                         DateTime csd = DateTime.FromOADate(csdOADate);

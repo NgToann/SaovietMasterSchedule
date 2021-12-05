@@ -41,6 +41,7 @@
                             <DataGridTextColumn Width="Auto" Header="GTNPO No." Binding="{Binding GTNPONo}"/>
                             <DataGridTextColumn Width="Auto" Header="UCustomerCode" Binding="{Binding UCustomerCode}"/>
                             <DataGridTextColumn Width="Auto" Header="EFD" Binding="{Binding ETD, StringFormat='yyyy-MM-dd'}"/>
+                            <DataGridTextColumn Width="Auto" Header="ShipDate" Binding="{Binding ShipDate, StringFormat='yyyy-MM-dd'}"/>
                             <DataGridTextColumn Width="Auto" Header="Article No." Binding="{Binding ArticleNo}"/>
                             <DataGridTextColumn Width="Auto" Header="Shoe Name" Binding="{Binding ShoeName}"/>
                             <DataGridTextColumn Width="Auto" Header="QTY" Binding="{Binding Quantity}"/>
@@ -49,6 +50,7 @@
                             <DataGridTextColumn Width="Auto" Header="Outsole Code" Binding="{Binding OutsoleCode}"/>
                             <DataGridTextColumn Width="Auto" Header="Last" Binding="{Binding LastCode}"/>
                             <DataGridTextColumn Width="Auto" Header="Country" Binding="{Binding Country}"/>
+                            <DataGridTextColumn Width="Auto" Header="TypeOfShoes" Binding="{Binding TypeOfShoes}"/>
                             <DataGridCheckBoxColumn Width="Auto" Header="Is Enable"  Binding="{Binding IsEnable}"/>
                         </DataGrid.Columns>
                     </DataGrid>
