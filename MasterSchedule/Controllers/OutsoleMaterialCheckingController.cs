@@ -20,6 +20,14 @@ namespace MasterSchedule.Controllers
                 return db.ExecuteStoreQuery<OutsoleMaterialCheckingModel>("EXEC spm_SelectOutsoleMaterialCheckingByPO @ProductNo", @ProductNo).ToList();
             };
         }
+        public static List<OutsoleMaterialCheckingModel> SelectByPOBorrow(string POSearch)
+        {
+            var @ProductNo = new SqlParameter("@ProductNo", POSearch);
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleMaterialCheckingModel>("EXEC spm_SelectOutsoleMaterialCheckingBorrowByPO @ProductNo", @ProductNo).ToList();
+            };
+        }
         public static List<OutsoleMaterialCheckingModel> SelectByPOSumBySize(string POSearch)
         {
             var @ProductNo = new SqlParameter("@ProductNo", POSearch);
@@ -60,7 +68,22 @@ namespace MasterSchedule.Controllers
                 }
                 return false;
             };
-            
+        }
+        
+        public static bool updateBorrow (OutsoleMaterialCheckingModel model)
+        {
+            var @OSCheckingId = new SqlParameter("@OSCheckingId", model.OSCheckingId);
+            var @ProductNoBorrow = new SqlParameter("@ProductNoBorrow", model.ProductNoBorrow);
+            var @QuantityBorrow = new SqlParameter("@QuantityBorrow", model.QuantityBorrow);
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                if (db.ExecuteStoreCommand("EXEC spm_UpdateOSWHBorrow @OSCheckingId, @ProductNoBorrow, @QuantityBorrow",
+                                                                      @OSCheckingId, @ProductNoBorrow, @QuantityBorrow) > 0)
+                {
+                    return true;
+                }
+                return false;
+            };
         }
     }
 }

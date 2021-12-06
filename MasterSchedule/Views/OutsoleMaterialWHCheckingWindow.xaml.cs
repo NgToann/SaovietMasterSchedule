@@ -747,6 +747,7 @@ namespace MasterSchedule.Views
                 //colSize.Header = String.Format("{0}\n{1}\n{2}\n{3}", sizeRun.SizeNo, sizeRun.OutsoleSize, sizeRun.Quantity, qtyDeliveryBySize);
                 colSize.Header = String.Format("{0}\n{1}", sizeRun.SizeNo, sizeRun.OutsoleSize);
                 colSize.Width = columnWidth;
+                colSize.SetValue(TagProperty, sizeRun);
                 DataTemplate tplSize = new DataTemplate();
                 FrameworkElementFactory tblSize = new FrameworkElementFactory(typeof(TextBlock));
                 tplSize.VisualTree = tblSize;
@@ -1078,6 +1079,62 @@ namespace MasterSchedule.Views
 
             if (this.IsLoaded)
                 dgDeliveryStatus.Visibility = Visibility.Collapsed;
+        }
+
+        private void dgSupplierDeliveryDetail_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            try
+            {
+                
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        private void dgSupplierDeliveryDetail_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var x = dgSupplierDeliveryDetail.CurrentCell;
+            //var sizeClicked = e..GetValue(TagProperty) as SizeRunModel;
+        }
+
+        private void dgSupplierDeliveryDetail_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
+        {
+            try
+            {
+                e.Cancel = true;
+                var sizeClicked = e.Column.GetValue(TagProperty) as SizeRunModel;
+                if (sizeClicked == null)
+                    return;
+
+                string sizeToCompare = "";
+                if (!String.IsNullOrEmpty(sizeClicked.OutsoleSize))
+                    sizeToCompare = sizeClicked.OutsoleSize;
+                else
+                    sizeToCompare = sizeClicked.SizeNo;
+
+                var oswhCheckCurrentList = currentOutsoleMaterialCheckingList.Where(f => f.OutsoleSupplierId == supplierClicked.OutsoleSupplierId).ToList();
+                var rowEditting = (DataRowView)e.Row.Item;
+                var dateList = oswhCheckCurrentList.Select(s => String.Format("{0:dd/MM/yyyy}", s.CheckingDate)).ToList();
+                var dateEditting = rowEditting["Date"].ToString();
+                if (!dateList.Contains(dateEditting))
+                    return;
+                var oswhCheckByDate = oswhCheckCurrentList.Where(w => String.Format("{0:dd/MM/yyyy}", w.CheckingDate).Contains(dateEditting)).ToList();
+                var oswhCheckBySize = oswhCheckByDate.Where(w => w.SizeNo == sizeToCompare).ToList();
+                if (oswhCheckBySize.Where(w => w.Reject > 0).Count() <= 0)
+                    return;
+
+                BorrowOutsoleWHMaterialWindow window = new BorrowOutsoleWHMaterialWindow(oswhCheckBySize, supplierClicked, oswhCheckCurrentList);
+                window.ShowDialog();
+
+                //MessageBox.Show($"Clicked {sizeClicked.SizeNo}", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private enum PressMode

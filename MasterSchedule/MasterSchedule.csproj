@@ -338,6 +338,9 @@
       <DependentUpon>AssemblyScheduleDelayReportWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Views\BorrowOutsoleWHMaterialWindow.xaml.cs">
+      <DependentUpon>BorrowOutsoleWHMaterialWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ChartScheduleWindow.xaml.cs">
       <DependentUpon>ChartScheduleWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -952,6 +955,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\AssemblyScheduleDelayReportWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\BorrowOutsoleWHMaterialWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

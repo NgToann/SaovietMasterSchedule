@@ -7,6 +7,7 @@ namespace MasterSchedule.Models
 {
     public class OutsoleMaterialCheckingModel
     {
+        public int OSCheckingId { get; set; }
         public string WorkerId { get; set; }
         public string ProductNo { get; set; }
         public DateTime CheckingDate { get; set; }
@@ -20,6 +21,8 @@ namespace MasterSchedule.Models
         public int ErrorId { get; set; }
         public int Excess { get; set; }
         public int WorkingCard { get; set; }
+        public int QuantityBorrow { get; set; }
+        public string ProductNoBorrow { get; set; }
         public bool UpdateReject { get; set; } = true;
         public bool UpdateQuantity { get; set; } = true;
         public bool UpdateReturnReject { get; set; } = true;

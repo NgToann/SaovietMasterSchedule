@@ -907,8 +907,7 @@ namespace MasterSchedule.Views
             {
                 def = PrivateDefineController.GetDefine();
                 if (!string.IsNullOrEmpty(def.Factory) && !def.Factory.Equals("THIENLOC"))
-                {
-
+                { 
                     var productNoListWithAccount = OrdersController.Select().Where(w => account.TypeOfShoes != -1 ? w.TypeOfShoes == account.TypeOfShoes : w.TypeOfShoes != -16111992).Select(s => s.ProductNo).ToList();
                     offDayList = OffDayController.Select();
                     sewingMasterSourceList = SewingMasterController.SelectSewingMasterSource().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
