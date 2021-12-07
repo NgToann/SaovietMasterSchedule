@@ -128,6 +128,8 @@ namespace MasterSchedule.Views
 
             if (bwLoad.IsBusy == false)
             {
+                prgStatus.Value = 0;
+                lblStatus.Text = "Loading PO ...";
                 this.Cursor = Cursors.Wait;
                 bwLoad.RunWorkerAsync();
             }
@@ -177,16 +179,14 @@ namespace MasterSchedule.Views
 
             Dispatcher.Invoke(new Action(() =>
             {
-                lblStatus.Text = "Loading PO ...";
                 prgStatus.Maximum = orderList.Count();
             }));
-            int index = 1;
             for (int i = 0; i <= orderList.Count - 1; i++)
             {
                 Dispatcher.Invoke(new Action(() =>
                 {
-                    lblStatus.Text = String.Format("Loading {0} / {1} PO", index, orderList.Count());
-                    prgStatus.Value = index;
+                    lblStatus.Text = String.Format("Loading {0} / {1} PO", i + 1, orderList.Count());
+                    prgStatus.Value = i + 1;
                 }));
                 OrdersModel order = orderList[i];
                 SockliningMasterViewModel sockliningMasterView = new SockliningMasterViewModel
@@ -297,8 +297,6 @@ namespace MasterSchedule.Views
                 {
                     sockliningMasterView.SockliningFinishDateForeground = Brushes.Red;
                 }
-
-                index++;
                 sockliningMasterViewList.Add(sockliningMasterView);
             }
             sockliningMasterViewList = sockliningMasterViewList.OrderBy(s => s.SockliningLine).ThenBy(s => s.Sequence).ToList();

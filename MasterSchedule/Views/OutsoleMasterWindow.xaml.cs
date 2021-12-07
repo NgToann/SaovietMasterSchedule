@@ -68,7 +68,7 @@ namespace MasterSchedule.Views
         List<OutsoleMaterialCheckingModel> outsoleMaterialCheckingWHList;
         List<OutsoleSuppliersModel> suppilerList;
         List<SizeRunModel> sizeRunList;
-        List<RawMaterialViewModelNew> rawMaterialViewModelNewList;
+        //List<RawMaterialViewModelNew> rawMaterialViewModelNewList;
         List<OutsoleMasterSourceModel> outsoleMasterSourceList;
 
 
@@ -131,7 +131,7 @@ namespace MasterSchedule.Views
             sizeRunList = new List<SizeRunModel>();
 
             outsoleReleaseMaterialList = new List<OutsoleReleaseMaterialModel>();
-            rawMaterialViewModelNewList = new List<RawMaterialViewModelNew>();
+            //rawMaterialViewModelNewList = new List<RawMaterialViewModelNew>();
 
             outsoleMasterSourceList = new List<OutsoleMasterSourceModel>();
 
@@ -165,6 +165,8 @@ namespace MasterSchedule.Views
 
             if (bwLoad.IsBusy == false)
             {
+                prgStatus.Value = 0;
+                lblStatus.Text = "Loading PO ...";
                 prgStatus.Visibility = Visibility.Visible;
                 this.Cursor = Cursors.Wait;
                 bwLoad.RunWorkerAsync();
@@ -187,15 +189,25 @@ namespace MasterSchedule.Views
             outsoleMaterialList = OutsoleMaterialController.Select();
             outsoleMaterialCheckingWHList = OutsoleMaterialCheckingController.SelectByPOAvailable();
             suppilerList = OutsoleSuppliersController.Select();
-            rawMaterialViewModelNewList = RawMaterialController.Select_1();
+            //rawMaterialViewModelNewList = RawMaterialController.Select_1();
             sizeRunList = SizeRunController.SelectIsEnable();
 
             int[] materialIdUpperArray = { 1, 2, 3, 4, 10 };
             int[] materialIdSewingArray = { 5, 7 };
             int[] materialIdOutsoleArray = { 6 };
             int[] materialIdAssemblyArray = { 8, 9 };
+
+            Dispatcher.Invoke(new Action(() =>
+            {
+                prgStatus.Maximum = orderList.Count();
+            }));
             for (int i = 0; i <= orderList.Count - 1; i++)
             {
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    lblStatus.Text = String.Format("Loading {0} / {1} PO", i + 1, orderList.Count());
+                    prgStatus.Value = i + 1;
+                }));
                 OrdersModel order = orderList[i];
                 OutsoleMasterViewModel outsoleMasterView = new OutsoleMasterViewModel
                 {
@@ -223,38 +235,79 @@ namespace MasterSchedule.Views
                 }
                 outsoleMasterView.MemoId = memoId;
 
-                // Outsole Material Follow Material Input
-                var rawMaterialViewModelNew = rawMaterialViewModelNewList.FirstOrDefault(f => f.ProductNo == order.ProductNo);
-                outsoleMasterView.OSMatsArrivalForeground = Brushes.Blue;
-                outsoleMasterView.OSMatsArrivalBackground = Brushes.Transparent;
+                //// Outsole Material Follow Material Input
+                //var rawMaterialViewModelNew = rawMaterialViewModelNewList.FirstOrDefault(f => f.ProductNo == order.ProductNo);
+                //outsoleMasterView.OSMatsArrivalForeground = Brushes.Blue;
+                //outsoleMasterView.OSMatsArrivalBackground = Brushes.Transparent;
 
-                // Deliveried
-                if (String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_Remarks) &&
-                    !String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_ActualDate))
+                //// Deliveried
+                //if (String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_Remarks) &&
+                //    !String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_ActualDate))
+                //{
+                //    outsoleMasterView.OSMatsArrival = rawMaterialViewModelNew.OUTSOLE_ActualDate;
+                //    outsoleMasterView.OSMatsArrivalOrginal = rawMaterialViewModelNew.OUTSOLE_ActualDate_DATE;
+                //}
+                //else
+                //{
+                //    outsoleMasterView.OSMatsArrivalForeground = Brushes.Black;
+                //    outsoleMasterView.OSMatsArrival = rawMaterialViewModelNew.OUTSOLE_ETD;
+
+                //    // ETD Late
+                //    if (rawMaterialViewModelNew.OUTSOLE_ETD_DATE < DateTime.Now.Date &&
+                //        rawMaterialViewModelNew.OUTSOLE_ETD_DATE != dtDefault)
+                //        outsoleMasterView.OSMatsArrivalBackground = Brushes.Red;
+
+                //    // Still Have Balance
+                //    if (!String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_Remarks))
+                //    {
+                //        outsoleMasterView.OSMatsArrivalBackground = Brushes.Yellow;
+                //        if (rawMaterialViewModelNew.OUTSOLE_ETD_DATE < DateTime.Now.Date &&
+                //            rawMaterialViewModelNew.OUTSOLE_ETD_DATE != dtDefault)
+                //            outsoleMasterView.OSMatsArrivalForeground = Brushes.Red;
+                //    }
+                //}
+                // only for outsole material type
+                var osRawMaterial = outsoleRawMaterialList.Where(w => w.ProductNo == order.ProductNo).ToList();
+                var actualDateList = osRawMaterial.Select(s => s.ActualDate).ToList();
+                if (actualDateList.Count() > 0 && actualDateList.Contains(dtDefault) == false)
                 {
-                    outsoleMasterView.OSMatsArrival = rawMaterialViewModelNew.OUTSOLE_ActualDate;
-                    outsoleMasterView.OSMatsArrivalOrginal = rawMaterialViewModelNew.OUTSOLE_ActualDate_DATE;
+                    outsoleMasterView.OSMatsArrival = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", actualDateList.Max());
+                    outsoleMasterView.OSMatsArrivalForeground = Brushes.Blue;
+                    outsoleMasterView.OSMatsArrivalBackground = Brushes.Transparent;
                 }
                 else
                 {
-                    outsoleMasterView.OSMatsArrivalForeground = Brushes.Black;
-                    outsoleMasterView.OSMatsArrival = rawMaterialViewModelNew.OUTSOLE_ETD;
-
-                    // ETD Late
-                    if (rawMaterialViewModelNew.OUTSOLE_ETD_DATE < DateTime.Now.Date &&
-                        rawMaterialViewModelNew.OUTSOLE_ETD_DATE != dtDefault)
-                        outsoleMasterView.OSMatsArrivalBackground = Brushes.Red;
-
-                    // Still Have Balance
-                    if (!String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_Remarks))
+                    var etdDateList = osRawMaterial.Select(s => s.ETD).ToList();
+                    if (etdDateList.Count() > 0)
                     {
-                        outsoleMasterView.OSMatsArrivalBackground = Brushes.Yellow;
-                        if (rawMaterialViewModelNew.OUTSOLE_ETD_DATE < DateTime.Now.Date &&
-                            rawMaterialViewModelNew.OUTSOLE_ETD_DATE != dtDefault)
-                            outsoleMasterView.OSMatsArrivalForeground = Brushes.Red;
+                        outsoleMasterView.OSMatsArrival = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", etdDateList.Max());
+                        outsoleMasterView.OSMatsArrivalForeground = Brushes.Black;
+                        outsoleMasterView.OSMatsArrivalBackground = Brushes.Transparent;
+                        if (etdDateList.Max() < DateTime.Now.Date)
+                        {
+                            outsoleMasterView.OSMatsArrivalBackground = Brushes.Red;
+                        }
+                        else
+                        {
+                            var rawMaterial_PO = rawMaterialList.Where(w => w.ProductNo == order.ProductNo && materialIdOutsoleArray.Contains(w.MaterialTypeId) == true).ToList();
+                            if (rawMaterial_PO.Where(w => String.IsNullOrEmpty(w.Remarks) == false).Count() > 0)
+                            {
+                                outsoleMasterView.OSMatsArrivalBackground = Brushes.Yellow;
+                            }
+                        }
                     }
                 }
-                outsoleMasterView.OutsoleWHBalance = rawMaterialViewModelNew.OUTSOLE_Remarks;
+
+                //outsoleMasterView.OutsoleWHBalance = rawMaterialViewModelNew.OUTSOLE_Remarks;
+                RawMaterialModel outsoleRawMaterial = rawMaterialList.FirstOrDefault(f => f.ProductNo == order.ProductNo && materialIdOutsoleArray.Contains(f.MaterialTypeId));
+                if (outsoleRawMaterial != null)
+                {
+                    outsoleMasterView.OutsoleWHBalance = outsoleRawMaterial.Remarks;
+                }
+                else
+                {
+                    outsoleMasterView.OutsoleWHBalance = "";
+                }
 
                 var outsoleMaster = outsoleMasterList.FirstOrDefault(f => f.ProductNo == order.ProductNo);
                 if (outsoleMaster != null)
@@ -371,7 +424,7 @@ namespace MasterSchedule.Views
                 {
                     outsoleMasterView.ReleasedQuantity = "";
                 }
-                if (qtyReleased >= order.Quantity)
+                else if (qtyReleased >= order.Quantity)
                 {
                     DateTime releasedDate = outsoleReleaseMaterialList_D1.OrderBy(o => o.ModifiedTime).LastOrDefault().ModifiedTime;
                     outsoleMasterView.ReleasedQuantity = string.Format("{0:M/d}", releasedDate);
@@ -384,7 +437,7 @@ namespace MasterSchedule.Views
                 {
                     outsoleMasterView.ReleasedToWHInspectionQuantity = "";
                 }
-                if (qtyReleasedToWHInspection >= order.Quantity)
+                else if (qtyReleasedToWHInspection >= order.Quantity)
                 {
                     DateTime releasedToWHInspectionDate = outsoleReleaseMaterialToWHInspectionList_D1.OrderBy(o => o.ModifiedTime).LastOrDefault().ModifiedTime;
                     outsoleMasterView.ReleasedToWHInspectionQuantity = string.Format("{0:M/d}", releasedToWHInspectionDate);
@@ -401,29 +454,29 @@ namespace MasterSchedule.Views
             try
             {
                 def = PrivateDefineController.GetDefine();
+                var productNoListWithAccount = OrdersController.Select().Where(w => account.TypeOfShoes != -1 ? w.TypeOfShoes == account.TypeOfShoes : w.TypeOfShoes != -16111992).Select(s => s.ProductNo).ToList();
+                outsoleMasterList = OutsoleMasterController.Select_1().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
+                foreach (var os in outsoleMasterList)
+                {
+                    poSequenceSourceList.Add(new POSequenceModel
+                    {
+                        ProductNo = os.ProductNo,
+                        Sequence = os.Sequence,
+                        Id = string.Format("{0}-{1}", os.ProductNo, os.Sequence)
+                    });
+                }
+
                 if (!string.IsNullOrEmpty(def.Factory) && !def.Factory.Equals("THIENLOC"))
                 {
                     offDayList = OffDayController.Select();
-                    var productNoListWithAccount = OrdersController.Select().Where(w => account.TypeOfShoes != -1 ? w.TypeOfShoes == account.TypeOfShoes : w.TypeOfShoes != -16111992).Select(s => s.ProductNo).ToList();
                     productionMemoList = ProductionMemoController.Select().Where(w => productNoListWithAccount.Contains(w.ProductionNumbers)).ToList();
-                    outsoleMasterList = OutsoleMasterController.Select_1().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
                     outsoleMasterSourceList = OutsoleMasterController.SelectSource().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
-
-                    foreach (var os in outsoleMasterList)
-                    {
-                        poSequenceSourceList.Add(new POSequenceModel
-                        {
-                            ProductNo = os.ProductNo,
-                            Sequence = os.Sequence,
-                            Id = string.Format("{0}-{1}", os.ProductNo, os.Sequence)
-                        });
-                    }
 
                     Dispatcher.Invoke(new Action(() =>
                     {
-                        lblStatus.Text = "Loading PO ...";
                         prgStatus.Maximum = outsoleMasterSourceList.Count();
                     }));
+
                     int index = 1;
                     foreach (var osSource in outsoleMasterSourceList)
                     {
@@ -553,7 +606,6 @@ namespace MasterSchedule.Views
                         index++;
                     }
                     outsoleMasterViewList = outsoleMasterViewList.OrderBy(o => o.OutsoleLine).ThenBy(o => o.Sequence).ToList();
-
                 }
                 else
                 {
@@ -1144,118 +1196,109 @@ namespace MasterSchedule.Views
         {
             try
             {
-                if (!string.IsNullOrEmpty(def.Factory) && !def.Factory.Equals("THIENLOC"))
+                e.Result = true;
+                Dispatcher.Invoke(new Action(() =>
                 {
+                    prgStatus.Visibility = Visibility.Visible;
+                    prgStatus.Value = 0;
+                }));
+                var sourceList = outsoleMasterViewFindList.ToList();
 
-                    e.Result = true;
+                // Insert New PO
+                var productNoSourceList = outsoleMasterList.Select(s => s.ProductNo).ToList();
+                var insertNewPOList = sourceList.Where(w => !productNoSourceList.Contains(w.ProductNo)).ToList();
+                if (insertNewPOList.Count() > 0)
+                {
                     Dispatcher.Invoke(new Action(() =>
                     {
-                        prgStatus.Visibility = Visibility.Visible;
                         prgStatus.Value = 0;
+                        prgStatus.Maximum = insertNewPOList.Count();
+                        lblStatus.Text = "Inserting New PO ...";
                     }));
-                    var sourceList = outsoleMasterViewFindList.ToList();
-
-                    // Insert New PO
-                    var productNoSourceList = outsoleMasterList.Select(s => s.ProductNo).ToList();
-                    var insertNewPOList = sourceList.Where(w => !productNoSourceList.Contains(w.ProductNo)).ToList();
-                    if (insertNewPOList.Count() > 0)
+                    int index = 1;
+                    foreach (var item in insertNewPOList)
                     {
+                        InsertAModel(item, true);
                         Dispatcher.Invoke(new Action(() =>
                         {
-                            prgStatus.Value = 0;
-                            prgStatus.Maximum = insertNewPOList.Count();
-                            lblStatus.Text = "Inserting New PO ...";
+                            lblStatus.Text = String.Format("Inserting {0} / {1} PO", index, insertNewPOList.Count());
+                            prgStatus.Value = index;
                         }));
-                        int index = 1;
-                        foreach (var item in insertNewPOList)
-                        {
-                            InsertAModel(item, true);
-                            Dispatcher.Invoke(new Action(() =>
-                            {
-                                lblStatus.Text = String.Format("Inserting {0} / {1} PO", index, insertNewPOList.Count());
-                                prgStatus.Value = index;
-                            }));
-                            index++;
-                        }
+                        index++;
                     }
-
-                    // Update OSMaster Info
-                    var updateList = sourceList.Where(w => linesNeedSaving.Contains(w.OutsoleLine)).ToList();
-                    var osMasterUpdateList = new List<OutsoleMasterModel>();
-                    if (updateList.Count() > 0)
-                    {
-                        Dispatcher.Invoke(new Action(() =>
-                        {
-                            lblStatus.Text = "Saving PO ...";
-                            prgStatus.Value = 0;
-                            prgStatus.Maximum = updateList.Count();
-                        }));
-                        int index = 1;
-                        foreach (var item in updateList)
-                        {
-                            InsertAModel(item, false);
-                            Dispatcher.Invoke(new Action(() =>
-                            {
-                                lblStatus.Text = String.Format("Saving {0} / {1} PO", index, updateList.Count());
-                                prgStatus.Value = index;
-                            }));
-                            index++;
-                        }
-                        linesNeedSaving.Clear();
-                    }
-
-                    if (sourceList.Count() == outsoleMasterViewList.Count() && account.OutsoleMaster)
-                    {
-                        // Get the sequence list
-                        int sqNo = 0;
-                        var productNoList = sourceList.Select(s => s.ProductNo).ToList();
-                        var sequenceCurrentList = new List<POSequenceModel>();
-                        foreach (var po in productNoList)
-                        {
-                            sequenceCurrentList.Add(new POSequenceModel
-                            {
-                                ProductNo = po,
-                                Sequence = sqNo,
-                                Id = po + "-" + sqNo.ToString()
-                            });
-                            sqNo++;
-                        }
-
-                        var sqNeedUpdateList = new List<POSequenceModel>();
-                        foreach (var item in sequenceCurrentList)
-                        {
-                            var checkSqChange = poSequenceSourceList.FirstOrDefault(f => f.Id == item.Id);
-                            if (checkSqChange == null)
-                                sqNeedUpdateList.Add(item);
-                        }
-                        poSequenceSourceList.Clear();
-                        poSequenceSourceList = sequenceCurrentList.ToList();
-                        if (sqNeedUpdateList.Count() > 0)
-                        {
-                            Dispatcher.Invoke(new Action(() =>
-                            {
-                                lblStatus.Text = "Saving Sequence PO ...";
-                                prgStatus.Value = 0;
-                                prgStatus.Maximum = sqNeedUpdateList.Count();
-                            }));
-                            int index = 1;
-                            foreach (var item in sqNeedUpdateList)
-                            {
-                                Dispatcher.Invoke(new Action(() =>
-                                {
-                                    lblStatus.Text = String.Format("Saving {0} / {1} Sq", index, sqNeedUpdateList.Count());
-                                    prgStatus.Value = index;
-                                }));
-                                CommonController.UpdateSequenceByPO(item.ProductNo, item.Sequence, "Outsole");
-                                index++;
-                            }
-                        }
-                    }
-
                 }
-                else
+
+                // Update OSMaster Info
+                var updateList = sourceList.Where(w => linesNeedSaving.Contains(w.OutsoleLine)).ToList();
+                var osMasterUpdateList = new List<OutsoleMasterModel>();
+                if (updateList.Count() > 0)
                 {
-                    bwInsert_DoWork_Before(sender, e);
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        lblStatus.Text = "Saving PO ...";
+                        prgStatus.Value = 0;
+                        prgStatus.Maximum = updateList.Count();
+                    }));
+                    int index = 1;
+                    foreach (var item in updateList)
+                    {
+                        InsertAModel(item, false);
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            lblStatus.Text = String.Format("Saving {0} / {1} PO", index, updateList.Count());
+                            prgStatus.Value = index;
+                        }));
+                        index++;
+                    }
+                    linesNeedSaving.Clear();
+                }
+
+                if (sourceList.Count() == outsoleMasterViewList.Count() && account.OutsoleMaster)
+                {
+                    // Get the sequence list
+                    int sqNo = 0;
+                    var productNoList = sourceList.Select(s => s.ProductNo).ToList();
+                    var sequenceCurrentList = new List<POSequenceModel>();
+                    foreach (var po in productNoList)
+                    {
+                        sequenceCurrentList.Add(new POSequenceModel
+                        {
+                            ProductNo = po,
+                            Sequence = sqNo,
+                            Id = po + "-" + sqNo.ToString()
+                        });
+                        sqNo++;
+                    }
+
+                    var sqNeedUpdateList = new List<POSequenceModel>();
+                    foreach (var item in sequenceCurrentList)
+                    {
+                        var checkSqChange = poSequenceSourceList.FirstOrDefault(f => f.Id == item.Id);
+                        if (checkSqChange == null)
+                            sqNeedUpdateList.Add(item);
+                    }
+                    poSequenceSourceList.Clear();
+                    poSequenceSourceList = sequenceCurrentList.ToList();
+                    if (sqNeedUpdateList.Count() > 0)
+                    {
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            lblStatus.Text = "Saving Sequence PO ...";
+                            prgStatus.Value = 0;
+                            prgStatus.Maximum = sqNeedUpdateList.Count();
+                        }));
+                        int index = 1;
+                        foreach (var item in sqNeedUpdateList)
+                        {
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                lblStatus.Text = String.Format("Saving {0} / {1} Sq", index, sqNeedUpdateList.Count());
+                                prgStatus.Value = index;
+                            }));
+                            CommonController.UpdateSequenceByPO(item.ProductNo, item.Sequence, "Outsole");
+                            index++;
+                        }
+                    }
                 }
             }
             catch (Exception ex)

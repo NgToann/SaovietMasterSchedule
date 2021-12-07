@@ -60,7 +60,7 @@ namespace MasterSchedule.Views
         List<OutsoleRawMaterialModel> outsoleRawMaterialList;
         List<OutsoleMaterialModel> outsoleMaterialList;
         List<OutsoleReleaseMaterialModel> outsoleReleaseMaterialList;
-        List<RawMaterialViewModelNew> rawMaterialViewModelNewList;
+        //List<RawMaterialViewModelNew> rawMaterialViewModelNewList;
 
         List<AssemblyMasterSourceModel> assemblySourceList;
 
@@ -143,13 +143,10 @@ namespace MasterSchedule.Views
                 colETD.CanUserSort = true;
             }
 
-            //if (account.Simulation == true)
-            //{
-            //    btnEnableSimulation.Visibility = Visibility.Visible;
-            //}
-
             if (bwLoad.IsBusy == false)
             {
+                prgStatus.Value = 0;
+                lblStatus.Text = "Loading PO ...";
                 this.Cursor = Cursors.Wait;
                 bwLoad.RunWorkerAsync();
             }
@@ -186,7 +183,7 @@ namespace MasterSchedule.Views
             outsoleMaterialList = OutsoleMaterialController.Select();
 
             outsoleReleaseMaterialList = OutsoleReleaseMaterialController.SelectByOutsoleMaster();
-            rawMaterialViewModelNewList = RawMaterialController.Select_1();
+            //rawMaterialViewModelNewList = RawMaterialController.Select_1();
 
 
             int[] materialIdUpperArray = { 1, 2, 3, 4, 10 };
@@ -195,8 +192,20 @@ namespace MasterSchedule.Views
             int[] materialIdAssemblyArray = { 8 };
             int[] materialIdSockliningArray = { 9 };
             int[] materialIdCartonArray = { 11 };
+
+            Dispatcher.Invoke(new Action(() =>
+            {
+                prgStatus.Maximum = orderList.Count();
+            }));
+
             for (int i = 0; i <= orderList.Count - 1; i++)
             {
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    lblStatus.Text = String.Format("Loading {0} / {1} PO", i + 1, orderList.Count());
+                    prgStatus.Value = i + 1;
+                }));
+
                 OrdersModel order = orderList[i];
                 AssemblyMasterViewModel assemblyMasterView = new AssemblyMasterViewModel
                 {
@@ -301,30 +310,62 @@ namespace MasterSchedule.Views
                 //}
 
                 // Outsole Material Follow Material Input
-                var rawMaterialViewModelNew = rawMaterialViewModelNewList.FirstOrDefault(f => f.ProductNo == order.ProductNo);
-                assemblyMasterView.OSMatsArrivalForeground = Brushes.Blue;
-                assemblyMasterView.OSMatsArrivalBackground = Brushes.Transparent;
-                // Deliveried
-                if (String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_Remarks) &&
-                    !String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_ActualDate))
-                    assemblyMasterView.OSMatsArrival = rawMaterialViewModelNew.OUTSOLE_ActualDate;
+                //var rawMaterialViewModelNew = rawMaterialViewModelNewList.FirstOrDefault(f => f.ProductNo == order.ProductNo);
+                //assemblyMasterView.OSMatsArrivalForeground = Brushes.Blue;
+                //assemblyMasterView.OSMatsArrivalBackground = Brushes.Transparent;
+                //// Deliveried
+                //if (String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_Remarks) &&
+                //    !String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_ActualDate))
+                //    assemblyMasterView.OSMatsArrival = rawMaterialViewModelNew.OUTSOLE_ActualDate;
+                //else
+                //{
+                //    assemblyMasterView.OSMatsArrivalForeground = Brushes.Black;
+                //    assemblyMasterView.OSMatsArrival = rawMaterialViewModelNew.OUTSOLE_ETD;
+
+                //    // ETD Late
+                //    if (rawMaterialViewModelNew.OUTSOLE_ETD_DATE < DateTime.Now.Date &&
+                //        rawMaterialViewModelNew.OUTSOLE_ETD_DATE != dtDefault)
+                //        assemblyMasterView.OSMatsArrivalBackground = Brushes.Red;
+
+                //    // Still Have Balance
+                //    if (!String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_Remarks))
+                //    {
+                //        assemblyMasterView.OSMatsArrivalBackground = Brushes.Yellow;
+                //        if (rawMaterialViewModelNew.OUTSOLE_ETD_DATE < DateTime.Now.Date &&
+                //            rawMaterialViewModelNew.OUTSOLE_ETD_DATE != dtDefault)
+                //            assemblyMasterView.OSMatsArrivalForeground = Brushes.Red;
+                //    }
+                //}
+
+                // only for outsole material type
+                var osRawMaterial = outsoleRawMaterialList.Where(w => w.ProductNo == order.ProductNo).ToList();
+                var actualDateList = osRawMaterial.Select(s => s.ActualDate).ToList();
+                if (actualDateList.Count() > 0 && actualDateList.Contains(dtDefault) == false)
+                {
+                    assemblyMasterView.OSMatsArrival = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", actualDateList.Max());
+                    assemblyMasterView.OSMatsArrivalForeground = Brushes.Blue;
+                    assemblyMasterView.OSMatsArrivalBackground = Brushes.Transparent;
+                }
                 else
                 {
-                    assemblyMasterView.OSMatsArrivalForeground = Brushes.Black;
-                    assemblyMasterView.OSMatsArrival = rawMaterialViewModelNew.OUTSOLE_ETD;
-
-                    // ETD Late
-                    if (rawMaterialViewModelNew.OUTSOLE_ETD_DATE < DateTime.Now.Date &&
-                        rawMaterialViewModelNew.OUTSOLE_ETD_DATE != dtDefault)
-                        assemblyMasterView.OSMatsArrivalBackground = Brushes.Red;
-
-                    // Still Have Balance
-                    if (!String.IsNullOrEmpty(rawMaterialViewModelNew.OUTSOLE_Remarks))
+                    var etdDateList = osRawMaterial.Select(s => s.ETD).ToList();
+                    if (etdDateList.Count() > 0)
                     {
-                        assemblyMasterView.OSMatsArrivalBackground = Brushes.Yellow;
-                        if (rawMaterialViewModelNew.OUTSOLE_ETD_DATE < DateTime.Now.Date &&
-                            rawMaterialViewModelNew.OUTSOLE_ETD_DATE != dtDefault)
-                            assemblyMasterView.OSMatsArrivalForeground = Brushes.Red;
+                        assemblyMasterView.OSMatsArrival = String.Format(new CultureInfo("en-US"), "{0:dd-MMM}", etdDateList.Max());
+                        assemblyMasterView.OSMatsArrivalForeground = Brushes.Black;
+                        assemblyMasterView.OSMatsArrivalBackground = Brushes.Transparent;
+                        if (etdDateList.Max() < DateTime.Now.Date)
+                        {
+                            assemblyMasterView.OSMatsArrivalBackground = Brushes.Red;
+                        }
+                        else
+                        {
+                            var rawMaterial_PO = rawMaterialList.Where(w => w.ProductNo == order.ProductNo && materialIdOutsoleArray.Contains(w.MaterialTypeId) == true).ToList();
+                            if (rawMaterial_PO.Where(w => String.IsNullOrEmpty(w.Remarks) == false).Count() > 0)
+                            {
+                                assemblyMasterView.OSMatsArrivalBackground = Brushes.Yellow;
+                            }
+                        }
                     }
                 }
 
@@ -468,7 +509,7 @@ namespace MasterSchedule.Views
                 {
                     assemblyMasterView.ReleasedQuantity = "";
                 }
-                if (qtyReleased >= order.Quantity)
+                else if (qtyReleased >= order.Quantity)
                 {
                     DateTime releasedDate = assemblyReleaseList_D1.OrderBy(a => a.ModifiedTime).LastOrDefault().ModifiedTime;
                     assemblyMasterView.ReleasedQuantity = string.Format("{0:M/d}", releasedDate);
@@ -481,7 +522,7 @@ namespace MasterSchedule.Views
                 {
                     assemblyMasterView.OutsoleReleasedQuantity = "";
                 }
-                if (qtyOutsoleReleased >= order.Quantity)
+                else if (qtyOutsoleReleased >= order.Quantity)
                 {
                     DateTime outsoleReleaseDate = outsoleReleaseList_D1.OrderBy(o => o.ModifiedTime).LastOrDefault().ModifiedTime;
                     assemblyMasterView.OutsoleReleasedQuantity = String.Format("{0:M/d}", outsoleReleaseDate);
@@ -497,26 +538,24 @@ namespace MasterSchedule.Views
             try
             {
                 def = PrivateDefineController.GetDefine();
+                var productNoListWithAccount = OrdersController.Select().Where(w => account.TypeOfShoes != -1 ? w.TypeOfShoes == account.TypeOfShoes : w.TypeOfShoes != -16111992).Select(s => s.ProductNo).ToList();
+                assemblyMasterList = AssemblyMasterController.Select().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
+                foreach (var assy in assemblyMasterList)
+                {
+                    poSequenceSourceList.Add(new POSequenceModel
+                    {
+                        ProductNo = assy.ProductNo,
+                        Sequence = assy.Sequence,
+                        Id = string.Format("{0}-{1}", assy.ProductNo, assy.Sequence)
+                    });
+                }
                 if (!string.IsNullOrEmpty(def.Factory) && !def.Factory.Equals("THIENLOC"))
                 {
-
                     offDayList = OffDayController.Select();
-                    var productNoListWithAccount = OrdersController.Select().Where(w => account.TypeOfShoes != -1 ? w.TypeOfShoes == account.TypeOfShoes : w.TypeOfShoes != -16111992).Select(s => s.ProductNo).ToList();
                     productionMemoList = ProductionMemoController.Select().Where(w => productNoListWithAccount.Contains(w.ProductionNumbers)).ToList();
                     assemblySourceList = AssemblyMasterController.SelectAssemblySource().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
-                    assemblyMasterList = AssemblyMasterController.Select().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
-                    foreach (var assy in assemblyMasterList)
-                    {
-                        poSequenceSourceList.Add(new POSequenceModel
-                        {
-                            ProductNo = assy.ProductNo,
-                            Sequence = assy.Sequence,
-                            Id = string.Format("{0}-{1}", assy.ProductNo, assy.Sequence)
-                        });
-                    }
                     Dispatcher.Invoke(new Action(() =>
                     {
-                        lblStatus.Text = "Loading PO ...";
                         prgStatus.Maximum = assemblySourceList.Count();
                     }));
                     int index = 1;
@@ -1197,124 +1236,117 @@ namespace MasterSchedule.Views
         {
             try
             {
-                if (!string.IsNullOrEmpty(def.Factory) && !def.Factory.Equals("THIENLOC"))
+                e.Result = true;
+                Dispatcher.Invoke(new Action(() =>
                 {
-                    e.Result = true;
+                    prgStatus.Visibility = Visibility.Visible;
+                    prgStatus.Value = 0;
+                }));
+                var sourceList = assemblyMasterViewFindList.ToList();
+
+                // Insert New PO
+                var productNoSourceList = assemblyMasterList.Select(s => s.ProductNo).Distinct().ToList();
+                var insertNewPOList = sourceList.Where(w => !productNoSourceList.Contains(w.ProductNo)).ToList();
+                if (insertNewPOList.Count() > 0)
+                {
                     Dispatcher.Invoke(new Action(() =>
                     {
-                        prgStatus.Visibility = Visibility.Visible;
                         prgStatus.Value = 0;
+                        prgStatus.Maximum = insertNewPOList.Count();
+                        lblStatus.Text = "Inserting New PO ...";
                     }));
-                    var sourceList = assemblyMasterViewFindList.ToList();
-
-                    // Insert New PO
-                    var productNoSourceList = assemblyMasterList.Select(s => s.ProductNo).Distinct().ToList();
-                    var insertNewPOList = sourceList.Where(w => !productNoSourceList.Contains(w.ProductNo)).ToList();
-                    if (insertNewPOList.Count() > 0)
+                    int index = 1;
+                    foreach (var item in insertNewPOList)
                     {
+                        InsertAModel(item, true);
                         Dispatcher.Invoke(new Action(() =>
                         {
-                            prgStatus.Value = 0;
-                            prgStatus.Maximum = insertNewPOList.Count();
-                            lblStatus.Text = "Inserting New PO ...";
+                            lblStatus.Text = String.Format("Saving {0} / {1} PO", index, insertNewPOList.Count());
+                            prgStatus.Value = index;
                         }));
-                        int index = 1;
-                        foreach (var item in insertNewPOList)
-                        {
-                            InsertAModel(item, true);
-                            Dispatcher.Invoke(new Action(() =>
-                            {
-                                lblStatus.Text = String.Format("Saving {0} / {1} PO", index, insertNewPOList.Count());
-                                prgStatus.Value = index;
-                            }));
-                            index++;
-                        }
+                        index++;
                     }
+                }
 
-
-                    // Update AssemblyMaster Info
-                    var updateList = sourceList.Where(w => linesNeedSaving.Contains(w.AssemblyLine)).ToList();
+                // Update AssemblyMaster Info
+                var updateList = sourceList.Where(w => linesNeedSaving.Contains(w.AssemblyLine)).ToList();
+                if (updateList.Count() > 0)
+                {
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        lblStatus.Text = "Saving PO ...";
+                        prgStatus.Value = 0;
+                        prgStatus.Maximum = updateList.Count();
+                    }));
+                    int index_1 = 1;
                     if (updateList.Count() > 0)
                     {
-                        Dispatcher.Invoke(new Action(() =>
+                        foreach (var item in updateList)
                         {
-                            lblStatus.Text = "Saving PO ...";
-                            prgStatus.Value = 0;
-                            prgStatus.Maximum = updateList.Count();
-                        }));
-                        int index_1 = 1;
-                        if (updateList.Count() > 0)
-                        {
-                            foreach (var item in updateList)
+                            InsertAModel(item, false);
+                            Dispatcher.Invoke(new Action(() =>
                             {
-                                InsertAModel(item, false);
-                                Dispatcher.Invoke(new Action(() =>
-                                {
-                                    lblStatus.Text = String.Format("Saving {0} / {1} PO", index_1, updateList.Count());
-                                    prgStatus.Value = index_1;
-                                }));
-                                index_1++;
-                            }
-                            linesNeedSaving.Clear();
+                                lblStatus.Text = String.Format("Saving {0} / {1} PO", index_1, updateList.Count());
+                                prgStatus.Value = index_1;
+                            }));
+                            index_1++;
                         }
+                        linesNeedSaving.Clear();
+                    }
+                }
+
+
+                // Update the Sequence
+                if (sourceList.Count() == assemblyMasterViewList.Count())
+                {
+                    // Get the sequence list
+                    int sqNo = 0;
+                    var productNoList = sourceList.Select(s => s.ProductNo).ToList();
+                    var sequenceCurrentList = new List<POSequenceModel>();
+                    foreach (var po in productNoList)
+                    {
+                        sequenceCurrentList.Add(new POSequenceModel
+                        {
+                            ProductNo = po,
+                            Sequence = sqNo,
+                            Id = po + "-" + sqNo.ToString()
+                        });
+                        sqNo++;
                     }
 
-
-                    // Update the Sequence
-                    if (sourceList.Count() == assemblyMasterViewList.Count())
+                    var sqNeedUpdateList = new List<POSequenceModel>();
+                    foreach (var item in sequenceCurrentList)
                     {
-                        // Get the sequence list
-                        int sqNo = 0;
-                        var productNoList = sourceList.Select(s => s.ProductNo).ToList();
-                        var sequenceCurrentList = new List<POSequenceModel>();
-                        foreach (var po in productNoList)
+                        var checkSqChange = poSequenceSourceList.FirstOrDefault(f => f.Id == item.Id);
+                        if (checkSqChange == null)
+                            sqNeedUpdateList.Add(item);
+                    }
+                    poSequenceSourceList.Clear();
+                    poSequenceSourceList = sequenceCurrentList.ToList();
+                    if (sqNeedUpdateList.Count() > 0)
+                    {
+                        Dispatcher.Invoke(new Action(() =>
                         {
-                            sequenceCurrentList.Add(new POSequenceModel
-                            {
-                                ProductNo = po,
-                                Sequence = sqNo,
-                                Id = po + "-" + sqNo.ToString()
-                            });
-                            sqNo++;
-                        }
-
-                        var sqNeedUpdateList = new List<POSequenceModel>();
-                        foreach (var item in sequenceCurrentList)
-                        {
-                            var checkSqChange = poSequenceSourceList.FirstOrDefault(f => f.Id == item.Id);
-                            if (checkSqChange == null)
-                                sqNeedUpdateList.Add(item);
-                        }
-                        poSequenceSourceList.Clear();
-                        poSequenceSourceList = sequenceCurrentList.ToList();
-                        if (sqNeedUpdateList.Count() > 0)
+                            lblStatus.Text = "Saving Sequence PO ...";
+                            prgStatus.Value = 0;
+                            prgStatus.Maximum = sqNeedUpdateList.Count();
+                        }));
+                        int index = 1;
+                        foreach (var item in sqNeedUpdateList)
                         {
                             Dispatcher.Invoke(new Action(() =>
                             {
-                                lblStatus.Text = "Saving Sequence PO ...";
-                                prgStatus.Value = 0;
-                                prgStatus.Maximum = sqNeedUpdateList.Count();
+                                lblStatus.Text = String.Format("Saving {0} / {1} Sq", index, sqNeedUpdateList.Count());
+                                prgStatus.Value = index;
                             }));
-                            int index = 1;
-                            foreach (var item in sqNeedUpdateList)
-                            {
-                                Dispatcher.Invoke(new Action(() =>
-                                {
-                                    lblStatus.Text = String.Format("Saving {0} / {1} Sq", index, sqNeedUpdateList.Count());
-                                    prgStatus.Value = index;
-                                }));
-                                CommonController.UpdateSequenceByPO(item.ProductNo, item.Sequence, "Assembly");
-                                index++;
-                            }
-                            //changingSequence = false;
+                            CommonController.UpdateSequenceByPO(item.ProductNo, item.Sequence, "Assembly");
+                            index++;
                         }
+                        //changingSequence = false;
                     }
                 }
-                else
-                {
-                    bwInsert_DoWork_Before(sender, e);
-                }
             }
+
             catch (Exception ex)
             {
                 Dispatcher.Invoke(new Action(() =>
