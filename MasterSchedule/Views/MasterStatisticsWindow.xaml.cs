@@ -33,10 +33,10 @@ namespace MasterSchedule.Views
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            string macAddress = "30-0E-D5-0F-BA-C8";
-            byte[] binaryData = Encoding.ASCII.GetBytes(macAddress);            
-            string strHex = BitConverter.ToString(binaryData);
-            Guid id = new Guid(binaryData);
+            //string macAddress = "30-0E-D5-0F-BA-C8";
+            //byte[] binaryData = Encoding.ASCII.GetBytes(macAddress);            
+            //string strHex = BitConverter.ToString(binaryData);
+            //Guid id = new Guid(binaryData);
             if (!bwLoad.IsBusy)
             {
                 this.Cursor = Cursors.Wait;

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,6 +14,8 @@ using MasterSchedule.Controllers;
 using MasterSchedule.Helpers;
 using MasterSchedule.Models;
 using MasterSchedule.ViewModels;
+
+using System.Reflection;
 namespace MasterSchedule.Views
 {
     /// <summary>
@@ -106,12 +109,17 @@ namespace MasterSchedule.Views
             {
                 var productNoListWithAccount = OrdersController.Select().Where(w => account.TypeOfShoes != -1 ? w.TypeOfShoes == account.TypeOfShoes : w.TypeOfShoes != -16111992).Select(s => s.ProductNo).ToList();
                 productionMemoList = ProductionMemoController.Select().Where(w => productNoListWithAccount.Contains(w.ProductionNumbers)).ToList();
-                rawMaterialViewModelNewList = RawMaterialController.Select_1().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
-                rejectUpperAccessoriesList = RejectController.GetRejectUpperAccessories();
+                Task t1 = new Task(() => { rawMaterialViewModelNewList = RawMaterialController.Select_1().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList(); });
+                t1.Start();
+                Task t2 = new Task(() => { rejectUpperAccessoriesList = RejectController.GetRejectUpperAccessories(); });
+                t2.Start();
+                Task.WaitAll(t1, t2);
+
                 int index = 1;
                 foreach (var x in rawMaterialViewModelNewList)
                 {
-                    Dispatcher.Invoke(new Action(() => {
+                    Dispatcher.Invoke(new Action(() =>
+                    {
                         lblStatus.Text = String.Format("Creating {0}/{1} rows ...", index, rawMaterialViewModelNewList.Count());
                     }));
                     rawMaterialViewList.Add(ConvertX(x));
@@ -120,20 +128,30 @@ namespace MasterSchedule.Views
             }
             else
             {
-                ordersList = OrdersController.Select();
-                rawMaterialList = RawMaterialController.Select();
-                orderExtraList = OrderExtraController.Select();
-                sewingMasterList = SewingMasterController.SelectCutAStartDate();
+                Task t1 = new Task(() => { ordersList = OrdersController.Select(); });
+                t1.Start();
+                Task t2 = new Task(() => { rawMaterialList = RawMaterialController.Select(); });
+                t2.Start();
+                Task t3 = new Task(() => { orderExtraList = OrderExtraController.Select(); });
+                t3.Start();
+                Task t4 = new Task(() => { sewingMasterList = SewingMasterController.SelectCutAStartDate(); });
+                t4.Start();
+                Task t5 = new Task(() => { outsoleRawMaterialList = OutsoleRawMaterialController.Select(); });
+                t5.Start();
+                Task t6 = new Task(() => { outsoleMaterialList = OutsoleMaterialController.Select(); });
+                t6.Start();
+                Task t7 = new Task(() => { assemblyMasterList = AssemblyMasterController.Select(); });
+                t7.Start();
+                Task t8 = new Task(() => { outsoleMasterList = OutsoleMasterController.Select(); });
+                t8.Start();
                 productionMemoList = ProductionMemoController.Select();
-                outsoleRawMaterialList = OutsoleRawMaterialController.Select();
-                outsoleMaterialList = OutsoleMaterialController.Select();
-                assemblyMasterList = AssemblyMasterController.Select();
-                outsoleMasterList = OutsoleMasterController.Select();
+                Task.WaitAll(t1, t2, t3, t4, t5, t6, t7, t8);
 
                 int index = 1;
                 foreach (OrdersModel orders in ordersList)
                 {
-                    Dispatcher.Invoke(new Action(() => {
+                    Dispatcher.Invoke(new Action(() =>
+                    {
                         lblStatus.Text = String.Format("Creating {0}/{1} rows ...", index, ordersList.Count());
                     }));
                     RawMaterialViewModel rawMaterialView = Convert(orders);
@@ -143,7 +161,6 @@ namespace MasterSchedule.Views
                     index++;
                 }
             }
-
         }
         
         private RawMaterialViewModel Convert(OrdersModel orders)

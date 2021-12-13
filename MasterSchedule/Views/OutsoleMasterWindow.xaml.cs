@@ -15,6 +15,7 @@ using MasterSchedule.Controllers;
 using MasterSchedule.Helpers;
 using MasterSchedule.Models;
 using MasterSchedule.ViewModels;
+using System.Threading.Tasks;
 
 namespace MasterSchedule.Views
 {
@@ -175,22 +176,56 @@ namespace MasterSchedule.Views
 
         private void bwLoad_DoWork(object sender, DoWorkEventArgs e)
         {
+            Task t1 = new Task(() => {
+                orderList = OrdersController.Select();
+            });
+            t1.Start();
+
+            Task t2 = new Task(() => {
+                sewingMasterList = SewingMasterController.Select();
+            });
+            t2.Start();
+
+            Task t3 = new Task(() => { 
+                outsoleMasterList = OutsoleMasterController.Select_1();
+            });
+            t3.Start();
+
+            Task t4 = new Task(() => {
+                rawMaterialList = RawMaterialController.Select();
+            });
+            t4.Start();
+            Task t5 = new Task(() => {
+                outsoleReleaseMaterialList = OutsoleReleaseMaterialController.SelectByOutsoleMaster();
+            });
+            t5 .Start();
+            Task t6 = new Task(() => {
+                outsoleReleaseMaterialToWHInspectionList = OutsoleReleaseWHInspectionController.SelectOutsoleReleaseToWHInspectionByOutsoleMaster();
+            });
+            t6.Start();
+            Task t7 = new Task(() => {
+                outsoleRawMaterialList = OutsoleRawMaterialController.Select();
+            });
+            t7.Start();
+            Task t8 = new Task(() => {
+                outsoleMaterialList = OutsoleMaterialController.Select();
+            });
+            t8.Start();
+            Task t9 = new Task(() => {
+                outsoleMaterialCheckingWHList = OutsoleMaterialCheckingController.SelectByPOAvailable();
+            });
+            t9.Start();
+            Task t10 = new Task(() => {
+                sizeRunList = SizeRunController.SelectIsEnable();
+            });
+            t10.Start();
+
             offDayList = OffDayController.Select();
-            orderList = OrdersController.Select();
-            sewingMasterList = SewingMasterController.Select();
-            outsoleMasterList = OutsoleMasterController.Select_1();
-            rawMaterialList = RawMaterialController.Select();
-            outsoleReleaseMaterialList = OutsoleReleaseMaterialController.SelectByOutsoleMaster();
-            outsoleReleaseMaterialToWHInspectionList = OutsoleReleaseWHInspectionController.SelectOutsoleReleaseToWHInspectionByOutsoleMaster();
-
             productionMemoList = ProductionMemoController.Select();
-
-            outsoleRawMaterialList = OutsoleRawMaterialController.Select();
-            outsoleMaterialList = OutsoleMaterialController.Select();
-            outsoleMaterialCheckingWHList = OutsoleMaterialCheckingController.SelectByPOAvailable();
             suppilerList = OutsoleSuppliersController.Select();
             //rawMaterialViewModelNewList = RawMaterialController.Select_1();
-            sizeRunList = SizeRunController.SelectIsEnable();
+
+            Task.WaitAll(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
 
             int[] materialIdUpperArray = { 1, 2, 3, 4, 10 };
             int[] materialIdSewingArray = { 5, 7 };

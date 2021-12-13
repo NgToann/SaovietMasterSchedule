@@ -314,7 +314,7 @@ namespace MasterSchedule.Views
             var poSearch = e.Argument as String;
             outsoleMaterialList = OutsoleMaterialController.Select(poSearch);
             outsoleSupplierList = OutsoleSuppliersController.Select();
-            outsoleMatCheckingList = OutsoleMaterialCheckingController.SelectByPO(poSearch);
+            outsoleMatCheckingList = OutsoleMaterialCheckingController.SelectByPO_1(poSearch);
             osmCheckFromZeroList = outsoleMatCheckingList.ToList();
             sizeRunList = SizeRunController.Select(poSearch);
 
@@ -325,7 +325,7 @@ namespace MasterSchedule.Views
                 if (osSizeList.Where(w => w.Equals(sr.OutsoleSize)).Count() > 1)
                     sizeRunByOutsoleSizeDuplicateList.Add(sr);
             }
-            currentOutsoleMaterialCheckingList = OutsoleMaterialCheckingController.SelectByPO(poSearch);
+            currentOutsoleMaterialCheckingList = OutsoleMaterialCheckingController.SelectByPO_1(poSearch);
             orderInformation = OrdersController.SelectTop1(poSearch);
         }
 
@@ -519,7 +519,7 @@ namespace MasterSchedule.Views
             allowPressKey = true;
 
             // HightLight
-            HightSupplierClicked(supplierClicked.OutsoleSupplierId);
+            HighLightSupplierClicked(supplierClicked.OutsoleSupplierId);
 
             oswhWorkingTimeList.Add(new OSWHWorkingTimeModel
             {
@@ -864,12 +864,16 @@ namespace MasterSchedule.Views
 
                     // Reject is ErrorId != 0 and != -1 : ErrorId > 0
                     var rejectList = currentCheckListBySize.Where(w => w.ErrorId > 0).ToList();
+                    
                     if (rejectList.Count() > 0)
                     {
+                        var totalBorrow = currentCheckListBySize.Sum(s => s.QuantityBorrow);
+                        //var totalBorrow = borrowedList.Sum(s => s.QuantityBorrow);
                         displayDataList.Add(String.Format("R:{0}", rejectList.Sum(s => s.Reject)));
+                        if (totalBorrow > 0)
+                            displayDataList.Add(String.Format("B:{0}", totalBorrow));
+
                         dr[String.Format("Background{0}", size)] = Brushes.Yellow;
-                        //dr[String.Format("{0}", size)]              = String.Format("{0}R: {1}", String.IsNullOrEmpty(qtyDisplay) == false ? String.Format("{0}\n", qtyDisplay) : "", rejectCheckListByDateBySize.Sum(s => s.Reject));
-                        //dr[String.Format("{0}", size)]              = String.Format("{0}R: {1}", qtyCheckByDateBySize > 0 ? String.Format("{0}\n", qtyCheckByDateBySize) : "", rejectCheckListByDateBySize.Sum(s => s.Reject));
                         dr[String.Format("{0}", size)] = String.Join("\n", displayDataList);
                         dr[String.Format("Foreground{0}", size)] = Brushes.Red;
 
@@ -885,6 +889,11 @@ namespace MasterSchedule.Views
                         if (totalRemarks > 0)
                             toolTips.Add(String.Format("Remark: {0}", totalRemarks));
 
+                        var posBorrowed = currentCheckListBySize.Where(w => !string.IsNullOrEmpty(w.ProductNoBorrow)).Select(s => s.ProductNoBorrow).ToList();
+                        foreach (var po in posBorrowed)
+                        {
+                            toolTips.Add($"Borrowed: {po}");
+                        }
                         dr[String.Format("ToolTip{0}", size)] = String.Join("\n", toolTips);
                     }
                     else if (totalRemarks > 0)
@@ -893,7 +902,7 @@ namespace MasterSchedule.Views
                     }
                 }
 
-                int totalQtyCheckByDate = currentCheckListByDate.Sum(s => s.Quantity + s.ReturnReject);
+                int totalQtyCheckByDate = currentCheckListByDate.Sum(s => s.Quantity + s.ReturnReject + s.QuantityBorrow);
                 if (totalQtyCheckByDate > 0)
                     dr["Total"] = totalQtyCheckByDate;
 
@@ -928,7 +937,7 @@ namespace MasterSchedule.Views
                     if (totalQtyOKBySize < sizeRun.Quantity)
                         drTotal[String.Format("Foreground{0}", size)] = Brushes.Red;
                 }
-                int totalTotal = currentCheckingList.Sum(s => s.Quantity + s.ReturnReject);
+                int totalTotal = currentCheckingList.Sum(s => s.Quantity + s.ReturnReject + s.QuantityBorrow);
                 if (totalTotal > 0)
                     drTotal["Total"] = totalTotal;
                 dtDeliveryDetail.Rows.Add(drTotal);
@@ -967,7 +976,7 @@ namespace MasterSchedule.Views
             catch { }
         }
 
-        private void HightSupplierClicked(int supplierId)
+        private void HighLightSupplierClicked(int supplierId)
         {
             try
             {
@@ -1076,28 +1085,8 @@ namespace MasterSchedule.Views
 
         private void chkDisplayDelivery_Unchecked(object sender, RoutedEventArgs e)
         {
-
             if (this.IsLoaded)
                 dgDeliveryStatus.Visibility = Visibility.Collapsed;
-        }
-
-        private void dgSupplierDeliveryDetail_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
-        {
-            try
-            {
-                
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
-        private void dgSupplierDeliveryDetail_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            var x = dgSupplierDeliveryDetail.CurrentCell;
-            //var sizeClicked = e..GetValue(TagProperty) as SizeRunModel;
         }
 
         private void dgSupplierDeliveryDetail_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
@@ -1126,10 +1115,12 @@ namespace MasterSchedule.Views
                 if (oswhCheckBySize.Where(w => w.Reject > 0).Count() <= 0)
                     return;
 
-                BorrowOutsoleWHMaterialWindow window = new BorrowOutsoleWHMaterialWindow(oswhCheckBySize, supplierClicked, oswhCheckCurrentList);
+                BorrowOutsoleWHMaterialWindow window = new BorrowOutsoleWHMaterialWindow(oswhCheckBySize.Where(w => w.Reject > 0).ToList(), supplierClicked, oswhCheckCurrentList);
                 window.ShowDialog();
-
-                //MessageBox.Show($"Clicked {sizeClicked.SizeNo}", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                if(window.oswhAfterBorrow.Count() > 0)
+                {
+                    LoadDataDetail(window.oswhAfterBorrow);
+                }
             }
             catch (Exception)
             {

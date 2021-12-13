@@ -16,6 +16,7 @@ using wf = System.Windows.Forms;
 using MasterSchedule.Helpers;
 using System.Globalization;
 using System.Windows.Controls.Primitives;
+using System.Threading.Tasks;
 
 namespace MasterSchedule.Views
 {
@@ -169,22 +170,30 @@ namespace MasterSchedule.Views
 
         private void bwLoad_DoWork(object sender, DoWorkEventArgs e)
         {
+
+            Task t1 = new Task(() => { sewingMasterList = SewingMasterController.Select(); });
+            t1.Start();
+            Task t2 = new Task(() => { sockliningMasterList = SockliningMasterController.Select(); });
+            t2.Start();
+            Task t3 = new Task(() => { assemblyMasterList = AssemblyMasterController.Select(); });
+            t3.Start();
+            Task t4 = new Task(() => { rawMaterialList = RawMaterialController.Select(); });
+            t4.Start();
+            Task t5 = new Task(() => { assemblyReleaseList = AssemblyReleaseController.SelectByAssemblyMaster(); });
+            t5.Start();
+            Task t6 = new Task(() => { outsoleRawMaterialList = OutsoleRawMaterialController.Select(); });
+            t6.Start();
+            Task t7 = new Task(() => { outsoleMaterialList = OutsoleMaterialController.Select(); });
+            t7.Start();
+            Task t8 = new Task(() => { outsoleReleaseMaterialList = OutsoleReleaseMaterialController.SelectByOutsoleMaster(); });
+            t8.Start();
+            Task t9 = new Task(() => { orderList = OrdersController.Select(); });
+            t9.Start();
             offDayList = OffDayController.Select();
-            orderList = OrdersController.Select();
-            sewingMasterList = SewingMasterController.Select();
-            outsoleMasterList = OutsoleMasterController.Select();
-            sockliningMasterList = SockliningMasterController.Select();
-            assemblyMasterList = AssemblyMasterController.Select();
-            rawMaterialList = RawMaterialController.Select();
-            assemblyReleaseList = AssemblyReleaseController.SelectByAssemblyMaster();
             productionMemoList = ProductionMemoController.Select();
+            Task.WaitAll(t1, t2, t3, t4, t5, t6, t7, t8, t9);
 
-            outsoleRawMaterialList = OutsoleRawMaterialController.Select();
-            outsoleMaterialList = OutsoleMaterialController.Select();
-
-            outsoleReleaseMaterialList = OutsoleReleaseMaterialController.SelectByOutsoleMaster();
             //rawMaterialViewModelNewList = RawMaterialController.Select_1();
-
 
             int[] materialIdUpperArray = { 1, 2, 3, 4, 10 };
             int[] materialIdSewingArray = { 5, 7 };

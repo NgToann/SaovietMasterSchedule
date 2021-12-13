@@ -17,6 +17,7 @@ using MasterSchedule.Models;
 using MasterSchedule.ViewModels;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MasterSchedule.Views
 {
@@ -278,18 +279,67 @@ namespace MasterSchedule.Views
             }
         }
 
+        private object CallStaticMethod(string typeName, string methodName)
+        {
+            object result = null;
+            var type = Type.GetType(typeName);
+            if (type != null)
+            {
+                var method = type.GetMethod(methodName);
+                if (method != null)
+                {
+                    return method.Invoke(null, null);
+                }
+            }
+            return result;
+        }
+
         private void bwLoad_DoWork(object sender, DoWorkEventArgs e)
         {
-            offDayList = OffDayController.Select();
-            orderList = OrdersController.Select();
-            sewingMasterList = SewingMasterController.Select();
-            rawMaterialList = RawMaterialController.Select();
-            outsoleMasterList = OutsoleMasterController.Select();
+            orderList = (List<OrdersModel>)CallStaticMethod("OrdersController", "Select");
+
+            Task t1 = new Task(()=> { 
+                offDayList = OffDayController.Select();
+            });
+            t1.Start();
+            Task t2 = new Task(() =>
+            {
+                orderList = OrdersController.Select();
+            });
+            t2.Start();
+
+            Task t3 = new Task(() => { 
+                sewingMasterList = SewingMasterController.Select();
+            });
+            t3.Start();
+
+            Task t4 = new Task(() =>
+            {
+                rawMaterialList = RawMaterialController.Select();
+            });
+            t4.Start();
+
+            Task t5 = new Task(() =>
+            {
+                outsoleMasterList = OutsoleMasterController.Select();
+            });
+            t5.Start();
+
+            Task t6 = new Task(() =>
+            {
+                outsoleRawMaterialList = OutsoleRawMaterialController.Select();
+            });
+            t6.Start();
+            Task t7 = new Task(() =>
+            {
+                outsoleMaterialList = OutsoleMaterialController.Select();
+            });
+            t7.Start();
+
+            Task.WaitAll(t1, t2, t3, t4, t5, t6, t7);
+
             productionMemoList = ProductionMemoController.Select();
             //rawMaterialViewModelNewList = RawMaterialController.Select_1();
-
-            outsoleRawMaterialList = OutsoleRawMaterialController.Select();
-            outsoleMaterialList = OutsoleMaterialController.Select();
             def = PrivateDefineController.GetDefine();
 
             _SEW_VS_CUTA = def.SewingVsCutAStartDate;

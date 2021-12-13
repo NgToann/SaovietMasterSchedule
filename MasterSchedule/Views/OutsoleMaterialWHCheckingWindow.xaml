@@ -166,7 +166,6 @@
                 </StackPanel>
                 <DataGrid x:Name="dgSupplierDeliveryDetail" Grid.Row="1" AutoGenerateColumns="False" AlternationCount="2" 
                       BeginningEdit="dgSupplierDeliveryDetail_BeginningEdit"
-                      CellEditEnding="dgSupplierDeliveryDetail_CellEditEnding" MouseLeftButtonDown="dgSupplierDeliveryDetail_MouseLeftButtonDown"
                       CanUserAddRows="False" SelectionUnit="Cell" HorizontalGridLinesBrush="LightGray" VerticalGridLinesBrush="LightGray" RowHeaderWidth="0"
                       IsReadOnly="False" FontFamily="Times New Roman" FontSize="15" LoadingRow="dgSupplierDeliveryDetail_LoadingRow">
                     <DataGrid.ColumnHeaderStyle>

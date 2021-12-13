@@ -115,6 +115,7 @@
     <Compile Include="Controllers\MaterialDeliveryController.cs" />
     <Compile Include="Controllers\MaterialInspectController.cs" />
     <Compile Include="Controllers\MaterialPlanController.cs" />
+    <Compile Include="Controllers\OSMaterialBorrowController.cs" />
     <Compile Include="Controllers\OSWHWorkingTimeController.cs" />
     <Compile Include="Controllers\OutsoleMaterialCheckingController.cs" />
     <Compile Include="Controllers\OutsoleMaterialDetailController.cs" />
@@ -251,6 +252,7 @@
     <Compile Include="Models\MaterialDeliveryModel.cs" />
     <Compile Include="Models\MaterialInspectModel.cs" />
     <Compile Include="Models\MaterialPlanModel.cs" />
+    <Compile Include="Models\OSMaterialBorrowModel.cs" />
     <Compile Include="Models\OSWHWorkingTimeModel.cs" />
     <Compile Include="Models\OutsoleMasterSourceModel.cs" />
     <Compile Include="Models\OutsoleMaterialBalanceReportModel.cs" />

@@ -20,6 +20,16 @@ namespace MasterSchedule.Controllers
                 return db.ExecuteStoreQuery<OutsoleMaterialCheckingModel>("EXEC spm_SelectOutsoleMaterialCheckingByPO @ProductNo", @ProductNo).ToList();
             };
         }
+        //
+        public static List<OutsoleMaterialCheckingModel> SelectByPO_1(string POSearch)
+        {
+            var @ProductNo = new SqlParameter("@ProductNo", POSearch);
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<OutsoleMaterialCheckingModel>("EXEC spm_SelectOutsoleMaterialCheckingByPO_1 @ProductNo", @ProductNo).ToList();
+            };
+        }
+
         public static List<OutsoleMaterialCheckingModel> SelectByPOBorrow(string POSearch)
         {
             var @ProductNo = new SqlParameter("@ProductNo", POSearch);
