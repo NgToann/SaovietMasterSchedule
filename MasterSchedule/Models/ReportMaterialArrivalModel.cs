@@ -12,5 +12,7 @@ namespace MasterSchedule.Models
         public DateTime DateDisplay { get; set; }
         public string Status { get; set; }
         public int Quantity { get; set; }
+        public string Remarks { get; set; }
+        public int QuantityArrived { get; set; }
     }
 }

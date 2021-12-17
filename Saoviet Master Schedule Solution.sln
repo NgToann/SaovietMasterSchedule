@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+# Visual Studio 2019
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterSchedule", "MasterSchedule\MasterSchedule.csproj", "{C7FED85D-E375-4FFB-A2A2-3103F134D2E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckUpdate", "CheckUpdate\CheckUpdate.csproj", "{B41DCE02-FF22-4EAF-B6C1-A07DACBBA19B}"

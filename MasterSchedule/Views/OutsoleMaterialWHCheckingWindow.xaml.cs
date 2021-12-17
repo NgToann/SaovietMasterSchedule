@@ -75,9 +75,11 @@ namespace MasterSchedule.Views
             oswhWorkingTimeList = new List<OSWHWorkingTimeModel>();
             definePrivate = new PrivateDefineModel();
             timerCounterWT = new DispatcherTimer();
+            timerCounterWT.Interval = new TimeSpan(0, 0, 1);
             timerCounterWT.Tick += WorkingTimeCal_Tick;
 
             clockTimer = new DispatcherTimer();
+            clockTimer.Interval = new TimeSpan(0, 0, 1);
             clockTimer.Tick += ClockTimer_Tick;
             clockTimer.Start();
 

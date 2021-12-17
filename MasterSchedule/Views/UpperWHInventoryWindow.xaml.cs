@@ -351,7 +351,7 @@ namespace MasterSchedule.Views
                 else if (eMats == EMaterial.Outsole)
                     lines = matsArrivalList.Select(s => s.OutsoleLine).Distinct().ToList();
 
-
+                var osMatsTotalList = new List<OSMatsArrivedModel>();
                 foreach (var line in lines)
                 {
                     var dr = dt.NewRow();
@@ -367,11 +367,29 @@ namespace MasterSchedule.Views
                                                                                 && w.Status.Equals("OK"))
                                                                          .Sum(s => s.Quantity);
                         else if (eMats == EMaterial.Outsole)
-                            totalPairsByLineByDate = matsArrivalList.Where(w => w.OutsoleLine == line
-                                                                                && w.DateDisplay >= date && w.DateDisplay < date.AddDays(8)
-                                                                                && w.Status.Equals("OK"))
-                                                                         .Sum(s => s.Quantity);
+                        {
+                            var osMatsFromTo = matsArrivalList.Where(w => w.OutsoleLine == line && w.DateDisplay >= date && w.DateDisplay < date.AddDays(8)).ToList();
+                            totalPairsByLineByDate = osMatsFromTo.Where(w => w.Status.Equals("OK")).Sum(s => s.Quantity);
 
+                            var osMatsNotOK = osMatsFromTo.Where(w => w.Status.Equals("NOT_OK")).ToList();
+                            var poList = osMatsNotOK.Select(s => s.ProductNo).Distinct().ToList();
+                            foreach (var po in poList)
+                            {
+                                var osMatsByPO = osMatsNotOK.Where(w => w.ProductNo == po).FirstOrDefault();
+                                var balance = osMatsByPO.Remarks;
+                                int qtyBalance = 0;
+                                Int32.TryParse(balance, out qtyBalance);
+                                if (qtyBalance > 0)
+                                {
+                                    int tenPercentOfQty = osMatsByPO.Quantity * 10 / 100;
+                                    if (qtyBalance < tenPercentOfQty)
+                                    {
+                                        totalPairsByLineByDate += (osMatsByPO.Quantity - qtyBalance);
+                                    }
+                                }
+                            }
+                        }
+                        osMatsTotalList.Add(new OSMatsArrivedModel { Id = colBindIdDetail, Quantity = totalPairsByLineByDate });
                         if (totalPairsByLineByDate > 0)
                             dr[string.Format("Column{0}", colBindIdDetail)] = totalPairsByLineByDate;
                         colBindIdDetail++;
@@ -385,10 +403,13 @@ namespace MasterSchedule.Views
                 int colBindId = 0;
                 for (DateTime date = dateFrom; date <= dateTo; date = date.AddDays(8))
                 {
-                    var totalPair = matsArrivalList.Where(w => w.DateDisplay >= date && w.DateDisplay < date.AddDays(8) && w.Status.Equals("OK")).Sum(s => s.Quantity);
-                    if (totalPair > 0)
-                        drTotalOK[string.Format("Column{0}", colBindId)] = totalPair;
-                    colBindId++;
+                    //var totalPair = matsArrivalList.Where(w => w.DateDisplay >= date && w.DateDisplay < date.AddDays(8) && w.Status.Equals("OK")).Sum(s => s.Quantity);
+                    //if (totalPair > 0)
+                    var totalArrived = osMatsTotalList.Where(w => w.Id == colBindId).Sum(s => s.Quantity);
+                    if (totalArrived > 0)
+                        //drTotalOK[string.Format("Column{0}", colBindId)] = totalPair;
+                        drTotalOK[string.Format("Column{0}", colBindId)] = totalArrived;
+                        colBindId++;
                 }
                 dt.Rows.Add(drTotalOK);
 
@@ -409,9 +430,14 @@ namespace MasterSchedule.Views
                 dgUpperArrival.Items.Refresh();
 
             }));
-
-
         }
+
+        class OSMatsArrivedModel
+        {
+            public int Id { get; set; }
+            public int Quantity { get; set; }
+        }
+
         private void BwPreviewUpperArrival_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             this.Cursor = null;

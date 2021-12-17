@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
+
 using MasterSchedule.Controllers;
 using MasterSchedule.Models;
-using MasterSchedule.Helpers;
 
 namespace MasterSchedule.Views
 {
@@ -24,6 +21,7 @@ namespace MasterSchedule.Views
         List<OutsoleMaterialCheckingModel> oswhCheckList;
         List<OutsoleMaterialCheckingModel> oswhCheckBySupplier;
         List<OSMaterialBorrowModel> currentBorrowedList;
+        private List<OrdersModel> orderList;
         public List<OutsoleMaterialCheckingModel> oswhAfterBorrow;
         //public List<OSMaterialBorrowModel> oswhBorrowedList;
         private string sizeBorrow = "";
@@ -54,6 +52,7 @@ namespace MasterSchedule.Views
             try
             {
                 currentBorrowedList = OSMaterialBorrowController.GetByOSCheckingId(osCheckingId).Where(w => !string.IsNullOrEmpty(w.ProductNoBorrow)).ToList();
+                orderList = OrdersController.Select();
                 var poList = currentBorrowedList.Select(s => s.ProductNoBorrow).Distinct().ToList();
                 if (poList.Count() > 1)
                 {
@@ -92,26 +91,13 @@ namespace MasterSchedule.Views
                 {
                     txtProductNo.Text   = poList.FirstOrDefault();
                     txtQuantity.Text    = currentBorrowedList.Sum(s => s.QuantityBorrow).ToString();
+                    displayArticleNo(poList.FirstOrDefault(), orderList);
                 }
                 else
                 {
                     txtProductNo.Focus();
                     btnReturn.IsEnabled = false;
                 }
-
-                //var qtyBorrowed = oswhCheckList.Sum(s => s.QuantityBorrow);
-                //if (qtyBorrowed > 0)
-                //{
-                //    txtQuantity.Focus();
-                //    txtProductNo.Text = oswhCheckList.FirstOrDefault().ProductNoBorrow;
-                //    txtQuantity.Text = qtyBorrowed.ToString();
-                //    txtProductNo.IsEnabled = false;
-                //}
-                //else
-                //{
-                //    txtProductNo.Focus();
-                //    btnReturn.IsEnabled = false;
-                //}
             }
             catch (Exception ex)
             {
@@ -139,7 +125,7 @@ namespace MasterSchedule.Views
                 var borrowedList = checkBoxChecked.Tag as List<OSMaterialBorrowModel>;
                 txtQuantity.Text = borrowedList.Sum(s => s.QuantityBorrow).ToString();
                 txtProductNo.Text = borrowedList.FirstOrDefault().ProductNoBorrow;
-
+                displayArticleNo(borrowedList.FirstOrDefault().ProductNoBorrow, orderList);
                 txtQuantity.Focus();
             }
             catch { }
@@ -336,6 +322,21 @@ namespace MasterSchedule.Views
                 }
                 else
                     btnBorrow.IsDefault = true;
+            }
+        }
+
+        private void txtProductNo_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var inputWhat = txtProductNo.Text.Trim().ToUpper().ToString();
+            displayArticleNo(inputWhat, orderList);
+        }
+        private void displayArticleNo (string po, List<OrdersModel> orderList)
+        {
+            lblArticleNo.Text = "";
+            var orderByPO = orderList.Where(w => w.ProductNo.ToUpper().Equals(po)).FirstOrDefault();
+            if (orderByPO != null)
+            {
+                lblArticleNo.Text = $"ArticleNo (Kiểu giày): {orderByPO.ArticleNo}";
             }
         }
     }

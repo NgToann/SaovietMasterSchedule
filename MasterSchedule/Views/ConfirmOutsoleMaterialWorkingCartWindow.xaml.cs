@@ -64,7 +64,7 @@ namespace MasterSchedule.Views
             resourceBorderThickness = (Thickness)TryFindResource("thicknessType1");
 
             dispatcherTimer = new DispatcherTimer();
-
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
             dispatcherTimer.Tick += DispatcherTimer_Tick;
             dispatcherTimer.Start();
 
