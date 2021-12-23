@@ -36,6 +36,13 @@ namespace MasterSchedule.Controllers
                 return db.ExecuteStoreQuery<SewingMasterSourceModel>("EXEC spm_SelectSewingMasterSource").ToList();
             };
         }
+        public static List<SewingMasterSourceModel> SelectSewingMasterSource_1()
+        {
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<SewingMasterSourceModel>("EXEC spm_SelectSewingMasterSource_1").ToList();
+            };
+        }
 
         // IsEnable = 1 || 0
         public static List<SewingMasterModel> SelectFull(DateTime etdStart, DateTime etdEnd)

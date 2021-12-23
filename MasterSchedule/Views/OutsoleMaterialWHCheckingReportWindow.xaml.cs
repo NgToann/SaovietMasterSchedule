@@ -714,6 +714,8 @@ namespace MasterSchedule.Views
 
             foreach (var sizeNo in sizeNoList)
             {
+                // var sizeRunBySizeNo = sizeRunList.Where(w => w.SizeNo == sizeNo).FirstOrDefault();
+
                 string sizeBinding = sizeNo.Contains(".") ? sizeNo.Replace(".", "@") : sizeNo;
 
                 dt.Columns.Add(String.Format("Column{0}", sizeBinding), typeof(String));

@@ -109,7 +109,7 @@ namespace MasterSchedule.Views
             {
                 var productNoListWithAccount = OrdersController.Select().Where(w => account.TypeOfShoes != -1 ? w.TypeOfShoes == account.TypeOfShoes : w.TypeOfShoes != -16111992).Select(s => s.ProductNo).ToList();
                 productionMemoList = ProductionMemoController.Select().Where(w => productNoListWithAccount.Contains(w.ProductionNumbers)).ToList();
-                Task t1 = new Task(() => { rawMaterialViewModelNewList = RawMaterialController.Select_1().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList(); });
+                Task t1 = new Task(() => { rawMaterialViewModelNewList = RawMaterialController.Select_1New().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList(); });
                 t1.Start();
                 Task t2 = new Task(() => { rejectUpperAccessoriesList = RejectController.GetRejectUpperAccessories(); });
                 t2.Start();

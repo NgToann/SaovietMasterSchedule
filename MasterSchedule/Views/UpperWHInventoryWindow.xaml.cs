@@ -290,7 +290,7 @@ namespace MasterSchedule.Views
             if (eMats == EMaterial.Upper)
                 matsArrivalList = ReportController.GetUpperMatsArrivalFromTo(dateFrom, dateTo);
             else if (eMats == EMaterial.Outsole)
-                matsArrivalList = ReportController.GetOutsoleMatsArrivalFromTo(dateFrom, dateTo);
+                matsArrivalList = ReportController.GetOutsoleMatsArrivalFromTo_1(dateFrom, dateTo);
 
             if (matsArrivalList.Count() <= 0)
                 return;

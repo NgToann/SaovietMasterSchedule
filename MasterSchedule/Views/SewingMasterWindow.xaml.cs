@@ -989,7 +989,7 @@ namespace MasterSchedule.Views
                 if (!string.IsNullOrEmpty(def.Factory) && !def.Factory.Equals("THIENLOC"))
                 { 
                     offDayList = OffDayController.Select();
-                    sewingMasterSourceList = SewingMasterController.SelectSewingMasterSource().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
+                    sewingMasterSourceList = SewingMasterController.SelectSewingMasterSource_1().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
                     productionMemoList = ProductionMemoController.Select().Where(w => productNoListWithAccount.Contains(w.ProductionNumbers)).ToList();
                     def = PrivateDefineController.GetDefine();
 

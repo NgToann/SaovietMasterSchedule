@@ -1061,9 +1061,9 @@ namespace MasterSchedule
                 "1.2.9.3: " + "Update: Improve WindowLoading Speed 'SV'\n" +
                 "1.2.9.5: " + "Update: OS WH Material Report FromTo, OS Painting Report 'SV'\n" +
                 "1.2.9.8: " + "Update: Improve saving data speed (sewing, outsole, assembly, socklining) 'SV', Separate SamplePO 'TL'.\n" +
-                "1.2.9.9: " + "Update: Add ShipDate Column 'SV'.\n"+
-                "1.3.0.2: " + "Update: Add Material Arrival Report Weekly 'SV'\n"+
-                "1.3.0.3: " + "Update: Add Borrow OSMaterial, Send report to supervisors by email, Revise OSMaterialArrival Report, Create multi threads while load data from db. 'SV'";
+                "1.2.9.9: " + "Update: Add ShipDate Column 'SV'.\n" +
+                "1.3.0.2: " + "Update: Add Material Arrival Report Weekly 'SV'\n" +
+                "1.3.0.4: " + "Update: Add Borrow OSMaterial, Send report to supervisors by email, Revise OSMaterialArrival Report, Create multi threads while load data from db. 'SV'";
             //MessageBox.Show(version, string.Format("Current Version: {0}", AssemblyHelper.Version()), MessageBoxButton.OK, MessageBoxImage.Information);
             UpdateHistoryWindow window = new UpdateHistoryWindow(version, AssemblyHelper.Version());
             window.Show();

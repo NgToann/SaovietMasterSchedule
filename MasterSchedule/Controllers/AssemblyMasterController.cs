@@ -23,6 +23,12 @@ namespace MasterSchedule.Controllers
             SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
             return db.ExecuteStoreQuery<AssemblyMasterSourceModel>("EXEC spm_SelectAssemblyMasterSource").ToList();
         }
+        public static List<AssemblyMasterSourceModel> SelectAssemblySource_1()
+        {
+            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
+            return db.ExecuteStoreQuery<AssemblyMasterSourceModel>("EXEC spm_SelectAssemblyMasterSource_1").ToList();
+        }
+
         public static List<AssemblyMasterModel> SelectFull(DateTime etdStart, DateTime etdEnd)
         {
             SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();

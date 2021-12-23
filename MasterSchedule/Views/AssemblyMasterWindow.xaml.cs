@@ -562,7 +562,7 @@ namespace MasterSchedule.Views
                 {
                     offDayList = OffDayController.Select();
                     productionMemoList = ProductionMemoController.Select().Where(w => productNoListWithAccount.Contains(w.ProductionNumbers)).ToList();
-                    assemblySourceList = AssemblyMasterController.SelectAssemblySource().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
+                    assemblySourceList = AssemblyMasterController.SelectAssemblySource_1().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
                     Dispatcher.Invoke(new Action(() =>
                     {
                         prgStatus.Maximum = assemblySourceList.Count();

@@ -505,7 +505,7 @@ namespace MasterSchedule.Views
                 {
                     offDayList = OffDayController.Select();
                     productionMemoList = ProductionMemoController.Select().Where(w => productNoListWithAccount.Contains(w.ProductionNumbers)).ToList();
-                    outsoleMasterSourceList = OutsoleMasterController.SelectSource().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
+                    outsoleMasterSourceList = OutsoleMasterController.SelectSource_1().Where(w => productNoListWithAccount.Contains(w.ProductNo)).ToList();
 
                     Dispatcher.Invoke(new Action(() =>
                     {

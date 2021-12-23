@@ -96,6 +96,14 @@ namespace MasterSchedule.Controllers
                 return db.ExecuteStoreQuery<RawMaterialViewModelNew>("EXEC spm_SelectRawMaterialViewModel").ToList();
             };
         }
+        public static List<RawMaterialViewModelNew> Select_1New()
+        {
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                db.CommandTimeout = 90;
+                return db.ExecuteStoreQuery<RawMaterialViewModelNew>("EXEC spm_SelectRawMaterialViewModel_1").ToList();
+            };
+        }
 
         // IsEnable = 1 || 0
         public static List<RawMaterialModel> SelectFull(DateTime etdStart, DateTime etdEnd)

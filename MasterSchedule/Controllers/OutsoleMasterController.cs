@@ -22,6 +22,11 @@ namespace MasterSchedule.Controllers
             SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
             return db.ExecuteStoreQuery<OutsoleMasterSourceModel>("EXEC spm_SelectOutsoleMasterSource").ToList();
         }
+        public static List<OutsoleMasterSourceModel> SelectSource_1()
+        {
+            SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();
+            return db.ExecuteStoreQuery<OutsoleMasterSourceModel>("EXEC spm_SelectOutsoleMasterSource_1").ToList();
+        }
         public static List<OutsoleMasterModel> Select_1()
         {
             SaovietMasterScheduleEntities db = new SaovietMasterScheduleEntities();

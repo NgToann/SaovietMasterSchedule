@@ -192,5 +192,14 @@ namespace MasterSchedule.Controllers
                 return db.ExecuteStoreQuery<ReportMaterialArrivalModel>("reporter_OutsoleMaterialArrivalFromTo @DateFrom, @DateTo", @DateFrom, @DateTo).ToList();
             }
         }
+        public static List<ReportMaterialArrivalModel> GetOutsoleMatsArrivalFromTo_1(DateTime dateFrom, DateTime dateTo)
+        {
+            var @DateFrom = new SqlParameter("@DateFrom", dateFrom);
+            var @DateTo = new SqlParameter("@DateTo", dateTo);
+            using (var db = new SaovietMasterScheduleEntities())
+            {
+                return db.ExecuteStoreQuery<ReportMaterialArrivalModel>("reporter_OutsoleMaterialArrivalFromTo_1 @DateFrom, @DateTo", @DateFrom, @DateTo).ToList();
+            }
+        }
     }
 }
